@@ -1,25 +1,22 @@
 ---
 /**
- * The timeline widget with its data already attached.
+ * The timeline widget's mount point.
  *
- * Both homes — the bitcoin stage and the bitcoin post — mount this rather than
- * the island directly, so neither has to know where the blocks come from and
- * the two can never end up quoting different ones (blockSamples caches across
- * pages within a build).
+ * Both homes — the bitcoin stage and the bitcoin post — go through this rather
+ * than the island directly, so the hydration directive stays one decision
+ * instead of two. The blocks are fetched by the island itself, in the browser.
  */
 import { BitcoinTimeline } from "./BitcoinTimeline";
-import { blockSamples } from "@/lib/bitcoin-blocks";
 
 interface Props {
   variant?: "stage" | "post";
 }
 
 const { variant = "post" } = Astro.props;
-const samples = await blockSamples();
 ---
 
 {
   /* client:visible — the widget only means anything once it is on screen, and
-    on the homepage it must not compete with the stage art for first paint. */
+    its fetch must not compete with the stage art for the first paint. */
 }
-<BitcoinTimeline client:visible samples={samples} variant={variant} />
+<BitcoinTimeline client:visible variant={variant} />

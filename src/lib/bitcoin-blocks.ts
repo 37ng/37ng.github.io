@@ -2,12 +2,12 @@
  * Fetches the blocks the timeline widget shows, from mempool.space's public
  * REST API.
  *
- * This runs at *build* time, not in the visitor's browser. The widget then
- * ships as static numbers: no key to keep, no CORS to negotiate, no third-party
- * request on the critical path of a page whose whole point is that it paints
- * immediately. The trade is that the figures are as fresh as the last deploy,
- * which is why the widget prints the block height and timestamp it is quoting
- * rather than implying it is live.
+ * This runs in the visitor's browser, when the widget scrolls into view. The
+ * figures are therefore current at read time rather than at deploy time, which
+ * is what the knots — 1min, 1h, 1d — claim to be. mempool.space serves
+ * `Access-Control-Allow-Origin: *` and needs no key, so no proxy is involved.
+ * The cost is that the numbers arrive after first paint: the widget renders its
+ * frame immediately and fills the readouts when the data lands.
  *
  * Every failure path returns null and the widget renders an explicit
  * unavailable state. Nothing here ever invents a number: a plausible-looking
@@ -110,20 +110,40 @@ export async function loadBlockSamples(): Promise<BlockSample[] | null> {
     }
     return samples as BlockSample[];
   } catch (error) {
-    // A blog that cannot reach mempool.space still has to build.
+    // A visitor who is offline, or whose network blocks the API, still gets
+    // the page.
     console.warn("[bitcoin-timeline] block data unavailable:", error);
     return null;
   }
 }
 
 /**
- * Module-level cache. The widget appears on the homepage stage and inside the
- * bitcoin post, which are separate pages built in the same process — without
- * this they would each pay for the whole fetch, and quote different blocks.
+ * Per-tab cache, with the time the load started.
+ *
+ * The widget can mount more than once in one session — the homepage stage and
+ * the bitcoin post are separate documents, but a view transition keeps the same
+ * window — and a remount must not re-run fourteen requests. The stamp is what
+ * lets a stale entry be refetched instead of served for the whole visit.
+ *
+ * A load is never cancelled by its caller: the promise is shared, so aborting
+ * it for one unmounting widget would hand every other consumer a failure.
  */
-let pending: Promise<BlockSample[] | null> | null = null;
+const MAX_AGE_MS = 5 * 60 * 1000;
+
+let cached: { at: number; promise: Promise<BlockSample[] | null> } | null =
+  null;
 
 export function blockSamples(): Promise<BlockSample[] | null> {
-  pending ??= loadBlockSamples();
-  return pending;
+  const now = Date.now();
+  if (cached && now - cached.at < MAX_AGE_MS) return cached.promise;
+  const entry = {
+    at: now,
+    // A failed load is not cached — the next mount should try again.
+    promise: loadBlockSamples().then((samples) => {
+      if (samples === null && cached === entry) cached = null;
+      return samples;
+    }),
+  };
+  cached = entry;
+  return entry.promise;
 }

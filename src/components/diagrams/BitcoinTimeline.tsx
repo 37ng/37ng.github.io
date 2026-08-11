@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { blockSamples } from "@/lib/bitcoin-blocks";
 import {
   bandAt,
   formatBtc,
@@ -10,8 +11,6 @@ import {
 } from "@/lib/bitcoin-timeline";
 
 interface BitcoinTimelineProps {
-  /** One per knot, from the build-time fetch. Null renders the empty state. */
-  samples: BlockSample[] | null;
   /** Stage furniture is a wide strip; in a post it is a boxed figure. */
   variant?: "stage" | "post";
 }
@@ -29,17 +28,31 @@ const SWEEP_SECONDS = 14;
  * looks (see lib/bitcoin-timeline.ts). Dragging selects whichever band the
  * cursor is *in*, so you never have to land on a tick. Left alone, the cursor
  * sweeps from 5y to 1min by itself.
+ *
+ * The blocks are fetched from the visitor's own browser on mount, so the near
+ * knots quote the chain as it is now rather than as it was at the last deploy.
  */
-export function BitcoinTimeline({
-  samples,
-  variant = "post",
-}: BitcoinTimelineProps) {
+export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState(0);
   // Any deliberate interaction — drag or hover — stops the sweep. It resumes on
   // leaving, from wherever it was left, so the widget never snaps.
   const [held, setHeld] = useState(false);
   const [dragging, setDragging] = useState(false);
+  const [samples, setSamples] = useState<BlockSample[] | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let live = true;
+    blockSamples().then((loaded) => {
+      if (!live) return;
+      setSamples(loaded);
+      setLoading(false);
+    });
+    return () => {
+      live = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (held || samples === null) return;
@@ -93,8 +106,8 @@ export function BitcoinTimeline({
       </div>
 
       {samples === null ? (
-        <p className="mt-4 font-mono text-[11px]">
-          block data unavailable at build time
+        <p className="mt-4 font-mono text-[11px]" style={{ opacity: 0.7 }}>
+          {loading ? "reading the chain…" : "block data unavailable"}
         </p>
       ) : (
         <dl className="mt-4 grid grid-cols-3 gap-4">
