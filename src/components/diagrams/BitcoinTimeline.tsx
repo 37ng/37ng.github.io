@@ -18,7 +18,7 @@ interface BitcoinTimelineProps {
 const BANDS = layout();
 
 /** Seconds for the cursor to travel the whole track on its own. */
-const SWEEP_SECONDS = 14;
+const SWEEP_SECONDS = 7;
 
 /**
  * A block, read at seven distances from now.
@@ -100,7 +100,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
     >
       <div className="flex items-baseline justify-between font-mono text-[10px]">
         <span style={{ color: "var(--hero-accent,var(--color-signal-600))" }}>
-          / bitcoin — one block, seven distances
+          / bitcoin network
         </span>
         {sample && <span>#{sample.height.toLocaleString("en-US")}</span>}
       </div>
@@ -112,7 +112,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
       ) : (
         <dl className="mt-4 grid grid-cols-3 gap-4">
           <Readout
-            label="fees (no coinbase)"
+            label="tx fees"
             value={sample ? `${formatBtc(sample.totalFeesSats)}` : "—"}
             unit="BTC"
             title={title}
@@ -231,12 +231,6 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
           }}
         />
       </div>
-
-      <p className="mt-3 font-mono text-[9px]" style={{ opacity: 0.7 }}>
-        {sample
-          ? `${formatStamp(sample.timestamp)} UTC · drag the track`
-          : "drag the track"}
-      </p>
     </div>
   );
 }
