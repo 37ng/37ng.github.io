@@ -1,0 +1,39 @@
+---
+// The fallback backdrop, for a stage whose post has no art. Its tone is
+// declared as `PAPER` in src/lib/stage.ts, which is what tells the caption to
+// use dark ink — if this ever stops being pale, change it there too.
+//
+// A sheet of manila drawing paper, carrying the
+// site's own spec the way a drawing carries its title block. Every line here
+// has to stay true — it is a colophon, not decoration.
+const SPEC = [
+  "37ng · personal site",
+  "astro · react islands · static",
+  "fraunces · inter · jetbrains mono",
+  "ink #05070a · signal #ea580c",
+];
+---
+
+<div class="paper-sheet absolute inset-0">
+  <div class="paper-grid absolute inset-0"></div>
+  <div class="paper-fibre absolute inset-0"></div>
+
+  {
+    /* Sits on the caption's own baseline, opposite corner. Hidden on narrow
+      screens, where the fan takes the full width and there is no corner
+      left to put it in. */
+  }
+  <div
+    class="absolute right-6 bottom-[calc(var(--fan-peek)+2.5rem)] hidden text-right md:block"
+  >
+    <div class="border-t border-signal-600/50 pt-2">
+      {
+        SPEC.map((line) => (
+          <p class="font-mono text-[10px] leading-[1.9] text-paper-muted/70">
+            {line}
+          </p>
+        ))
+      }
+    </div>
+  </div>
+</div>

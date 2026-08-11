@@ -1,0 +1,15 @@
+#!/bin/sh
+# Formats staged files with Prettier and re-stages them before the commit is made.
+staged=$(git diff --cached --name-only --diff-filter=ACMR -- '*.js' '*.jsx' '*.ts' '*.tsx' '*.astro' '*.css' '*.json' '*.md')
+
+if [ -z "$staged" ]; then
+  exit 0
+fi
+
+echo "pre-commit: formatting staged files..."
+IFS='
+'
+for f in $staged; do
+  npx prettier --write "$f" || exit 1
+  git add "$f"
+done

@@ -1,0 +1,99 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+// Real text from bitcoin.mdx's "Centralization of mining farms" / "矿场的中心化问题"
+// section — picked because it has Han/digit/percent boundaries ("51%攻击"), Chinese
+// punctuation, and enough length to show line-height and letter-spacing at reading
+// scale, not just a single line. The thin spaces (U+2009) around "51%" below are
+// typed in by hand, matching what rehype-pangu-spacing.ts produces on the real post
+// — this .astro page is outside the MDX pipeline, so the plugin doesn't run here.
+---
+
+<BaseLayout
+  title="Styleguide"
+  description="Chinese vs Latin typography, compared side by side on real post content."
+>
+  <main class="mx-auto max-w-5xl px-6 py-16">
+    <a href="/" class="font-mono text-xs text-ink-400 hover:text-signal-500"
+      >&larr; back</a
+    >
+
+    <header class="mt-8 mb-16 border-b border-ink-700 pb-8">
+      <p class="font-mono text-xs text-signal-600">§00 — typography</p>
+      <h1 class="mt-2 text-4xl font-semibold leading-tight text-ink-50">
+        Bilingual typography
+      </h1>
+      <p class="mt-3 max-w-lg text-ink-300">
+        Same section of the same post, in both languages, side by side — the
+        :lang(zh) rules in global.css (font, line-height, letter-spacing,
+        emphasis) against the Latin defaults.
+      </p>
+    </header>
+
+    <div class="grid grid-cols-1 gap-12 lg:grid-cols-2">
+      <article class="prose-tech" lang="en">
+        <h2>Centralization of mining farms</h2>
+        <p>
+          In theory, centralized farms with enormous hashpower do threaten
+          Bitcoin's security. In the pursuit of maximum efficiency,
+          centralization is <em>inevitable</em>.
+        </p>
+        <p>
+          But at the level of individual will, these farms achieve a kind of
+          "decentralization": the farm leases machines out to miners, the miner
+          takes the yield, the farm takes a cut.
+        </p>
+        <p>
+          Of course, under today's hashrate distribution, a few farms colluding
+          could run a 51% attack — trading long-term interest and legal exposure
+          for short-term gain.
+        </p>
+      </article>
+
+      <article class="prose-tech" lang="zh">
+        <h2>矿场的中心化问题</h2>
+        <p>
+          理论上，拥有强大算力的中心化矿场对比特币的安全确实造成了威胁。为了极致的效率，中心化是<em
+            >必然</em
+          >趋势。
+        </p>
+        <p>
+          但是这些矿场，在意愿层面做到了"去中心化"：矿场云出租矿机给矿工，矿工获得收益，矿场获得提成。
+        </p>
+        <p>
+          当然，在今天的算力分布下，几家矿场联合起来是可以进行 51% 攻击的，需要他们决定牺牲长期利益和面临法律风险来换取短期利益。
+        </p>
+      </article>
+    </div>
+
+    <section class="mt-20 border-t border-ink-700 pt-8">
+      <h2 class="text-2xl font-semibold text-ink-50">What's different</h2>
+      <ul class="prose-tech mt-4 list-none pl-0" lang="en">
+        <li>
+          <code>font-family</code> — Noto Serif SC (400 body / 700 heading), Fraunces
+          first in the stack only to catch stray Latin/digits.
+        </li>
+        <li>
+          <code>line-height: 1.9</code> vs 1.75 — CJK glyphs are denser and taller-set.
+        </li>
+        <li>
+          <code>letter-spacing: 0.02em</code>, never negative — the Latin
+          heading's -0.01em would collide adjacent Han strokes.
+        </li>
+        <li>
+          <code>font-size: 0.95em</code> — CJK glyphs fill their em box edge-to-edge
+          and read larger than Latin at the same nominal size.
+        </li>
+        <li>
+          Thin spaces (U+2009) around "51%" — baked into the HTML at build time
+          by <code>rehype-pangu-spacing.ts</code>, not done in CSS.
+        </li>
+        <li>
+          Emphasis — English <em>inevitable</em> italicizes; Chinese <em
+            >必然</em
+          > gets a filled dot underneath instead, since CJK has no true italic.
+        </li>
+      </ul>
+    </section>
+  </main>
+</BaseLayout>

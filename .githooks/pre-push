@@ -1,0 +1,8 @@
+#!/bin/sh
+# Blocks the push if `npm ci` can't install cleanly from package-lock.json.
+echo "pre-push: running npm ci..."
+npm ci
+if [ $? -ne 0 ]; then
+  echo "pre-push: npm ci failed — push aborted." >&2
+  exit 1
+fi

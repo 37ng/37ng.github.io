@@ -1,0 +1,132 @@
+---
+import { getImage } from "astro:assets";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import HeroStage from "../components/HeroStage.astro";
+import { PostsFan } from "../components/PostsFan";
+import { Clock } from "../components/Clock";
+import { getSortedPosts } from "../lib/posts";
+import { backdropFor } from "../lib/stage";
+
+// Runs each heroImage through Astro's build-time image pipeline (webp, no upscale) so
+// full-res source art in src/assets never ships to the browser as-is. Clamped to the
+// source's own width — getImage happily upscales otherwise, which just bloats the file
+// without adding real detail.
+async function optimizedSrc(image: ImageMetadata | undefined, width: number) {
+  if (!image) return undefined;
+  const optimized = await getImage({
+    src: image,
+    format: "webp",
+    width: Math.min(width, image.width),
+  });
+  return optimized.src;
+}
+
+// One list feeds both islands: every post gets a card in the fan and a stage
+// behind it, so any card can be raised onto the stage. `heroImage` is the card
+// thumbnail, `stageImage` the same art full-bleed. The fan's curated order
+// lives in PostsFan.
+const posts = await getSortedPosts();
+const summaries = await Promise.all(
+  posts.map(async (post) => ({
+    id: post.id,
+    title: post.data.title,
+    description: post.data.description,
+    date: post.data.date,
+    color: post.data.color,
+    stageTone: post.data.stageTone,
+    heroImage: await optimizedSrc(post.data.heroImage, 480),
+    stageImage: await optimizedSrc(post.data.heroImage, 2560),
+  })),
+);
+
+// What a first visit sees before any card has been hovered. The page doesn't
+// scroll — the fan is the only way through the rest.
+const LANDING_STAGE = "bitcoin";
+
+// Which stage is up has to be settled in CSS, not in the island: the browser
+// paints the server HTML long before React hydrates, so a stage chosen in JSX
+// would show the landing stage first and then cross-fade off it on the way
+// back from a post. These rules key off <html data-stage>, which the bootstrap
+// script below sets before the body is even parsed. Generated from the post
+// list rather than hand-written, so adding a post needs no edit here.
+const cssSafe = (value: string) => value.replace(/[^\w\s#(),.%-]/g, "");
+const jsLiteral = (value: unknown) =>
+  JSON.stringify(value).replace(/</g, "\\u003c");
+const stageRules = summaries
+  .map((stage) => {
+    const id = cssSafe(stage.id);
+    // Two independent axes, and keeping them apart is the whole point of this
+    // system. `color` is identity: one custom hue per post, free to be loud,
+    // and it never has to be legible over anything. `stageTone` is legibility:
+    // it picks a whole set of tones that work over that post's art, and every
+    // piece of text sitting on the stage reads from it.
+    const accent = cssSafe(stage.color ?? "var(--color-signal-500)");
+    // Asked of the backdrop, not of the frontmatter: the same call decides
+    // which backdrop HeroStage draws, so the tone can't disagree with what is
+    // actually on screen. It also means a missing or stale stageTone on a post
+    // with no art can't render as white type on cream — a failure that hides
+    // rather than shows.
+    const light = backdropFor(stage).tone === "light";
+    // The light pair is named in global.css, not written out here — Tailwind
+    // drops any @theme token that nothing in that stylesheet references, and
+    // this generated CSS is invisible to it.
+    const title = light ? "var(--stage-title-light)" : "var(--color-ink-50)";
+    const body = light ? "var(--stage-body-light)" : "var(--color-ink-300)";
+    return [
+      `html[data-stage="${id}"]{--hero-accent:${accent};--stage-title:${title};--stage-body:${body}}`,
+      // transition-delay:0s cancels the hold that keeps an outgoing layer
+      // visible through its fade — coming in has to be immediate.
+      `html[data-stage="${id}"] [data-stage-id="${id}"]{opacity:1;visibility:visible;transition-delay:0s}`,
+      `html[data-stage="${id}"] a[data-stage-id="${id}"]{pointer-events:auto}`,
+      // The stage recedes behind the raised fan by losing contrast, not by
+      // dimming: the brightness cut that makes a photograph sit back just
+      // makes paper look dirty. Outranks the shared rule on specificity.
+      light
+        ? `html[data-posts-open="true"][data-stage="${id}"] .stage-layer{filter:saturate(0.7) contrast(0.82)}`
+        : "",
+    ].join("");
+  })
+  .join("");
+
+// Sets data-stage before the body is parsed, so the saved stage is what the
+// browser paints first. Written out as a string, and everything inside one
+// IIFE using `var`, on purpose: a view transition re-executes this script in
+// the same window, and a top-level `const` (which is what `define:vars` would
+// emit) throws on the second run.
+const stageBootstrap = `(function () {
+  var known = ${jsLiteral(summaries.map((s) => s.id))};
+  var landing = ${jsLiteral(LANDING_STAGE)};
+  function apply() {
+    var id = null;
+    // Storage throws outright in some privacy modes.
+    try { id = sessionStorage.getItem("stage"); } catch (e) {}
+    // A stage saved before a post was renamed or removed has nothing to show.
+    if (!id || known.indexOf(id) === -1) id = landing;
+    document.documentElement.dataset.stage = id;
+  }
+  apply();
+  // A view transition swaps in the incoming page's <html> attributes, which
+  // drops data-stage — reapply before that swap is painted.
+  if (!window.__stageBootstrap) {
+    window.__stageBootstrap = 1;
+    document.addEventListener("astro:after-swap", apply);
+  }
+})();`;
+---
+
+<BaseLayout title="Home">
+  <Fragment slot="head">
+    <style is:inline set:html={stageRules}></style>
+    <script is:inline set:html={stageBootstrap} />
+  </Fragment>
+
+  <header
+    class="fixed inset-x-0 top-0 z-40 mx-auto flex w-full max-w-3xl items-center justify-between px-6 pt-8"
+  >
+    <p class="site-label font-mono text-xs">/ 37ng's site</p>
+    <Clock client:load />
+  </header>
+
+  <HeroStage stages={summaries} landing={LANDING_STAGE} />
+  <PostsFan client:load posts={summaries} />
+</BaseLayout>

@@ -1,0 +1,147 @@
+---
+title: "Bitcoin, and then miners"
+titleZh: "先有比特币，后有矿工"
+description: "Pools, farms and miners"
+descriptionZh: "矿池，矿场，和矿工"
+date: "2026-07-28"
+tags: ["bitcoin", "比特币", "crypto", "cryptocurrency", "加密货币"]
+heroImage: "../../assets/bitcoin.png"
+color: "#F7941D"
+stageTone: "dark"
+---
+
+import BitcoinTimeline from "@/components/diagrams/BitcoinTimeline.astro";
+
+{/* Outside both language blocks — it is numbers and mono labels, so it reads
+    the same either way and should not be duplicated. */}
+
+<BitcoinTimeline variant="post" />
+
+<div lang="zh">
+
+几个关于比特币的问题：矿池的中心化, 挖矿的能源消耗，矿工和网络的关系，矿工成本和价格，核心价值。
+阅读需要先了解基础的比特币知识 👉 白皮书 https://bitcoin.org/files/bitcoin-paper/bitcoin_zh_cn.pdf
+
+## 矿池的中心化问题
+
+效率天然喜欢中心化，即使去中心化的网络，运营也高度中心化：比特币前三矿池占据超50%的算力，以太坊大量节点部署在亚马逊云，微软云，谷歌云等
+
+矿池通过稳定、可预测的奖励分配来吸引矿场的接入，矿池虽然中心化程度高，但是背后是多个第三方的矿场共同组成的，这些矿场可以随时接入其它矿池，所以矿池的利益诉求是稳定运营，给矿场提供匹配算力的稳定奖励
+
+把矿池当作一个整体来看，是中心化的，但如果拆分成多个矿场的集合，则是去中心化的，算力不归矿池所有，只是矿池暂时从矿场“借用”
+
+攻击需要大量算力，矿池如果挪用算力，那么剩下给“诚实”主网的算力会大大减少，主网出块频率都会有明显变化，矿场会起疑虑，不再接入，矿池遭受长期损失
+
+攻击的收益和比特币的价格挂钩，攻击网络导致比特币网络失信，价格下跌，会导致攻击的预期回报无限降低，这是资金厌恶的
+
+## 挖矿的能源消耗
+
+电力能源=算力=协议的安全基础，这是一种付出资源，来收获信任的模型。这个资源可以是电力或任何资源，如果无资源消耗就可以参与共识，反而提供了无成本攻击网络的入口。
+
+## 矿工和网络的关系
+
+共生关系：矿工的加入让网络的去中心化得以成立，矿工离开会导致网络安全的风险。
+
+因果关系：去中心化的协议设计为因，本身具有价值；市场对币的定价为果，产生获利机会，吸引矿工加入网络。
+
+我倾向于因果关系。
+
+人类天生有逐利心理，会自然地去寻找收益，种田，进厂打螺丝，去大厂上班或者去开AI公司，只是在不同逐利预期下，根据手头的先天、后天的资源，去选择的不同投入产出项目。公司会因为员工离去而消失，但先有成熟的商业模式，后才有聚集起来的员工。矿工也是如此，因协议的可行性聚集，通过投入资源，获得收益。
+
+## 矿工成本和价格
+
+听过一种说法："因为电价决定了矿工的成本，所以周期底部的价格是由电价决定的。"
+它的逻辑：币价跌到一定程度，矿工的挖矿行为会亏本，矿工会关机，网络会停，所以币价不会跌到成本线以下。
+
+这里似乎藏了一个预设"矿工不能关机，比特币不能倒"，事实上失败的区块链网络也有很多，比特币一直运行到今天是因为核心价值，而不是因为能让矿工一直能赚钱。
+
+价格由市场供需决定，矿工关机不会影响市场供需。所以价格不会因矿工关机而变化。
+
+整体挖矿的市场是一个独立的生态，如果收益（币价）不能覆盖成本，高成本的矿工会关机，挖矿难度会下降从而让低成本矿工获利，矿工之间的竞争关系达到新的平衡。
+
+这里可以把比特币比作农作物，农作物天然满足人类对于食物的需求，有天然价值，反馈在市场决定的价格上。种植农作物并非百分百有利可图，但是给善于思考，乐于探索的耕种者提供了获利机会。
+
+## 核心价值
+
+价值的储存和转移，是人类社会天然存在的需求——货币诞生。
+
+中心化货币依赖政府信用，面临超发、贬值和单点控制等风险。因此出现了对去中心化货币的需求。比特币满足了这一需求，并由此获得了价值。
+
+</div>
+
+<div lang="en">
+
+A few things about Bitcoin: the centralization of mining farms, the
+energy cost of mining, the relationship between miners
+and the network, miner cost and price,  and its core value. Some basic Bitcoin
+knowledge is assumed 👉 the whitepaper: https://bitcoin.org/bitcoin.pdf
+
+## Centralization of mining farms
+
+In theory, centralized farms with enormous hashpower do threaten Bitcoin's
+security. In the pursuit of maximum efficiency, centralization is
+inevitable.
+
+But at the level of individual will, these farms achieve a kind of
+"decentralization": the farm leases machines out to miners, the miner takes
+the yield, the farm takes a cut. A farm is assembled out of a large number
+of miners each chasing profit. Count individual will as the unit, and these
+farms are decentralized.
+
+Of course, under today's hashrate distribution, a few farms colluding could
+run a 51% attack — violating their users' will, trading long-term interest and legal exposure for
+short-term gain. That risk is hard to quantify. 
+
+## The energy cost of mining
+
+Electricity = hashpower = the security foundation of the protocol. Spend a
+resource, earn trust. The resource could be electricity or anything else.
+Consensus that costs nothing to join is consensus that costs nothing to
+attack.
+
+## Miner cost and price
+
+A claim I've heard: "electricity sets miner cost, so electricity sets the
+price at the bottom of the cycle." The reasoning goes — price falls far
+enough, mining turns unprofitable, miners shut down, the network stops, so
+price can't fall below the cost line.
+
+Hidden in there is a premise: that miners can't shut down, that
+Bitcoin can't fail. Plenty of blockchain networks have shut down.
+Bitcoin hasn't, because of its core value — not because it keeps miners
+perpetually profitable.
+
+Price is set by supply and demand. A miner powering off doesn't touch
+either, so price doesn't move because of it.
+
+Mining is its own ecosystem. When revenue can't cover cost, high-cost miners
+shut down, difficulty falls, low-cost miners profit again, and competition
+settles into a new equilibrium.
+
+Bitcoin is a crop here. A crop naturally meets a human need for food, so it
+has value, and that feeds back into the price the market sets. Farming isn't
+guaranteed profitable. It just offers an opportunity to whoever is willing
+to think and explore.
+
+## Miners and the Bitcoin network
+
+Symbiotic: miners joining is what makes the network's decentralization real,
+and miners leaving puts security at risk.
+
+Causal: the decentralized protocol design is the cause, and has value in
+itself; the market's pricing of the coin is the effect, creating a profit
+opportunity that draws miners in.
+
+I lean causal. 
+
+Humans are born profit-seeking. They look for returns as a matter of course. Deliver doordash orders, taking a big tech job, launching an SF AI startup — these are only different input-and-output propositions, chosen under different expectations of return, according to the innate and acquired resources at hand. A company disappears when its employees leave, but the mature business model comes first, and only then do the employees gather around it. Miners are the same. They gather because the protocol is viable. They put in resources, and they take out returns.
+
+## Core value
+
+Storing and moving value is a need that arises naturally in human society.
+Money was born. Centralized money runs on government credit, and carries the
+risks that come with it — overissuance, devaluation, a single point of
+control. So a demand for decentralized money appeared. Bitcoin met it, and
+its value follows from that.
+
+</div>

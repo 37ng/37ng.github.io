@@ -1,0 +1,25 @@
+---
+/**
+ * The timeline widget with its data already attached.
+ *
+ * Both homes — the bitcoin stage and the bitcoin post — mount this rather than
+ * the island directly, so neither has to know where the blocks come from and
+ * the two can never end up quoting different ones (blockSamples caches across
+ * pages within a build).
+ */
+import { BitcoinTimeline } from "./BitcoinTimeline";
+import { blockSamples } from "@/lib/bitcoin-blocks";
+
+interface Props {
+  variant?: "stage" | "post";
+}
+
+const { variant = "post" } = Astro.props;
+const samples = await blockSamples();
+---
+
+{
+  /* client:visible — the widget only means anything once it is on screen, and
+    on the homepage it must not compete with the stage art for first paint. */
+}
+<BitcoinTimeline client:visible samples={samples} variant={variant} />

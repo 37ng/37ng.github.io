@@ -1,0 +1,787 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------
+   Design tokens
+   Engineering plan set / spec sheet: monospace is the interface
+   voice, not just the code voice. Cold blueprint-blue neutrals, one
+   oxide-orange signal reserved for rules, indices and hover states
+   — never body text. Zero radius, hairline dividers instead of
+   blurred shadows. Edit these values — everything else derives
+   from them.
+----------------------------------------------------------------- */
+@theme {
+  /* Color: cold blue-slate ink ramp */
+  --color-ink-950: #05070a;
+  --color-ink-900: #0a0f15;
+  --color-ink-800: #131b24;
+  --color-ink-700: #1e2836;
+  --color-ink-600: #2f3f4f;
+  --color-ink-400: #6b8092;
+  --color-ink-300: #93a7b5;
+  --color-ink-200: #bccbd4;
+  --color-ink-100: #dde6ea;
+  --color-ink-50: #f1f5f7;
+
+  /* Oxide orange — rules, indices, hover states only. Never body text. */
+  --color-signal-500: #ea580c;
+  --color-signal-600: #c2410c;
+  --color-signal-glow: #c2410c40;
+
+  --color-warn-500: #f59e0b;
+  --color-danger-500: #f87171;
+
+  /* Warm paper — the landing page's card catalog (PostsFan.tsx).
+     Deliberately breaks from the cold ink ramp: the whole point of the fan
+     of index cards is that warm paper laid over the dark hero reads
+     instantly as a different, physical layer. */
+  --color-paper-100: #f1e9da;
+  --color-paper-200: #e9e0cf;
+  /* Manila — the ground a light stage is printed on. Deliberately a step
+     below the cards' own cream: index cards have to keep reading as separate
+     objects lying on it, and on a matching tone they would dissolve into it. */
+  --color-paper-300: #d9ccb5;
+  --color-paper-ink: #211c14;
+  /* Body copy on manila. paper-muted is right for labels but too pale against
+     paper-300 for a caption you are meant to read. */
+  --color-paper-body: #4a4235;
+  --color-paper-muted: #6f6555;
+
+  /* Typography: mono is the UI voice, Fraunces is the display voice, Inter reads body copy */
+  --font-display: "Fraunces", "Iowan Old Style", ui-serif, serif;
+  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", monospace;
+
+  /* Chinese companions to --font-body/--font-display. Latin face first, CJK
+     second — Fraunces has no Han glyphs, so it never actually renders any
+     Chinese text; it's there only so embedded Latin/digits inside zh content
+     stay Fraunces instead of picking up Noto Serif SC's weaker Latin set.
+     Headings and body share the same family (Noto Serif SC 400/700 imported
+     in BaseLayout.astro) and differ by weight, not typeface — same pattern
+     as the Latin display/body split. */
+  --font-body-zh:
+    "Fraunces", "Noto Serif SC", "Iowan Old Style", ui-serif, serif;
+  --font-display-zh:
+    "Fraunces", "Noto Serif SC", "Iowan Old Style", ui-serif, serif;
+
+  /* Type scale — 1.25 ratio (major third), tuned for long-form reading */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.563rem;
+  --text-2xl: 1.953rem;
+  --text-3xl: 2.441rem;
+  --text-4xl: 3.052rem;
+  --text-5xl: 3.815rem;
+
+  /* Radius: zero everywhere — spec sheets don't have rounded corners */
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+
+  /* Panels get a hairline rule, not a blurred drop shadow */
+  --shadow-panel: 0 1px 0 0 var(--color-ink-600);
+
+  /* Spacing: Tailwind's own base multiplier, declared explicitly (0.25rem is
+     Tailwind's default — this just makes it a deliberate, editable token rather
+     than an implicit one). --rhythm/--gutter/--measure derive from it so the
+     vertical grid, the marginalia column, and the prose line length all trace
+     back to one number instead of being ad-hoc em/ch values. */
+  --spacing: 0.25rem;
+  --rhythm: calc(var(--spacing) * 7); /* 1.75rem — one text-base line box */
+  --gutter: calc(var(--rhythm) * 2); /* 3.5rem — marginalia column width */
+  --measure: calc(
+    var(--spacing) * 152
+  ); /* 38rem — prose line length, in rem so it's stable regardless of which font (Inter/Fraunces) renders the text */
+}
+
+/* ---------------------------------------------------------------
+   Base
+----------------------------------------------------------------- */
+html {
+  color-scheme: dark;
+}
+
+/* ---------------------------------------------------------------
+   Light theme — dark is blueprint, light is paper.
+   Rather than teaching every component a second set of classes, this swaps
+   the ink ramp itself. The ramp is a *value* ramp (950 sits furthest back,
+   50 comes furthest forward), so re-pointing it at warm paper tones flips
+   every existing `bg-ink-900` / `text-ink-300` at once and keeps each
+   contrast relationship pointing the same way.
+
+   Scoped to pages that have prose in them. The homepage is full-bleed art
+   whose legibility is decided by each post's stageTone, not by a reading
+   preference — inverting the ramp under it would put near-black type on a
+   dark photograph. :has() is doing real work here, not decoration.
+----------------------------------------------------------------- */
+html[data-theme="light"]:has(#post) {
+  color-scheme: light;
+
+  --color-ink-950: #f7f3ea;
+  --color-ink-900: #f2ede1;
+  --color-ink-800: #e8e1d1;
+  --color-ink-700: #d5cab4;
+  --color-ink-600: #bdb098;
+  /* 4.6:1 on the paper ground above. It carries the date and every mono
+     label, which are normal-size text, so this one is pinned by contrast
+     rather than picked by eye. */
+  --color-ink-400: #786d54;
+  --color-ink-300: #6b6151;
+  --color-ink-200: #4d4536;
+  --color-ink-100: #332c21;
+  --color-ink-50: #1d1810;
+}
+
+/* The toggle shows the theme you'd switch *to*. Which glyph that is comes
+   from CSS, not from React state: the bootstrap sets data-theme before the
+   first paint, so a light-preferring visitor would otherwise watch the sun
+   flip to a moon the moment the island hydrated. */
+html[data-theme="light"] .theme-when-dark,
+html:not([data-theme="light"]) .theme-when-light {
+  display: none;
+}
+
+body {
+  background-color: var(--color-ink-950);
+  color: var(--color-ink-100);
+  font-family: var(--font-body);
+  font-feature-settings: "cv11", "ss01";
+  font-variant-numeric: tabular-nums;
+}
+
+/* The header sits directly on the art, so it reads from the stage's tone, not
+   from its color: a custom hue is free to be unreadable over a photograph,
+   and the label and clock are not. --stage-title resolves to near-white over
+   a dark stage and near-black over a light one. */
+.site-label,
+.site-nav-fg {
+  color: var(--stage-title, var(--color-ink-50));
+  transition: color 700ms ease-out;
+}
+
+/* ---------------------------------------------------------------
+   The stage
+   One subject on screen at a time — backdrop, live furniture and caption,
+   each a full-viewport layer stacked in HeroStage. Every layer is off by
+   default here; the rules that turn one back on are generated per post id in
+   index.astro, keyed on <html data-stage>, together with the head script that
+   sets that attribute before the body is parsed. It has to be CSS and it has
+   to be that early: the browser paints HeroStage's markup long before the
+   island hydrates, so a stage chosen in JSX shows the landing stage first and
+   cross-fades off it on the way back from a post.
+----------------------------------------------------------------- */
+.stage-layer {
+  opacity: 0;
+  /* visibility, not opacity alone. @react-three/fiber's Canvas writes
+     pointer-events:auto into an *inline* style on its own container, and no
+     ancestor's pointer-events can override an explicit value on a descendant
+     — so an invisible coin still took the cursor over every other stage. A
+     hidden element is out of hit testing entirely and the child cannot opt
+     back in. The 0s/700ms holds it visible through the fade-out; the
+     generated on-rule zeroes that delay so showing is immediate. */
+  visibility: hidden;
+  transition:
+    opacity 700ms ease-out,
+    visibility 0s linear 700ms,
+    transform 900ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    filter 900ms ease;
+}
+
+/* PostsFan flips data-posts-open on <html> when the fan rises — the stage is
+   static markup with no JS of its own, so an attribute is the whole bridge
+   (same pattern as LangToggle/[data-lang] below). The stage pushes back and
+   desaturates: while the fan is up the cards are the subject and the stage
+   is backdrop. */
+html[data-posts-open="true"] .stage-layer {
+  transform: scale(1.045) translateY(-3%);
+  filter: saturate(0.45) brightness(0.62) blur(1px);
+}
+
+/* While the fan is up you're browsing cards, not spinning the coin. Both the
+   descendant selector and the !important are load-bearing, for the same
+   reason as the visibility above: the target is r3f's inline
+   pointer-events:auto, which only an important declaration outranks. */
+html[data-posts-open="true"] .stage-grab,
+html[data-posts-open="true"] .stage-grab * {
+  pointer-events: none !important;
+}
+
+/* The stage caption sits bottom-left, exactly where the fan's own caption
+   would land once the cards rise — so it hands over to that one rather than
+   showing the same title twice. Same content either way: the fan only
+   changes where it is written, never what.
+
+   Its two colors are variables, not fixed ink tones: a light stage needs dark
+   type, and the generated per-stage rules set both from the post's own
+   stageTone. The fallbacks in the markup are the dark-stage defaults. */
+
+/* The light-stage pair, named here rather than written straight into the
+   generated rules — Tailwind drops any @theme token nothing in this
+   stylesheet references, and index.astro's generated CSS is invisible to it.
+   Without this line --color-paper-body would never be emitted. */
+:root {
+  --stage-title-light: var(--color-paper-ink);
+  --stage-body-light: var(--color-paper-body);
+}
+.stage-caption {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 500ms ease-out;
+}
+html[data-posts-open="true"] .stage-caption {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* ---------------------------------------------------------------
+   Manila stage
+   The backdrop for a light stage: a sheet of drawing paper instead of a
+   photograph. Built from gradients and one noise tile rather than an image,
+   so it costs nothing to ship and scales to any viewport.
+----------------------------------------------------------------- */
+.paper-sheet {
+  background-color: var(--color-paper-300);
+}
+/* Engineering rules — minor every 24px, a heavier one every fifth. */
+.paper-grid {
+  background-image:
+    linear-gradient(
+      to right,
+      color-mix(in srgb, var(--color-paper-muted) 13%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--color-paper-muted) 13%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to right,
+      color-mix(in srgb, var(--color-paper-muted) 26%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--color-paper-muted) 26%, transparent) 1px,
+      transparent 1px
+    );
+  background-size:
+    24px 24px,
+    24px 24px,
+    120px 120px,
+    120px 120px;
+}
+/* Paper tooth. One small feTurbulence tile repeated, not a full-viewport
+   filter — the filter is rasterised once at tile size this way instead of
+   over every pixel on screen. multiply keeps the grain inside the paper's own
+   value range rather than washing it grey. */
+.paper-fibre {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23f)'/%3E%3C/svg%3E");
+  mix-blend-mode: multiply;
+  opacity: 0.12;
+}
+
+/* Selection wears the stage's own color like everything else on it —
+   --hero-accent is the current post's `color`, washed down to a tint. The
+   foreground tracks the tone rather than a fixed near-white: on a light stage
+   that would drop selected text out of the page entirely. Both fall back to
+   the shared orange and ink off the homepage, where neither variable is set. */
+::selection {
+  background-color: color-mix(
+    in srgb,
+    var(--hero-accent, var(--color-signal-500)) 25%,
+    transparent
+  );
+  color: var(--stage-title, var(--color-ink-50));
+}
+/* On post pages, selection picks up the post's own --accent-glow (defined
+   alongside #post below) instead of the shared orange — higher specificity
+   than the bare ::selection above, so it wins there without needing layers. */
+#post ::selection {
+  background-color: var(--accent-glow);
+}
+
+/* Unlike <a>, a <button> gets no pointer cursor by default in any browser —
+   fixed once, globally, rather than adding `cursor-pointer` to every button. */
+button:not(:disabled) {
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-signal-500);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* All UI chrome — nav, labels, metadata, dates — speaks in mono, uppercase, tracked out.
+   Targets Tailwind's `font-mono` utility directly so every existing call site inherits
+   this for free; unlayered rules beat Tailwind's utility layer regardless of source order. */
+.font-mono {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  /* letter-spacing adds trailing space after the last character too — without this,
+     centered mono labels sit visibly off-center by half that trailing gap. */
+  margin-right: -0.12em;
+}
+
+/* Headings default to the display face everywhere, not just inside .prose-tech.
+   Fraunces' variable axes are driven per level so display sizes get genuinely
+   weird (higher opsz + SOFT + full WONK) rather than just scaling up. */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+h1 {
+  font-variation-settings:
+    "opsz" 144,
+    "SOFT" 60,
+    "WONK" 1;
+}
+h2 {
+  font-variation-settings:
+    "opsz" 72,
+    "SOFT" 35,
+    "WONK" 1;
+}
+h3,
+h4,
+h5,
+h6 {
+  font-variation-settings:
+    "opsz" 40,
+    "SOFT" 15,
+    "WONK" 1;
+}
+
+/* ---------------------------------------------------------------
+   Prose defaults for MDX/blog content
+----------------------------------------------------------------- */
+/* --accent defaults to the shared signal color here; PostLayout overrides it
+   with an inline style set from the post's own `color` frontmatter, which
+   always wins over this stylesheet default on the same element. --accent-dark/
+   -glow are derived from whichever one is active, so every post gets its own
+   hover/highlight color in the varying degrees the signal palette used to be
+   the only one to have. */
+#post {
+  --accent: var(--color-signal-500);
+  --accent-dark: color-mix(in srgb, var(--accent) 78%, black);
+  --accent-glow: color-mix(in srgb, var(--accent) 25%, transparent);
+}
+.prose-tech {
+  /* --measure is in rem, not ch — ch resolves against .prose-tech's own font
+     (Inter), but the actual body copy renders in Fraunces via [lang="en"] below,
+     which is wider. A rem-based measure stays correct regardless of which font
+     ends up rendering the text. */
+  max-width: var(--measure);
+  /* +2px over the base body size for readability at this measure. */
+  font-size: calc(var(--text-base) + 2px);
+  line-height: 1.75;
+  color: var(--color-ink-200);
+  counter-reset: section-counter;
+  /* Reserves the marginalia column inside .prose-tech's own box, so the §0N
+     markers below live inside this element's padding rather than depending on
+     outer page margins — immune to ancestor `overflow: hidden` and to whatever
+     centers the page. */
+  padding-left: var(--gutter);
+  container-type: inline-size;
+}
+/* English body copy reads in Fraunces too, not just headings — Chinese stays on
+   the body sans stack since Fraunces has no CJK glyphs. No explicit "opsz" here,
+   so the browser auto-selects a text-appropriate optical size rather than
+   inheriting the headings' display-sized settings. Two selectors: bilingual posts
+   nest a separate lang="en" div inside .prose-tech (descendant), while an
+   an English-only page could instead tag .prose-tech itself (same element). */
+.prose-tech[lang="en"],
+.prose-tech [lang="en"] {
+  font-family: var(--font-display);
+}
+/* CJK glyphs fill their em box edge-to-edge, so they read larger than Latin
+   text at the same nominal font-size — step paragraph text down slightly to
+   match. Scoped to <p> specifically, not a blanket :lang(zh) rule: this is
+   unlayered CSS, which always beats a *layered* Tailwind size utility like
+   text-4xl regardless of specificity — a blanket rule silently collapsed the
+   post title's lang="zh" <h1> (which sizes itself via text-4xl) down to
+   ~0.95em of its inherited ambient size, not 0.95× its intended size. <p>
+   has no such competing utility, so em-based sizing is safe here. */
+.prose-tech p:lang(zh) {
+  font-size: 0.95em;
+}
+.prose-tech h1,
+.prose-tech h2,
+.prose-tech h3 {
+  color: var(--color-ink-50);
+}
+/* Heading margins are in rem (multiples of --rhythm), not em of each heading's own
+   font-size — em would put h2 and h3 on different grids since they're different
+   sizes. Bottom margins are set explicitly to at least --rhythm so they win the
+   margin-collapse against the paragraph below rather than being silently
+   overridden by it. */
+.prose-tech h2 {
+  position: relative;
+  counter-increment: section-counter;
+  margin-top: calc(var(--rhythm) * 3);
+  margin-bottom: var(--rhythm);
+  font-size: var(--text-2xl);
+}
+.prose-tech h3 {
+  margin-top: calc(var(--rhythm) * 2);
+  margin-bottom: var(--rhythm);
+  font-size: var(--text-xl);
+}
+/* §01 / §02 — auto-numbered section index in the marginalia column, mono. Positioned
+   in rem (via --gutter) rather than em of the heading's own font-size, so markers on
+   differently-sized headings still land in the same column. Falls back to an inline
+   prefix once .prose-tech's own rendered width (not the viewport's) can't spare the
+   gutter — a container query, since viewport width says nothing about whether this
+   element is centered or how much room its own box actually has. */
+.prose-tech h2::before {
+  content: "§" counter(section-counter, decimal-leading-zero);
+  position: absolute;
+  top: 0.2em;
+  left: calc(-1 * var(--gutter));
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  margin-right: -0.12em;
+  color: var(--accent-dark);
+}
+@container (max-width: 34rem) {
+  .prose-tech h2::before {
+    position: static;
+    display: inline-block;
+    margin-right: 0.75em;
+  }
+}
+/* Heading anchors — rehype-autolink-headings (astro.config.mjs) wraps each h2/h3's
+   whole text in this link, so hovering/clicking the title itself does the same
+   thing as hovering/clicking the "#": cursor turns to a pointer, click jumps to
+   the same href. Overrides .prose-tech a's link-wipe treatment below: this is a
+   UI affordance on prose headings, not body prose, so the text keeps the
+   heading's own color/font instead of picking up link styling. */
+.prose-tech .heading-anchor {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: none;
+  background-image: none;
+  cursor: pointer;
+}
+.prose-tech h2:hover .heading-anchor,
+.prose-tech h3:hover .heading-anchor {
+  color: var(--accent-dark);
+}
+/* The "#" itself stays a separate mono glyph, styled and hover-revealed
+   independently of the heading text it's appended after — mechanical reveal
+   (max-width, stepped), not a fade. */
+.prose-tech .heading-anchor-glyph {
+  display: inline-block;
+  margin-left: 0.6em;
+  font-family: var(--font-mono);
+  font-size: 0.7em;
+  font-weight: 400;
+  vertical-align: middle;
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: max-width 150ms steps(3, jump-end);
+}
+.prose-tech h2:hover .heading-anchor-glyph,
+.prose-tech h3:hover .heading-anchor-glyph,
+.prose-tech .heading-anchor:focus-visible .heading-anchor-glyph {
+  max-width: 1.5em;
+}
+.prose-tech p {
+  margin-block: var(--rhythm);
+}
+.prose-tech code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  background: var(--color-ink-800);
+  padding: 0.15em 0.4em;
+  border-radius: var(--radius-sm);
+  color: var(--accent);
+}
+.prose-tech pre {
+  background: var(--color-ink-900);
+  border: 1px solid var(--color-ink-700);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+}
+.prose-tech pre code {
+  background: none;
+  padding: 0;
+  color: var(--color-ink-100);
+}
+/* Links stay ink-colored (signal never touches body text) with a static neutral rule;
+   hover mechanically wipes a signal-colored underline left-to-right — a background-size
+   transition on a linear-gradient, not a fade. */
+.prose-tech a {
+  color: var(--color-ink-50);
+  text-decoration: none;
+  border-bottom: 1px solid var(--color-ink-600);
+  background-image: linear-gradient(var(--accent-dark), var(--accent-dark));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 1.5px;
+  transition:
+    background-size 180ms linear,
+    border-color 180ms linear;
+}
+.prose-tech a:hover {
+  border-color: transparent;
+  background-size: 100% 1.5px;
+}
+/* Icon-only links (e.g. GitHub/Twitter marks) skip the prose link-wipe
+   underline above — there's no text baseline for it to sit under. */
+.prose-tech a.icon-link {
+  border-bottom: none;
+  background-image: none;
+}
+
+/* ---------------------------------------------------------------
+   Interactive primitives
+----------------------------------------------------------------- */
+/* Interactive cards: a hard-offset border on hover, like print misregistration.
+   No blur, no easing curve — a flat 3px double-exposure that snaps in mechanically. */
+.spec-card {
+  position: relative;
+  padding: var(--rhythm);
+  border: 1px solid var(--color-ink-700);
+  transition:
+    box-shadow 120ms steps(3, jump-end),
+    border-color 120ms steps(3, jump-end);
+}
+.spec-card:hover {
+  border-color: var(--color-ink-300);
+  box-shadow: 3px 3px 0 0 var(--color-signal-600);
+}
+
+/* Nav items: a mono index number shutters open before the label on hover — a
+   mechanical reveal (max-width, stepped), never an opacity fade. */
+/* Zero-radius slider for the mining readout (ProofOfWork.tsx). --pow-fill is
+   set inline from the current value: a range input can't paint a filled track
+   on its own. */
+.pow-range {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 0.875rem;
+  background: transparent;
+  /* The thumb sits on the stage, which is one big fixed surface — without
+     this a touch drag scrolls or swipes the page instead of moving the
+     slider. */
+  touch-action: none;
+}
+.pow-range::-webkit-slider-runnable-track {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    var(--hero-accent, var(--color-signal-500)) 0 var(--pow-fill),
+    var(--color-ink-600) var(--pow-fill) 100%
+  );
+}
+.pow-range::-moz-range-track {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    var(--hero-accent, var(--color-signal-500)) 0 var(--pow-fill),
+    var(--color-ink-600) var(--pow-fill) 100%
+  );
+}
+.pow-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 5px;
+  height: 0.875rem;
+  margin-top: -0.4375rem;
+  border: 0;
+  border-radius: 0;
+  background: var(--hero-accent, var(--color-signal-500));
+}
+.pow-range::-moz-range-thumb {
+  width: 5px;
+  height: 0.875rem;
+  border: 0;
+  border-radius: 0;
+  background: var(--hero-accent, var(--color-signal-500));
+}
+
+.nav-index {
+  counter-reset: nav-index;
+}
+.nav-index a,
+.nav-index button {
+  counter-increment: nav-index;
+}
+.nav-index a::before,
+.nav-index button::before {
+  content: counter(nav-index, decimal-leading-zero) "\2014";
+  display: inline-block;
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  vertical-align: middle;
+  color: var(--color-signal-600);
+  transition: max-width 150ms steps(4, jump-end);
+}
+.nav-index a:hover::before,
+.nav-index button:hover::before {
+  max-width: 3em;
+}
+
+/* ---------------------------------------------------------------
+   Posts fan — the landing page's index
+   A hand of index cards held at the bottom edge, part of the landing page
+   itself rather than an overlay: --fan-peek of each card stays on screen at
+   rest, and the whole hand rises when the pointer reaches it. Card position
+   is a pure function of --d (offset from the middle card) so PostsFan.tsx
+   only ever sets custom properties, never recomputes pixel math in JS — and
+   the clamp()s below mean the same fan degrades gracefully from desktop down
+   to a phone screen without a separate mobile layout.
+----------------------------------------------------------------- */
+/* Plain :root, not @theme — HeroStage reads --fan-peek to keep its caption
+   clear of the resting cards, and Tailwind only emits the @theme variables it
+   sees used by a utility, which would miss a var referenced from raw CSS. */
+:root {
+  --fan-w: clamp(112px, 26vw, 200px);
+  --fan-h: calc(var(--fan-w) * 1.34);
+  --fan-gap: clamp(46px, 11vw, 118px);
+  --fan-peek: clamp(54px, 11vw, 96px);
+}
+/* The reach zone for the resting stack — as wide as the fan itself, not the
+   whole viewport, so sweeping the mouse along the bottom-left corner of a wide
+   screen doesn't summon the cards. PostsFan reads this box's rect to decide
+   when the pointer has arrived, and it doubles as the tap target on touch. */
+.posts-sensor {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  height: calc(var(--fan-peek) + 1.5rem);
+  width: calc((var(--fan-count, 1) - 1) * var(--fan-gap) + var(--fan-w) + 3rem);
+  max-width: 100%;
+}
+
+.posts-fan {
+  position: relative;
+  height: var(--fan-h);
+  /* The +1.5rem cancels the dock's own pb-6, so exactly --fan-peek of the
+     card stack is left above the viewport's bottom edge at rest. */
+  transform: translateY(calc(var(--fan-h) - var(--fan-peek) + 1.5rem));
+  transition: transform 620ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.posts-fan[data-raised="true"] {
+  transform: translateY(0);
+}
+.posts-fan-card {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: var(--fan-w);
+  height: var(--fan-h);
+  margin-left: calc(var(--fan-w) / -2);
+  transform-origin: 50% 220%;
+  transform: translateX(calc(var(--d, 0) * var(--fan-gap)))
+    rotate(calc(var(--d, 0) * 4.2deg)) translateY(var(--fan-lift, 0px));
+  z-index: calc(20 + var(--i, 0));
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.45);
+  transition:
+    transform 420ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 420ms ease;
+}
+/* Scoped to the raised fan — at rest only a sliver of each card is reachable,
+   and a card lifting out of the stack there would read as a glitch. */
+.posts-fan[data-raised="true"] .posts-fan-card[data-active="true"] {
+  --fan-lift: clamp(-64px, -17vw, -104px);
+  z-index: 90;
+  box-shadow: 0 26px 60px rgba(0, 0, 0, 0.6);
+}
+
+/* ---------------------------------------------------------------
+   Chinese typography
+   Driven off :lang(zh), not a class — :lang() matches an element whose
+   *effective* language is zh whether the lang attribute sits on that exact
+   element or is inherited from an ancestor (unlike a plain [lang="zh"]
+   attribute selector, which only matches the literal element carrying it).
+   So this "just works" on the existing lang="zh" wrapper divs and cascades
+   correctly into every descendant without new markup.
+----------------------------------------------------------------- */
+:lang(zh) {
+  font-family: var(--font-body-zh);
+  /* Looser than Latin's 1.75 — CJK glyphs are denser and taller-set. */
+  line-height: 1.9;
+  /* Positive, never negative — negative tracking (as used on Latin headings)
+     visibly collides adjacent Han glyphs. */
+  letter-spacing: 0.02em;
+  line-break: strict;
+  word-break: normal;
+  /* Faux-bold/faux-italic synthesis is visibly broken on CJK strokes. */
+  font-synthesis: none;
+  /* Proportional-width punctuation instead of full-width fixed cells. */
+  font-feature-settings: "palt" 1;
+  /* Progressive enhancement — thin-space placement is already baked into the
+     HTML at build time by rehype-pangu-spacing.ts, so these are a supplementary
+     refinement in browsers that support them, not the mechanism doing the work. */
+  text-spacing-trim: space-first;
+  text-autospace: normal;
+}
+
+/* Fraunces has no CJK coverage — without this, :lang(zh) headings would
+   silently fall through past Fraunces and its Latin-serif fallbacks to
+   whatever system Heiti/PingFang the platform happens to pick, rather than
+   a deliberate, heavier CJK display face. No opsz/SOFT/WONK here: those are
+   Fraunces-only variable axes that Noto Serif SC doesn't have. */
+h1:lang(zh),
+h2:lang(zh),
+h3:lang(zh),
+h4:lang(zh),
+h5:lang(zh),
+h6:lang(zh) {
+  font-family: var(--font-display-zh);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  font-variation-settings: normal;
+  /* Headings must opt out of the 1.9 body line-height set by the :lang(zh) rule
+     above. That rule is unlayered, so it beats a *layered* Tailwind utility like
+     leading-tight on the post <h1> — without this, the zh title block grows
+     taller than the en one and everything under it (date, toggles) jumps on a
+     language switch. */
+  line-height: 1.25;
+}
+
+/* CJK has no true italic — emphasis reads as a filled dot under each
+   character instead of a slant. */
+em:lang(zh),
+i:lang(zh) {
+  font-style: normal;
+  text-emphasis: filled dot;
+  text-emphasis-position: under right;
+}
+
+/* Bilingual posts: PostLayout sets [data-lang] on <main id="post">, flipped by
+   LangToggle.tsx; content authors mark each language block with a plain
+   lang="en"/"zh" attribute. */
+[data-lang="en"] [lang="zh"] {
+  display: none;
+}
+[data-lang="zh"] [lang="en"] {
+  display: none;
+}

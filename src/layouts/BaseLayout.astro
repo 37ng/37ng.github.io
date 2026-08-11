@@ -1,0 +1,98 @@
+---
+import "../styles/global.css";
+import { ClientRouter } from "astro:transitions";
+// Self-hosted, unicode-range-split into small per-glyph-block woff2 chunks — the
+// browser only fetches the ranges it actually needs, not one giant CJK font file.
+// 400 = --font-body-zh, 700 = --font-display-zh (a real heavier CJK face for
+// headings, since Fraunces has no CJK coverage to fall back on).
+import "@fontsource/noto-serif-sc/400.css";
+import "@fontsource/noto-serif-sc/700.css";
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = "" } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,SOFT,WONK,wght@0,9..144,0..100,0..1,100..900&family=Inter:wght@400..700&family=JetBrains+Mono:wght@400..700&display=swap"
+    />
+    <script
+      defer
+      src="https://cloud.umami.is/script.js"
+      data-website-id="1846fd0e-c748-4646-ac98-40e2864ee8fe"></script>
+    <ClientRouter />
+    <script is:inline>
+      // Settles the theme before the body is parsed, so the page paints in the
+      // one it means to be. One IIFE, `var` only, on purpose: a view
+      // transition re-executes this in the same window, and a top-level
+      // `const` would throw on the second run. Same shape as the stage
+      // bootstrap in index.astro; keep the storage key in step with
+      // ThemeToggle.tsx.
+      (function () {
+        function apply() {
+          var choice = null;
+          try {
+            choice = localStorage.getItem("theme");
+          } catch (e) {
+            // Storage throws outright in some privacy modes.
+          }
+          if (choice !== "light" && choice !== "dark") {
+            choice = window.matchMedia("(prefers-color-scheme: light)").matches
+              ? "light"
+              : "dark";
+          }
+          document.documentElement.dataset.theme = choice;
+        }
+        apply();
+        // A swap replaces <html>'s attributes with the incoming page's, which
+        // drops data-theme — reapply before that swap is painted.
+        if (!window.__themeBootstrap) {
+          window.__themeBootstrap = 1;
+          document.addEventListener("astro:after-swap", apply);
+        }
+      })();
+    </script>
+    <!-- Anything that has to be settled before the body is parsed — see the
+         stage bootstrap in index.astro. -->
+    <slot name="head" />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
+
+<style is:global>
+  @media (prefers-reduced-motion: no-preference) {
+    @keyframes lights-out {
+      to {
+        filter: brightness(0);
+      }
+    }
+    @keyframes lights-in {
+      from {
+        filter: brightness(0);
+      }
+    }
+
+    ::view-transition-old(root) {
+      animation: 100ms linear both lights-out;
+    }
+    ::view-transition-new(root) {
+      animation: 100ms linear 100ms both lights-in;
+    }
+  }
+</style>
