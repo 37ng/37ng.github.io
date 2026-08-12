@@ -1,13 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { blockSamples } from "@/lib/bitcoin-blocks";
 import {
-  INTERVALS,
   bandUnder,
-  formatBtc,
+  feesPerBlock,
+  formatBtcPerBlock,
   formatCompact,
+  formatHeight,
   hashrateEhs,
   layout,
-  type BlockSample,
 } from "@/lib/bitcoin-timeline";
 
 interface BitcoinTimelineProps {
@@ -17,16 +16,6 @@ interface BitcoinTimelineProps {
 
 const BANDS = layout();
 
-/** Zeroed readouts, so the panel has its final shape before the chain answers. */
-const ZERO_SAMPLES: BlockSample[] = INTERVALS.map((interval) => ({
-  intervalId: interval.id,
-  height: 0,
-  timestamp: 0,
-  totalFeesSats: 0,
-  difficulty: 0,
-  feeRateSatVb: 0,
-}));
-
 /** Seconds for the cursor to travel the whole track on its own. */
 const SWEEP_SECONDS = 7;
 
@@ -34,16 +23,13 @@ const SWEEP_SECONDS = 7;
 const CONTACT = 0.012;
 
 /**
- * A block, read at seven distances from now.
+ * A halving epoch, read at five knots along a track.
  *
- * The track along the bottom is deliberately not a linear time axis — it is
- * seven knots, spaced by how far back each one looks (see
- * lib/bitcoin-timeline.ts). The readouts change only when the cursor touches a
- * knot, from either direction, and hold that knot until it touches the next
- * one. Left alone, the cursor sweeps from 5y to 1min by itself.
- *
- * The blocks are fetched from the visitor's own browser on mount, so the near
- * knots quote the chain as it is now rather than as it was at the last deploy.
+ * The data is static — see lib/bitcoin-timeline.ts — so there is nothing to
+ * wait on: the widget starts sweeping the moment it mounts. The track is
+ * deliberately not a linear block-height axis; each knot's band is sized by
+ * that epoch's duration (see `layout`), and the readouts change only when the
+ * cursor touches a knot, from either direction, holding it until the next.
  */
 export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   const trackRef = useRef<HTMLDivElement>(null);
@@ -52,37 +38,10 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   // leaving, from wherever it was left, so the widget never snaps.
   const [held, setHeld] = useState(false);
   const [dragging, setDragging] = useState(false);
-  const [samples, setSamples] = useState<BlockSample[]>(ZERO_SAMPLES);
-  const [status, setStatus] = useState<"loading" | "live" | "failed">(
-    "loading",
-  );
-  const [selectedId, setSelectedId] = useState(BANDS[0].interval.id);
-  const live = status === "live";
+  const [selectedId, setSelectedId] = useState(BANDS[0].epoch.id);
 
   useEffect(() => {
-    let mounted = true;
-    blockSamples()
-      .then((loaded) => {
-        if (!mounted) return;
-        if (!loaded) {
-          setStatus("failed");
-          return;
-        }
-        setSamples(loaded);
-        setStatus("live");
-      })
-      .catch(() => {
-        if (mounted) setStatus("failed");
-      });
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  // The cursor stays parked on the first knot until there is something to
-  // read: a sweep over zeroed readouts looks like the widget is broken.
-  useEffect(() => {
-    if (held || !live) return;
+    if (held) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     let frame = 0;
@@ -95,7 +54,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
     };
     frame = requestAnimationFrame(step);
     return () => cancelAnimationFrame(frame);
-  }, [held, live]);
+  }, [held]);
 
   const positionFromEvent = (clientX: number) => {
     const track = trackRef.current;
@@ -106,14 +65,12 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   };
 
   const touched = bandUnder(BANDS, position, CONTACT);
-  const band =
-    BANDS.find((entry) => entry.interval.id === selectedId) ?? BANDS[0];
-  const sample =
-    samples?.find((s) => s.intervalId === band.interval.id) ?? null;
+  const band = BANDS.find((entry) => entry.epoch.id === selectedId) ?? BANDS[0];
+  const epoch = band.epoch;
 
   useEffect(() => {
-    if (touched) setSelectedId(touched.interval.id);
-  }, [touched?.interval.id]);
+    if (touched) setSelectedId(touched.epoch.id);
+  }, [touched?.epoch.id]);
 
   const stage = variant === "stage";
   // One palette for both homes. On the stage these resolve against whichever
@@ -133,33 +90,34 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
     >
       <div className="flex items-baseline justify-between font-mono text-[10px]">
         <span style={{ color: "var(--hero-accent,var(--color-signal-600))" }}>
-          / bitcoin
+          mining
         </span>
-        <span style={{ opacity: live ? 1 : 0.5 }}>
-          #{(sample?.height ?? 0).toLocaleString("en-US")}
-        </span>
+        <span>#{formatHeight(epoch.startHeight)}</span>
       </div>
 
-      <dl
-        className="mt-4 grid grid-cols-3 gap-4"
-        style={{ opacity: live ? 1 : 0.5 }}
-      >
+      <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3">
         <Readout
           label="tx fees"
-          value={formatBtc(sample?.totalFeesSats ?? 0)}
-          unit="BTC"
+          value={formatBtcPerBlock(feesPerBlock(epoch))}
+          unit="BTC / block"
+          title={title}
+        />
+        <Readout
+          label="subsidy"
+          value={epoch.label}
+          unit="BTC / block"
           title={title}
         />
         <Readout
           label="difficulty"
-          value={formatCompact(sample?.difficulty ?? 0)}
-          unit={`${formatCompact(hashrateEhs(sample?.difficulty ?? 0))} EH/s`}
+          value={formatCompact(epoch.avgDifficulty)}
+          unit={`${formatCompact(hashrateEhs(epoch.avgDifficulty))} EH/s`}
           title={title}
         />
         <Readout
-          label="fee rate"
-          value={(sample?.feeRateSatVb ?? 0).toFixed(1)}
-          unit="sat/vB"
+          label="date"
+          value={epoch.startDate.slice(0, 4)}
+          unit={epoch.startDate}
           title={title}
         />
       </dl>
@@ -170,11 +128,11 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
         ref={trackRef}
         role="slider"
         tabIndex={0}
-        aria-label="Time before now"
+        aria-label="Halving epoch"
         aria-valuemin={0}
         aria-valuemax={BANDS.length - 1}
         aria-valuenow={BANDS.indexOf(band)}
-        aria-valuetext={band.interval.label}
+        aria-valuetext={`${epoch.subsidyBtc} BTC subsidy, ${epoch.startDate} to ${epoch.endDate ?? "present"}`}
         className="relative mt-6 h-10 cursor-ew-resize touch-none select-none"
         onPointerDown={(event) => {
           event.currentTarget.setPointerCapture(event.pointerId);
@@ -206,7 +164,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
           if (next === null) return;
           event.preventDefault();
           setPosition(
-            BANDS[Math.min(BANDS.length - 1, Math.max(0, next))].center,
+            BANDS[Math.min(BANDS.length - 1, Math.max(0, next))].tick,
           );
         }}
       >
@@ -216,12 +174,12 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
         />
 
         {BANDS.map((entry) => {
-          const on = entry.interval.id === band.interval.id;
+          const on = entry.epoch.id === epoch.id;
           return (
             <div
-              key={entry.interval.id}
+              key={entry.epoch.id}
               className="absolute top-0 flex -translate-x-1/2 flex-col items-center"
-              style={{ left: `${entry.center * 100}%` }}
+              style={{ left: `${entry.tick * 100}%` }}
             >
               <div
                 className="w-px transition-all duration-200"
@@ -242,7 +200,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
                   opacity: on ? 1 : 0.6,
                 }}
               >
-                {entry.interval.label}
+                {entry.epoch.label}
               </span>
             </div>
           );
@@ -259,12 +217,6 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
           }}
         />
       </div>
-
-      {status === "failed" && (
-        <p className="mt-2 font-mono text-[10px]" style={{ opacity: 0.7 }}>
-          internet not ok for real time data
-        </p>
-      )}
     </div>
   );
 }

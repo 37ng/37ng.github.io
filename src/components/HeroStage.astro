@@ -92,19 +92,23 @@ const { stages, landing } = Astro.props;
   }
 
   {
-    /* The timeline reads as the stage's instrument panel. It sits under the
-      header rather than near the caption on purpose: the bottom of this page
-      already belongs to the caption and the raised fan, and a widget you have
-      to drag cannot share space with either. */
+    /* The timeline reads as the stage's instrument panel. It sits on the left
+      pan of the balance in the art, mirroring the coin on the right pan
+      (translate-x negative where the coin's is positive), rather than near
+      the caption: the bottom of this page already belongs to the caption and
+      the raised fan, and a widget you have to drag cannot share space with
+      either. */
   }
   {
     stages.some((stage) => stage.id === "bitcoin") && (
       <div
         data-stage-id="bitcoin"
-        class="stage-layer pointer-events-none fixed inset-x-0 top-[calc(6rem+12.5vh)] z-20"
+        class="stage-layer pointer-events-none fixed inset-0 z-20 flex items-center"
       >
         <div class="mx-auto w-full max-w-3xl px-6">
-          <BitcoinTimeline variant="stage" />
+          <div class="w-[260px] -translate-x-[calc(12.5vw-2rem)] -translate-y-20 sm:w-[300px] sm:-translate-x-[calc(12.5vw-2rem)] sm:-translate-y-24">
+            <BitcoinTimeline variant="stage" />
+          </div>
         </div>
       </div>
     )

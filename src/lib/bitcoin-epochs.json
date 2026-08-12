@@ -1,0 +1,57 @@
+[
+  {
+    "id": "e1",
+    "label": "50",
+    "subsidyBtc": 50,
+    "startHeight": 0,
+    "endHeight": 210000,
+    "startDate": "2009-01-03",
+    "endDate": "2012-11-28",
+    "totalFeesBtc": 8944.410314009996,
+    "avgDifficulty": 690502.041487497
+  },
+  {
+    "id": "e2",
+    "label": "25",
+    "subsidyBtc": 25,
+    "startHeight": 210000,
+    "endHeight": 420000,
+    "startDate": "2012-11-28",
+    "endDate": "2016-07-09",
+    "totalFeesBtc": 38435.859018670024,
+    "avgDifficulty": 44266904101.040794
+  },
+  {
+    "id": "e3",
+    "label": "12.5",
+    "subsidyBtc": 12.5,
+    "startHeight": 420000,
+    "endHeight": 630000,
+    "startDate": "2016-07-09",
+    "endDate": "2020-05-11",
+    "totalFeesBtc": 163382.73239560996,
+    "avgDifficulty": 5314991189716.108
+  },
+  {
+    "id": "e4",
+    "label": "6.25",
+    "subsidyBtc": 6.25,
+    "startHeight": 630000,
+    "endHeight": 840000,
+    "startDate": "2020-05-11",
+    "endDate": "2024-04-20",
+    "totalFeesBtc": 80742.60006412998,
+    "avgDifficulty": 34898583734796.895
+  },
+  {
+    "id": "e5",
+    "label": "3.125",
+    "subsidyBtc": 3.125,
+    "startHeight": 840000,
+    "endHeight": 962199,
+    "startDate": "2024-04-20",
+    "endDate": null,
+    "totalFeesBtc": 9066.376045490002,
+    "avgDifficulty": 119094173522967.48
+  }
+]

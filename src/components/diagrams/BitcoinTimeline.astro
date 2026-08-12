@@ -4,7 +4,8 @@
  *
  * Both homes — the bitcoin stage and the bitcoin post — go through this rather
  * than the island directly, so the hydration directive stays one decision
- * instead of two. The blocks are fetched by the island itself, in the browser.
+ * instead of two. The epoch data is static, built into the bundle by
+ * `scripts/generate-bitcoin-epochs.mjs` — nothing is fetched in the browser.
  */
 import { BitcoinTimeline } from "./BitcoinTimeline";
 
@@ -16,7 +17,7 @@ const { variant = "post" } = Astro.props;
 ---
 
 {
-  /* client:visible — the widget only means anything once it is on screen, and
-    its fetch must not compete with the stage art for the first paint. */
+  /* client:visible — the widget only means anything once it is on screen, so
+    its hydration should not compete with the stage art for the first paint. */
 }
 <BitcoinTimeline client:visible variant={variant} />
