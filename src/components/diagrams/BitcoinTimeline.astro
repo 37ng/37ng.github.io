@@ -4,8 +4,9 @@
  *
  * Both homes — the bitcoin stage and the bitcoin post — go through this rather
  * than the island directly, so the hydration directive stays one decision
- * instead of two. The epoch data is static, built into the bundle by
- * `scripts/generate-bitcoin-epochs.mjs` — nothing is fetched in the browser.
+ * instead of two. Every finished epoch is static, built into the bundle by
+ * `scripts/generate-bitcoin-epochs.mjs`; only the current, still-open epoch
+ * is fetched live in the browser, on mount.
  */
 import { BitcoinTimeline } from "./BitcoinTimeline";
 

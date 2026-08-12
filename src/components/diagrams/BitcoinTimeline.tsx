@@ -1,6 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { fetchLiveEpoch, type LiveEpoch } from "@/lib/bitcoin-live-epoch";
 import {
   bandUnder,
+  EPOCHS,
   feesPerBlock,
   formatBtcPerBlock,
   formatCompact,
@@ -8,6 +10,8 @@ import {
   hashrateEhs,
   layout,
   normalize,
+  pendingEpoch,
+  type Epoch,
 } from "@/lib/bitcoin-timeline";
 
 interface BitcoinTimelineProps {
@@ -15,32 +19,15 @@ interface BitcoinTimelineProps {
   variant?: "stage" | "post";
 }
 
-const BANDS = layout();
-
-/** One spine per readout, each shaped by that readout's own series across
-    the five epochs — fees rise and fall with the market, difficulty only
-    climbs, subsidy only falls. Difficulty is log-scaled: linear would flatten
-    690K next to 119T to a single flat line. */
-const SPINES = [
-  {
-    id: "tx fees",
-    heights: normalize(BANDS.map((b) => feesPerBlock(b.epoch))),
-  },
-  {
-    id: "subsidy",
-    heights: normalize(BANDS.map((b) => b.epoch.subsidyBtc)),
-  },
-  {
-    id: "difficulty",
-    heights: normalize(
-      BANDS.map((b) => b.epoch.avgDifficulty),
-      { log: true },
-    ),
-  },
-];
+// The open epoch's fixed facts (id, subsidy, start) are knowable with no
+// network call — only its fees and difficulty need the live fetch below — so
+// the track's layout is stable at module scope like everything else.
+const PENDING = pendingEpoch(EPOCHS);
+const ALL_EPOCHS = [...EPOCHS, PENDING];
+const BANDS = layout(ALL_EPOCHS);
 
 /** Seconds for the cursor to travel the whole track on its own. */
-const SWEEP_SECONDS = 7;
+const SWEEP_SECONDS = 6;
 
 /** How close to a tick counts as touching it, as a fraction of the track. */
 const CONTACT = 0.012;
@@ -48,11 +35,15 @@ const CONTACT = 0.012;
 /**
  * A halving epoch, read at five knots along a track.
  *
- * The data is static — see lib/bitcoin-timeline.ts — so there is nothing to
- * wait on: the widget starts sweeping the moment it mounts. The track is
- * deliberately not a linear block-height axis; each knot's band is sized by
- * that epoch's duration (see `layout`), and the readouts change only when the
- * cursor touches a knot, from either direction, holding it until the next.
+ * Every epoch but the last is finished, permanent history — see
+ * lib/bitcoin-timeline.ts — so there is nothing to wait on for those. The
+ * last one is still open: its fees and difficulty are fetched live from the
+ * visitor's browser on mount (lib/bitcoin-live-epoch.ts) and show as
+ * unavailable if that fetch fails, rather than a stale or invented number.
+ * The track itself is deliberately not a linear block-height axis; each
+ * knot's band is sized by that epoch's duration (see `layout`), and the
+ * readouts change only when the cursor touches a knot, from either
+ * direction, holding it until the next.
  */
 export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   const trackRef = useRef<HTMLDivElement>(null);
@@ -65,6 +56,19 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   // Bars grow in from zero on mount rather than appearing full-height — a
   // static spec sheet should still announce that this panel just switched on.
   const [grown, setGrown] = useState(false);
+  const [live, setLive] = useState<LiveEpoch | "loading" | "failed">(
+    "loading",
+  );
+
+  useEffect(() => {
+    let mounted = true;
+    fetchLiveEpoch(PENDING.startHeight, PENDING.startDate).then((result) => {
+      if (mounted) setLive(result ?? "failed");
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -101,11 +105,42 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
 
   const touched = bandUnder(BANDS, position, CONTACT);
   const band = BANDS.find((entry) => entry.epoch.id === selectedId) ?? BANDS[0];
-  const epoch = band.epoch;
+  // The live fetch only ever fills in the open epoch — every other epoch's
+  // fields are already final, so merging is a no-op for them.
+  const resolveEpoch = (epoch: Epoch): Epoch =>
+    epoch.id === PENDING.id && typeof live === "object"
+      ? { ...epoch, ...live }
+      : epoch;
+  const epoch = resolveEpoch(band.epoch);
 
   useEffect(() => {
     if (touched) setSelectedId(touched.epoch.id);
   }, [touched?.epoch.id]);
+
+  // Spine heights react to the live fetch: 0 until it resolves (grows in
+  // once real data lands, same as the mount animation), 0 forever if it
+  // fails rather than a fabricated bar.
+  const spines = useMemo(() => {
+    const resolved = BANDS.map((b) => resolveEpoch(b.epoch));
+    return [
+      {
+        id: "tx fees",
+        heights: normalize(resolved.map((e) => feesPerBlock(e) ?? 0)),
+      },
+      {
+        id: "subsidy",
+        heights: normalize(resolved.map((e) => e.subsidyBtc)),
+      },
+      {
+        id: "difficulty",
+        heights: normalize(
+          resolved.map((e) => e.avgDifficulty ?? 0),
+          { log: true },
+        ),
+      },
+    ];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [live]);
 
   const stage = variant === "stage";
   // One palette for both homes. On the stage these resolve against whichever
@@ -113,6 +148,9 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   // ramp, which the light theme has already re-pointed at paper.
   const title = "var(--stage-title,var(--color-ink-50))";
   const body = "var(--stage-body,var(--color-ink-300))";
+
+  const fees = feesPerBlock(epoch);
+  const unavailable = live === "failed" && epoch.id === PENDING.id;
 
   return (
     <div
@@ -128,27 +166,38 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
           mining
         </span>
         <span>
-          #{formatHeight(epoch.startHeight)} {epoch.startDate} 
+          {epoch.startDate} #{formatHeight(epoch.startHeight)}
         </span>
       </div>
 
       <dl className="mt-4 grid grid-cols-3 gap-x-4 gap-y-3">
         <Readout
           label="tx fees"
-          value={formatBtcPerBlock(feesPerBlock(epoch))}
+          value={fees === null ? null : formatBtcPerBlock(fees)}
           unit="BTC / block"
+          unavailable={unavailable}
           title={title}
         />
         <Readout
           label="subsidy"
           value={epoch.label}
           unit="BTC / block"
+          unavailable={false}
           title={title}
         />
         <Readout
           label="difficulty"
-          value={formatCompact(epoch.avgDifficulty)}
-          unit={`${formatCompact(hashrateEhs(epoch.avgDifficulty))} EH/s`}
+          value={
+            epoch.avgDifficulty === null
+              ? null
+              : formatCompact(epoch.avgDifficulty)
+          }
+          unit={
+            epoch.avgDifficulty === null
+              ? "EH/s"
+              : `${formatCompact(hashrateEhs(epoch.avgDifficulty))} EH/s`
+          }
+          unavailable={unavailable}
           title={title}
         />
       </dl>
@@ -157,7 +206,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
           describes — the spine and the track below it read as one
           instrument, not two. */}
       <div className="mt-4 space-y-2">
-        {SPINES.map((spine) => (
+        {spines.map((spine) => (
           <div key={spine.id} className="relative h-3">
             {BANDS.map((entry, i) => {
               const on = entry.epoch.id === epoch.id;
@@ -285,11 +334,13 @@ function Readout({
   label,
   value,
   unit,
+  unavailable,
   title,
 }: {
   label: string;
-  value: string;
+  value: string | null;
   unit: string;
+  unavailable: boolean;
   title: string;
 }) {
   return (
@@ -297,15 +348,26 @@ function Readout({
       <dt className="font-mono text-[9px]" style={{ opacity: 0.7 }}>
         {label}
       </dt>
-      <dd
-        className="mt-1 font-[family-name:var(--font-display)] text-xl font-semibold tabular-nums"
-        style={{ color: title }}
-      >
-        {value}
-      </dd>
-      <dd className="font-mono text-[9px]" style={{ opacity: 0.7 }}>
-        {unit}
-      </dd>
+      {unavailable ? (
+        <dd
+          className="mt-1 font-mono text-[10px]"
+          style={{ opacity: 0.6 }}
+        >
+          unavailable
+        </dd>
+      ) : (
+        <>
+          <dd
+            className="mt-1 font-[family-name:var(--font-display)] text-xl font-semibold tabular-nums"
+            style={{ color: title, opacity: value === null ? 0.4 : 1 }}
+          >
+            {value ?? "—"}
+          </dd>
+          <dd className="font-mono text-[9px]" style={{ opacity: 0.7 }}>
+            {unit}
+          </dd>
+        </>
+      )}
     </div>
   );
 }

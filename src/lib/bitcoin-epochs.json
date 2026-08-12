@@ -42,16 +42,5 @@
     "endDate": "2024-04-20",
     "totalFeesBtc": 80742.60006412998,
     "avgDifficulty": 34898583734796.895
-  },
-  {
-    "id": "e5",
-    "label": "3.125",
-    "subsidyBtc": 3.125,
-    "startHeight": 840000,
-    "endHeight": 962199,
-    "startDate": "2024-04-20",
-    "endDate": null,
-    "totalFeesBtc": 9066.376045490002,
-    "avgDifficulty": 119094173522967.48
   }
 ]

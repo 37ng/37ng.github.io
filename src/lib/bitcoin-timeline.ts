@@ -6,14 +6,17 @@
  * position into a selection — are testable on their own and shared by the
  * stage and the post.
  *
- * The data itself is not fetched: `bitcoin-epochs.json` is generated at build
- * time by `scripts/generate-bitcoin-epochs.mjs` from downloadable history
- * (blockchain.info's charts CSV export, mempool.space for halving heights),
- * aggregated one row per halving epoch. See that script for how each figure
- * is computed. Reading a committed file means the widget has no loading or
- * failed state and nothing to fetch in the visitor's browser — the cost is
- * that its numbers are current as of the last run of that script, not as of
- * the moment the page loads.
+ * `bitcoin-epochs.json` holds only *finished* halving epochs — a finished
+ * epoch's numbers are permanent, so `scripts/generate-bitcoin-epochs.mjs`
+ * writes them once, at build time, from downloadable history (blockchain.info
+ * charts CSV, mempool.space for halving heights) and never again. The current,
+ * still-running epoch is deliberately not in that file: its totals change
+ * every block, and rewriting the build output on every deploy just to chase
+ * that is the wrong layer for it. `pendingEpoch()` below derives its fixed
+ * facts (id, subsidy, start height/date — all knowable from the last finished
+ * epoch) with no network call; its live figures (fees, difficulty, current
+ * height) are fetched in the visitor's own browser by
+ * `lib/bitcoin-live-epoch.ts` and merged in at render time.
  */
 import epochData from "@/lib/bitcoin-epochs.json";
 
@@ -23,15 +26,43 @@ export interface Epoch {
   label: string;
   subsidyBtc: number;
   startHeight: number;
-  endHeight: number;
+  /** null until the open epoch's live tip height has been fetched. */
+  endHeight: number | null;
   startDate: string;
   /** null for the current, still-running epoch. */
   endDate: string | null;
-  totalFeesBtc: number;
-  avgDifficulty: number;
+  /** null until the open epoch's live fee total has been fetched, or fetch failed. */
+  totalFeesBtc: number | null;
+  /** null until the open epoch's live difficulty has been fetched, or fetch failed. */
+  avgDifficulty: number | null;
 }
 
+/** Every finished halving epoch — permanent, baked in at build time. */
 export const EPOCHS: Epoch[] = epochData as Epoch[];
+
+/**
+ * The open epoch's fixed facts, with no live figures yet.
+ *
+ * Everything here follows deterministically from the last finished epoch: its
+ * start is that epoch's end, its subsidy is half of that epoch's, and its id
+ * is the next in line. Nothing here needs a network call — only totalFeesBtc,
+ * avgDifficulty, and endHeight do, and those start out null.
+ */
+export function pendingEpoch(closed: Epoch[] = EPOCHS): Epoch {
+  const last = closed[closed.length - 1];
+  const subsidyBtc = last.subsidyBtc / 2;
+  return {
+    id: `e${closed.length + 1}`,
+    label: String(subsidyBtc),
+    subsidyBtc,
+    startHeight: last.endHeight as number,
+    endHeight: null,
+    startDate: last.endDate as string,
+    endDate: null,
+    totalFeesBtc: null,
+    avgDifficulty: null,
+  };
+}
 
 /** One knot's span of the track, as fractions of the whole. */
 export interface Band {
@@ -100,8 +131,11 @@ export function hashrateEhs(difficulty: number): number {
   return (difficulty * 2 ** 32) / TARGET_BLOCK_SECONDS / 1e18;
 }
 
-/** An epoch's total fees, spread over its blocks — a fraction of a BTC. */
-export function feesPerBlock(epoch: Epoch): number {
+/** An epoch's total fees, spread over its blocks — a fraction of a BTC. Null
+    if either figure isn't known yet (the open epoch, before its live fetch
+    resolves). */
+export function feesPerBlock(epoch: Epoch): number | null {
+  if (epoch.endHeight === null || epoch.totalFeesBtc === null) return null;
   const blocks = epoch.endHeight - epoch.startHeight;
   return blocks > 0 ? epoch.totalFeesBtc / blocks : 0;
 }
