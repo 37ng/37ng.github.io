@@ -97,7 +97,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
         </span>
       </div>
 
-      <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3">
+      <dl className="mt-4 grid grid-cols-3 gap-x-4 gap-y-3">
         <Readout
           label="tx fees"
           value={formatBtcPerBlock(feesPerBlock(epoch))}
@@ -114,12 +114,6 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
           label="difficulty"
           value={formatCompact(epoch.avgDifficulty)}
           unit={`${formatCompact(hashrateEhs(epoch.avgDifficulty))} EH/s`}
-          title={title}
-        />
-        <Readout
-          label="date"
-          value={epoch.startDate.slice(0, 4)}
-          unit={epoch.startDate}
           title={title}
         />
       </dl>
