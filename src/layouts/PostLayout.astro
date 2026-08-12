@@ -1,0 +1,80 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import { ThemeToggle } from "../components/ThemeToggle";
+
+interface Props {
+  title: string;
+  description?: string;
+  date: string;
+  github?: string;
+  color?: string;
+}
+
+const { title, description, date, github, color } = Astro.props;
+// Fraunces, like the title above it and the prose below it — this line sits
+// between the two, and it was the only thing on the page still reading in the
+// body sans. The stage caption and the fan's panel already set the same face.
+const descriptionClass =
+  "mt-3 font-[family-name:var(--font-display)] text-lg text-ink-300";
+const headingClass =
+  "font-[family-name:var(--font-display)] text-4xl font-semibold text-ink-50 leading-tight";
+---
+
+<BaseLayout title={title} description={description}>
+  <!-- --accent set here (inline style always wins over the CSS default on the
+       same element) drives every signal-colored hover/highlight below with
+       this post's own color instead of the shared orange — see global.css.
+       The id is what the light theme is scoped to (html[data-theme]:has(#post)),
+       so it stays even though nothing else reads it now. -->
+  <main
+    id="post"
+    class="mx-auto max-w-3xl px-6 py-16"
+    style={`--accent: ${color ?? "var(--color-signal-500)"}`}
+  >
+    <a
+      href="/"
+      data-back-home
+      class="font-mono text-xs text-ink-400 hover:text-[var(--accent,var(--color-signal-500))]"
+      >&larr; esc</a
+    >
+
+    <header class="mt-8 mb-10 border-b border-ink-700 pb-8">
+      {
+        github && (
+          <div class="flex justify-end mb-4">
+            <a
+              href={github}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="font-mono text-xs text-ink-400 hover:text-[var(--accent,var(--color-signal-500))] transition-colors"
+            >
+              repo &#8599;
+            </a>
+          </div>
+        )
+      }
+      <h1 class={headingClass}>{title}</h1>
+      {description && <p class={descriptionClass}>{description}</p>}
+      <div class="mt-3 flex items-center justify-between">
+        <time class="font-mono text-sm text-ink-400">{date}</time>
+        <ThemeToggle client:load />
+      </div>
+    </header>
+
+    <article class="prose-tech">
+      <slot />
+    </article>
+  </main>
+</BaseLayout>
+
+<script>
+  // Escape leaves the post, same as clicking "back". Bound to the document
+  // once and resolved against the DOM at press time rather than to this
+  // page's link: the listener outlives a view transition, and a page with no
+  // back link (the homepage, where Escape lowers the card fan instead) simply
+  // finds nothing to click.
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape" || event.defaultPrevented) return;
+    document.querySelector<HTMLAnchorElement>("[data-back-home]")?.click();
+  });
+</script>

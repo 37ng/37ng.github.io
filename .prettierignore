@@ -1,0 +1,7 @@
+dist
+node_modules
+.astro
+package-lock.json
+
+# Bilingual blog prose — avoid Prettier reflowing/mangling content mixed with JSX.
+src/content/blog/*.mdx

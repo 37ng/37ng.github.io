@@ -1,0 +1,144 @@
+---
+import { BitcoinCoin3D } from "./diagrams/BitcoinCoin3D";
+import BitcoinTimeline from "./diagrams/BitcoinTimeline.astro";
+import PaperSheet from "./stages/PaperSheet.astro";
+import { backdropFor, type StageSummary } from "@/lib/stage";
+import { cardNo } from "@/lib/fan";
+
+interface Props {
+  /** One per card in the fan — every card has a stage to put up. */
+  stages: StageSummary[];
+  /** Which stage a first visit lands on. Only decides which art loads eagerly. */
+  landing: string;
+}
+
+const { stages, landing } = Astro.props;
+---
+
+{
+  /*
+  The main stage: one full-screen subject at a time — backdrop, live furniture
+  and caption, all belonging to the same post and swapping together.
+
+  Every stage is rendered here, all of them, and which one is visible is decided
+  entirely in CSS off `<html data-stage="…">`: the per-id rules and the bootstrap
+  script that sets the attribute both live in index.astro. That is deliberate —
+  the browser paints this markup before any script runs, so a stage picked in JS
+  would show the landing stage first and cross-fade off it every time you came
+  back from reading a post.
+
+  Because CSS owns all of that, none of this needs to be an island. The only
+  thing here that has to run on the client is the coin.
+
+  Hovering a card in PostsFan writes the attribute (src/lib/stage.ts) and nothing
+  clears it, so the last card you touched is still the thing you are looking at
+  long after the fan has dropped back down.
+
+  The page itself does not scroll. Every layer here is fixed to the viewport, and
+  the fan is the only way through the work.
+  */
+}
+
+<div class="h-screen">
+  <div class="pointer-events-none fixed inset-0 z-10">
+    {
+      stages.map((stage) => {
+        // One call answers both halves — which backdrop, and how bright it is.
+        // index.astro asks the same question to pick the caption's ink, so the
+        // type can never be coloured for a backdrop other than the one drawn.
+        const backdrop = backdropFor(stage);
+        return (
+          <div data-stage-id={stage.id} class="stage-layer absolute inset-0">
+            {backdrop.kind === "art" ? (
+              <img
+                src={backdrop.src}
+                alt=""
+                loading={stage.id === landing ? "eager" : "lazy"}
+                decoding="async"
+                class="absolute inset-0 h-full w-full object-cover"
+              />
+            ) : (
+              <PaperSheet />
+            )}
+          </div>
+        );
+      })
+    }
+  </div>
+
+  {
+    /* Live furniture belonging to one stage and one stage only, in its own
+      fixed layer rather than beside its backdrop, so switching stages never
+      rebuilds it — one WebGL context for the coin, held for the life of the
+      page. A client directive is compile-time, so each piece is written out
+      by hand instead of looked up by id. There is one. */
+  }
+  {
+    stages.some((stage) => stage.id === "bitcoin") && (
+      <div
+        data-stage-id="bitcoin"
+        class="stage-layer pointer-events-none fixed inset-0 z-20 flex items-center"
+      >
+        <div class="mx-auto w-full max-w-3xl px-6">
+          <div class="stage-grab w-[260px] translate-x-[calc(12.5vw-2rem)] -translate-y-6 sm:w-[320px] sm:translate-x-[calc(12.5vw-4rem)] sm:-translate-y-8">
+            {/* client:idle, not client:load — three.js is by far the heaviest
+                thing on this page and a decorative coin has no business
+                competing with first paint for the main thread. */}
+            <BitcoinCoin3D client:idle frame={false} />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  {
+    /* The timeline reads as the stage's instrument panel. It sits under the
+      header rather than near the caption on purpose: the bottom of this page
+      already belongs to the caption and the raised fan, and a widget you have
+      to drag cannot share space with either. */
+  }
+  {
+    stages.some((stage) => stage.id === "bitcoin") && (
+      <div
+        data-stage-id="bitcoin"
+        class="stage-layer pointer-events-none fixed inset-x-0 top-[calc(6rem+12.5vh)] z-20"
+      >
+        <div class="mx-auto w-full max-w-3xl px-6">
+          <BitcoinTimeline variant="stage" />
+        </div>
+      </div>
+    )
+  }
+
+  {
+    /* No per-caption --accent below: only the stage that is up is ever
+      visible, and --hero-accent already holds that post's color. One variable,
+      so the caption, the header and the fan can never disagree. */
+  }
+  <div class="pointer-events-none fixed inset-0 z-20">
+    {
+      stages.map((stage, i) => (
+        <a
+          href={`/blog/${stage.id}`}
+          data-stage-id={stage.id}
+          class="stage-caption group absolute inset-x-0 bottom-0 mx-auto block w-full max-w-3xl px-6 pb-[calc(var(--fan-peek)+2.5rem)]"
+        >
+          {/* The same index the card carries in the hand, and the same line the
+              raised panel writes — `stages` arrives in the fan's curated order
+              (index.astro), so the position is the number. */}
+          <span class="mb-2 block font-mono text-xs text-[var(--hero-accent,var(--color-signal-500))]">
+            {cardNo(i)} · {stage.date}
+          </span>
+          <span class="font-[family-name:var(--font-display)] text-4xl font-semibold text-[var(--stage-title,var(--color-ink-50))] transition-colors group-hover:text-[var(--hero-accent,var(--color-signal-500))]">
+            {stage.title}
+          </span>
+          {stage.description && (
+            <p class="mt-3 max-w-lg font-[family-name:var(--font-display)] text-[var(--stage-body,var(--color-ink-300))] transition-colors group-hover:text-[var(--hero-accent,var(--color-signal-500))]">
+              {stage.description}
+            </p>
+          )}
+        </a>
+      ))
+    }
+  </div>
+</div>
