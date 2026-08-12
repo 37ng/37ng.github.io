@@ -14,9 +14,13 @@
  * Sources: mempool.space for the current tip and each halving's exact block
  * timestamp; blockchain.info's charts CSV export (daily totals, full history)
  * for tx fees and difficulty, fetched only when there's new ground to cover.
- * All of this runs at build time — the widget reads the committed JSON with
- * no runtime fetch, so a visitor's numbers are current as of the last run of
- * this script, not as of the moment the page loads.
+ * All of this runs at build time — `npm run build` runs it automatically via
+ * the `prebuild` script in package.json — and the widget reads the committed
+ * JSON with no runtime fetch, so a visitor's numbers are current as of the
+ * last build, not as of the moment the page loads. The tradeoff of wiring
+ * this into every build: a build now needs network access to reach
+ * mempool.space, and fails if that one call does not succeed, even when
+ * every epoch on file is already up to date.
  */
 import { readFile, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
