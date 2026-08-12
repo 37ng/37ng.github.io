@@ -7,6 +7,7 @@ import {
   formatHeight,
   hashrateEhs,
   layout,
+  normalize,
 } from "@/lib/bitcoin-timeline";
 
 interface BitcoinTimelineProps {
@@ -15,6 +16,28 @@ interface BitcoinTimelineProps {
 }
 
 const BANDS = layout();
+
+/** One spine per readout, each shaped by that readout's own series across
+    the five epochs — fees rise and fall with the market, difficulty only
+    climbs, subsidy only falls. Difficulty is log-scaled: linear would flatten
+    690K next to 119T to a single flat line. */
+const SPINES = [
+  {
+    id: "tx fees",
+    heights: normalize(BANDS.map((b) => feesPerBlock(b.epoch))),
+  },
+  {
+    id: "subsidy",
+    heights: normalize(BANDS.map((b) => b.epoch.subsidyBtc)),
+  },
+  {
+    id: "difficulty",
+    heights: normalize(
+      BANDS.map((b) => b.epoch.avgDifficulty),
+      { log: true },
+    ),
+  },
+];
 
 /** Seconds for the cursor to travel the whole track on its own. */
 const SWEEP_SECONDS = 7;
@@ -39,6 +62,18 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   const [held, setHeld] = useState(false);
   const [dragging, setDragging] = useState(false);
   const [selectedId, setSelectedId] = useState(BANDS[0].epoch.id);
+  // Bars grow in from zero on mount rather than appearing full-height — a
+  // static spec sheet should still announce that this panel just switched on.
+  const [grown, setGrown] = useState(false);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setGrown(true);
+      return;
+    }
+    const frame = requestAnimationFrame(() => setGrown(true));
+    return () => cancelAnimationFrame(frame);
+  }, []);
 
   useEffect(() => {
     if (held) return;
@@ -117,6 +152,35 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
           title={title}
         />
       </dl>
+
+      {/* One spine per readout above, each bar aligned under the tick it
+          describes — the spine and the track below it read as one
+          instrument, not two. */}
+      <div className="mt-4 space-y-2">
+        {SPINES.map((spine) => (
+          <div key={spine.id} className="relative h-3">
+            {BANDS.map((entry, i) => {
+              const on = entry.epoch.id === epoch.id;
+              return (
+                <div
+                  key={entry.epoch.id}
+                  className="absolute bottom-0 w-[3px] -translate-x-1/2 origin-bottom transition-transform duration-500 ease-out"
+                  style={{
+                    left: `${entry.tick * 100}%`,
+                    height: "100%",
+                    transform: `scaleY(${grown ? spine.heights[i] : 0})`,
+                    background: on
+                      ? "var(--hero-accent,var(--color-signal-500))"
+                      : "currentColor",
+                    opacity: on ? 1 : 0.35,
+                    transitionDelay: grown ? `${i * 40}ms` : "0ms",
+                  }}
+                />
+              );
+            })}
+          </div>
+        ))}
+      </div>
 
       {/* The track. One element takes the pointer; the knots are painted on top
           and never handle events themselves, so there is nothing to miss. */}

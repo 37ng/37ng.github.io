@@ -128,3 +128,22 @@ export function formatCompact(value: number, digits = 2): string {
 export function formatHeight(height: number): string {
   return Math.round(height).toLocaleString("en-US");
 }
+
+/**
+ * Scale a series to [floor, 1] for a spine chart's bar heights.
+ *
+ * `floor` keeps the smallest bar visible rather than collapsing to nothing —
+ * a spine that vanishes at one end reads as missing data, not as small data.
+ * `log` is for series like difficulty that span many orders of magnitude,
+ * where a linear scale would flatten every early epoch to the floor.
+ */
+export function normalize(
+  values: number[],
+  { log = false, floor = 0.08 }: { log?: boolean; floor?: number } = {},
+): number[] {
+  const scaled = log ? values.map((v) => Math.log(Math.max(v, 1))) : values;
+  const min = Math.min(...scaled);
+  const max = Math.max(...scaled);
+  if (max === min) return values.map(() => 1);
+  return scaled.map((v) => floor + (1 - floor) * ((v - min) / (max - min)));
+}
