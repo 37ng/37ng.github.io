@@ -92,7 +92,9 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
         <span style={{ color: "var(--hero-accent,var(--color-signal-600))" }}>
           mining
         </span>
-        <span>#{formatHeight(epoch.startHeight)}</span>
+        <span>
+          #{formatHeight(epoch.startHeight)} {epoch.startDate} 
+        </span>
       </div>
 
       <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3">
@@ -200,7 +202,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
                   opacity: on ? 1 : 0.6,
                 }}
               >
-                {entry.epoch.label}
+                {entry.epoch.startDate.slice(0, 4)}
               </span>
             </div>
           );
