@@ -1,16 +1,23 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { fetchLiveEpoch, type LiveEpoch } from "@/lib/bitcoin-live-epoch";
+import {
+  fetchBtcUsd,
+  fetchLiveEpoch,
+  type LiveEpoch,
+} from "@/lib/bitcoin-live-epoch";
 import {
   bandUnder,
   EPOCHS,
   feesPerBlock,
+  feeWorth,
   formatBtcPerBlock,
   formatCompact,
   formatHeight,
+  formatUsd,
   hashrateEhs,
   layout,
   normalize,
   pendingEpoch,
+  subsidyWorth,
   type Epoch,
 } from "@/lib/bitcoin-timeline";
 
@@ -56,7 +63,10 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   // Bars grow in from zero on mount rather than appearing full-height — a
   // static spec sheet should still announce that this panel just switched on.
   const [grown, setGrown] = useState(false);
-  const [live, setLive] = useState<LiveEpoch | "loading" | "failed">(
+  const [live, setLive] = useState<LiveEpoch | "loading" | "failed">("loading");
+  // Independent of the epoch fetch: every epoch's fee readout converts into
+  // today's dollars off the same live price, not just the open epoch's.
+  const [btcUsd, setBtcUsd] = useState<number | "loading" | "failed">(
     "loading",
   );
 
@@ -64,6 +74,16 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
     let mounted = true;
     fetchLiveEpoch(PENDING.startHeight, PENDING.startDate).then((result) => {
       if (mounted) setLive(result ?? "failed");
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+    fetchBtcUsd().then((price) => {
+      if (mounted) setBtcUsd(price ?? "failed");
     });
     return () => {
       mounted = false;
@@ -112,6 +132,9 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
       ? { ...epoch, ...live }
       : epoch;
   const epoch = resolveEpoch(band.epoch);
+  // A finished epoch prices itself at its own averages and ignores this; only
+  // the open one needs the live price, and it is null until that fetch lands.
+  const price = typeof btcUsd === "number" ? btcUsd : null;
 
   useEffect(() => {
     if (touched) setSelectedId(touched.epoch.id);
@@ -120,16 +143,27 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   // Spine heights react to the live fetch: 0 until it resolves (grows in
   // once real data lands, same as the mount animation), 0 forever if it
   // fails rather than a fabricated bar.
+  //
+  // Fees and subsidy are drawn in Big Macs, not BTC. In BTC the subsidy spine
+  // is just the halving — four bars, each half the last, saying only what the
+  // label already says. Priced in what it bought at the time, the same series
+  // says something the numbers alone don't: the subsidy kept growing in real
+  // terms for three halvings. Difficulty stays on its own log scale; it is not
+  // a value and has nothing to convert.
   const spines = useMemo(() => {
     const resolved = BANDS.map((b) => resolveEpoch(b.epoch));
     return [
       {
         id: "tx fees",
-        heights: normalize(resolved.map((e) => feesPerBlock(e) ?? 0)),
+        heights: normalize(
+          resolved.map((e) => feeWorth(e, price)?.bigMacs ?? 0),
+        ),
       },
       {
         id: "subsidy",
-        heights: normalize(resolved.map((e) => e.subsidyBtc)),
+        heights: normalize(
+          resolved.map((e) => subsidyWorth(e, price)?.bigMacs ?? 0),
+        ),
       },
       {
         id: "difficulty",
@@ -140,7 +174,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
       },
     ];
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [live]);
+  }, [live, price]);
 
   const stage = variant === "stage";
   // One palette for both homes. On the stage these resolve against whichever
@@ -151,12 +185,18 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
 
   const fees = feesPerBlock(epoch);
   const unavailable = live === "failed" && epoch.id === PENDING.id;
+  // What each amount could buy, priced in the epoch that earned it — its own
+  // averages if it is finished, today's live price if it is still running.
+  // The Big Mac count is the comparable figure across epochs; the dollar
+  // figure above it is only there to make the count legible.
+  const feesUnit = worthLines(feeWorth(epoch, price));
+  const subsidyUnit = worthLines(subsidyWorth(epoch, price));
 
   return (
     <div
       className={
         stage
-          ? "pointer-events-auto w-full max-w-md"
+          ? "pointer-events-auto w-full max-w-lg"
           : "not-prose my-10 w-full border border-ink-700 p-5"
       }
       style={{ color: body }}
@@ -165,8 +205,14 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
         <span style={{ color: "var(--hero-accent,var(--color-signal-600))" }}>
           mining
         </span>
-        <span>
-          {epoch.startDate} #{formatHeight(epoch.startHeight)}
+        {/* The height box reserves its widest value and left-aligns inside it,
+            so stepping #0 → #420,000 → #1,050,000 never drags the date sideways
+            with it. Pinning the right edge instead would move the digits. */}
+        <span className="tabular-nums">
+          {epoch.startDate}{" "}
+          <span className="inline-block w-[10ch] text-left">
+            #{formatHeight(epoch.startHeight)}
+          </span>
         </span>
       </div>
 
@@ -174,14 +220,14 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
         <Readout
           label="tx fees"
           value={fees === null ? null : formatBtcPerBlock(fees)}
-          unit="BTC / block"
+          unit={feesUnit}
           unavailable={unavailable}
           title={title}
         />
         <Readout
           label="subsidy"
-          value={epoch.label}
-          unit="BTC / block"
+          value={`₿${epoch.label}`}
+          unit={subsidyUnit}
           unavailable={false}
           title={title}
         />
@@ -326,8 +372,29 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
           }}
         />
       </div>
+
+      {/* The basis, stated rather than assumed. A Big Mac count is only
+          comparable across epochs if the reader knows it is one country's
+          burger and each epoch's own average price — not a world index, and
+          not today's rate applied backwards. */}
+      <p className="mt-1 font-mono text-[9px]" style={{ opacity: 0.55 }}>
+        Data is per block,
+        <br />
+        big mac data is United States
+      </p>
     </div>
   );
+}
+
+/** Dollars over Big Macs, always two lines whether or not the conversion
+    resolved — a cell that grows a line when the live price lands would shove
+    the spines and the track down with it. */
+function worthLines(worth: { usd: number; bigMacs: number } | null): string[] {
+  if (!worth) return ["—", "— Big Macs"];
+  return [
+    formatUsd(worth.usd),
+    `${worth.bigMacs.toLocaleString("en-US", { maximumFractionDigits: 0 })} Big Macs`,
+  ];
 }
 
 function Readout({
@@ -339,20 +406,19 @@ function Readout({
 }: {
   label: string;
   value: string | null;
-  unit: string;
+  /** One line, or several stacked under the value. */
+  unit: string | string[];
   unavailable: boolean;
   title: string;
 }) {
+  const units = Array.isArray(unit) ? unit : [unit];
   return (
     <div>
       <dt className="font-mono text-[9px]" style={{ opacity: 0.7 }}>
         {label}
       </dt>
       {unavailable ? (
-        <dd
-          className="mt-1 font-mono text-[10px]"
-          style={{ opacity: 0.6 }}
-        >
+        <dd className="mt-1 font-mono text-[10px]" style={{ opacity: 0.6 }}>
           unavailable
         </dd>
       ) : (
@@ -363,9 +429,15 @@ function Readout({
           >
             {value ?? "—"}
           </dd>
-          <dd className="font-mono text-[9px]" style={{ opacity: 0.7 }}>
-            {unit}
-          </dd>
+          {units.map((line) => (
+            <dd
+              key={line}
+              className="font-mono text-[9px] whitespace-nowrap"
+              style={{ opacity: 0.7 }}
+            >
+              {line}
+            </dd>
+          ))}
         </>
       )}
     </div>

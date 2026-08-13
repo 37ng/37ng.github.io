@@ -1,16 +1,19 @@
 /**
- * Live figures for the open halving epoch, fetched from the visitor's browser.
+ * Live figures fetched from the visitor's browser: the open halving epoch's
+ * fees and difficulty, and the current BTC/USD price used to convert the tx
+ * fees readout into dollars (and Big Macs — see bitcoin-timeline.ts).
  *
  * Every finished epoch in bitcoin-epochs.json is permanent and baked in at
  * build time (see bitcoin-timeline.ts). The open one is not — its fees and
- * difficulty change every block — so instead of rewriting the build output on
- * every deploy, the widget asks mempool.space directly, once, on mount.
- * mempool.space is the only source used here, unlike the build script, which
- * also uses blockchain.info: mempool.space is the only one of the two that
- * serves `Access-Control-Allow-Origin: *`. blockchain.info's charts API sends
- * no CORS headers at all, so a browser fetch to it is blocked before it
- * starts — fine for the build script, which runs in Node and isn't subject to
- * CORS, but unusable from here.
+ * difficulty change every block, and price changes by the second — so
+ * instead of rewriting the build output to chase either, the widget asks
+ * mempool.space directly, once, on mount. mempool.space is the only source
+ * used here, unlike the build script, which also uses blockchain.info:
+ * mempool.space is the only one of the two that serves
+ * `Access-Control-Allow-Origin: *`. blockchain.info's charts API sends no
+ * CORS headers at all, so a browser fetch to it is blocked before it starts —
+ * fine for the build script, which runs in Node and isn't subject to CORS,
+ * but unusable from here.
  *
  * Every failure path returns null and the widget shows that figure as
  * unavailable. Nothing here ever invents a number.
@@ -132,6 +135,19 @@ export async function fetchLiveEpoch(
     return { endHeight, totalFeesBtc: totalFeesSats / 1e8, avgDifficulty };
   } catch (error) {
     console.warn("[bitcoin-timeline] live epoch unavailable:", error);
+    return null;
+  }
+}
+
+/** Live BTC/USD, for converting a fee readout into today's dollars. Same
+    source and same reasoning as fetchLiveEpoch: this changes far too often
+    to bake in at build time. */
+export async function fetchBtcUsd(): Promise<number | null> {
+  try {
+    const price = (await getJson(`${API}/v1/prices`)) as { USD?: number };
+    return typeof price.USD === "number" ? price.USD : null;
+  } catch (error) {
+    console.warn("[bitcoin-timeline] BTC/USD price unavailable:", error);
     return null;
   }
 }
