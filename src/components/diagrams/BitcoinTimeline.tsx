@@ -218,9 +218,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
       style={{ color: body }}
     >
       <div className="flex items-baseline justify-between font-mono text-[10px]">
-        <span style={{ color: accent }}>
-          mining
-        </span>
+        <span style={{ color: accent }}>mining</span>
         {/* The height box reserves its widest value and left-aligns inside it,
             so stepping #0 → #420,000 → #1,050,000 never drags the epoch label
             sideways with it. Pinning the right edge instead would move the
