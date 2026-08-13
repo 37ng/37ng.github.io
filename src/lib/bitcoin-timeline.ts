@@ -123,6 +123,71 @@ export function layout(epochs: Epoch[] = EPOCHS): Band[] {
 }
 
 /**
+ * How far off the row's floor the lowest point sits, in viewBox units, so a
+ * 1px stroke on the minimum is not half-clipped by the row's bottom edge.
+ * Unlike the bar spines this is *only* clearance — the scale still runs to a
+ * true zero, since a line at the baseline is perfectly visible where a bar of
+ * no height would not be.
+ */
+const SPINE_PAD = 4;
+
+/** A normalized height as a percentage up from the row's floor. The SVG and
+    the DOM cursor dot both place points with this, so they cannot drift. */
+export function spineY(height: number): number {
+  return SPINE_PAD + (100 - 2 * SPINE_PAD) * height;
+}
+
+export interface StepGeometry {
+  /** Every flat run, as one path — the value each epoch actually held. */
+  plateaus: string;
+  /** The jump at each halving, kept separate so it can be colored by
+      direction. One per epoch after the first. */
+  risers: { d: string; up: boolean }[];
+}
+
+/**
+ * The three series as step lines rather than one bar per epoch.
+ *
+ * A straight line between two knots would draw values that never existed:
+ * the subsidy is a step function that holds for a whole epoch and halves in a
+ * single block, and the fee and difficulty figures are averages over their
+ * whole span. So the value is flat across the band and jumps at the tick,
+ * which also puts the band widths `layout()` computes to work — a bar spine
+ * throws them away and draws every epoch the same width.
+ */
+export function stepPath(bands: Band[], heights: number[]): StepGeometry {
+  const x = (fraction: number) => (fraction * 100).toFixed(2);
+  const y = (height: number) => (100 - spineY(height)).toFixed(2);
+  const plateaus = bands
+    .map((band, i) => `M${x(band.start)} ${y(heights[i])}H${x(band.end)}`)
+    .join("");
+  const risers = bands.slice(1).map((band, i) => ({
+    d: `M${x(band.start)} ${y(heights[i])}V${y(heights[i + 1])}`,
+    up: heights[i + 1] > heights[i],
+  }));
+  return { plateaus, risers };
+}
+
+/**
+ * The step's value under a cursor sitting anywhere along the track.
+ *
+ * The dot rides the raw cursor position, not the selected knot, and on a step
+ * line that stays truthful: between two halvings the value really is the one
+ * the last halving set.
+ */
+export function stepAt(
+  bands: Band[],
+  heights: number[],
+  position: number,
+): number {
+  let index = 0;
+  for (let i = 0; i < bands.length; i++) {
+    if (position >= bands[i].start) index = i;
+  }
+  return heights[index];
+}
+
+/**
  * The knot the cursor is touching, or `null` between knots. `tolerance` is a
  * fraction of the track's width — the tick's contact width, half on each side,
  * so a cursor arriving from either direction picks it up at the same distance.
@@ -227,10 +292,12 @@ export function formatHeight(height: number): string {
 }
 
 /**
- * Scale a series to [floor, 1] for a spine chart's bar heights.
+ * Scale a series to [floor, 1] for a spine chart.
  *
- * `floor` keeps the smallest bar visible rather than collapsing to nothing —
- * a spine that vanishes at one end reads as missing data, not as small data.
+ * `floor` is for bars, where the smallest value would otherwise collapse to
+ * nothing and read as missing data instead of small data. A step line needs
+ * none — it is visible at any height — so callers drawing lines pass 0 and
+ * keep a true zero, with `SPINE_PAD` handling stroke clearance instead.
  * `log` is for series like difficulty that span many orders of magnitude,
  * where a linear scale would flatten every early epoch to the floor.
  */

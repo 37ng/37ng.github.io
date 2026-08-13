@@ -17,6 +17,9 @@ import {
   layout,
   normalize,
   pendingEpoch,
+  spineY,
+  stepAt,
+  stepPath,
   subsidyWorth,
   type Epoch,
 } from "@/lib/bitcoin-timeline";
@@ -60,7 +63,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   const [held, setHeld] = useState(false);
   const [dragging, setDragging] = useState(false);
   const [selectedId, setSelectedId] = useState(BANDS[0].epoch.id);
-  // Bars grow in from zero on mount rather than appearing full-height — a
+  // Spines grow in from the floor on mount rather than appearing whole — a
   // static spec sheet should still announce that this panel just switched on.
   const [grown, setGrown] = useState(false);
   const [live, setLive] = useState<LiveEpoch | "loading" | "failed">("loading");
@@ -142,37 +145,46 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
 
   // Spine heights react to the live fetch: 0 until it resolves (grows in
   // once real data lands, same as the mount animation), 0 forever if it
-  // fails rather than a fabricated bar.
+  // fails rather than a fabricated reading.
   //
   // Fees and subsidy are drawn in Big Macs, not BTC. In BTC the subsidy spine
-  // is just the halving — four bars, each half the last, saying only what the
-  // label already says. Priced in what it bought at the time, the same series
+  // is just the halving — four steps, each half the last, saying only what
+  // the label already says. Priced in what it bought at the time, the same series
   // says something the numbers alone don't: the subsidy kept growing in real
   // terms for three halvings. Difficulty stays on its own log scale; it is not
   // a value and has nothing to convert.
   const spines = useMemo(() => {
     const resolved = BANDS.map((b) => resolveEpoch(b.epoch));
-    return [
+    const rows = [
       {
         id: "tx fees",
+        note: null,
         heights: normalize(
           resolved.map((e) => feeWorth(e, price)?.bigMacs ?? 0),
+          { floor: 0 },
         ),
       },
       {
         id: "subsidy",
+        note: null,
         heights: normalize(
           resolved.map((e) => subsidyWorth(e, price)?.bigMacs ?? 0),
+          { floor: 0 },
         ),
       },
       {
+        // Difficulty spans five orders of magnitude, so a linear row would
+        // pin every epoch but the last to the floor. Saying so is not
+        // pedantry: a log line's shape is not the growth's shape.
         id: "difficulty",
+        note: "log",
         heights: normalize(
           resolved.map((e) => e.avgDifficulty ?? 0),
-          { log: true },
+          { log: true, floor: 0 },
         ),
       },
     ];
+    return rows.map((row) => ({ ...row, ...stepPath(BANDS, row.heights) }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [live, price]);
 
@@ -249,33 +261,73 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
         />
       </dl>
 
-      {/* One spine per readout above, each bar aligned under the tick it
-          describes — the spine and the track below it read as one
-          instrument, not two. */}
+      {/* One spine per readout above, sharing the track's x axis below —
+          the spines and the track read as one instrument, not two.
+          Each is a step line: flat for the epoch's whole band, jumping at
+          the halving, so it never draws a value the chain did not hold. */}
       <div className="mt-4 space-y-2">
-        {spines.map((spine) => (
-          <div key={spine.id} className="relative h-3">
-            {BANDS.map((entry, i) => {
-              const on = entry.epoch.id === epoch.id;
-              return (
-                <div
-                  key={entry.epoch.id}
-                  className="absolute bottom-0 w-[3px] -translate-x-1/2 origin-bottom transition-transform duration-500 ease-out"
-                  style={{
-                    left: `${entry.tick * 100}%`,
-                    height: "100%",
-                    transform: `scaleY(${grown ? spine.heights[i] : 0})`,
-                    background: on
-                      ? "var(--hero-accent,var(--color-signal-500))"
-                      : "currentColor",
-                    opacity: on ? 1 : 0.35,
-                    transitionDelay: grown ? `${i * 40}ms` : "0ms",
-                  }}
+        {spines.map((spine, row) => {
+          const cursor = stepAt(BANDS, spine.heights, position);
+          return (
+            <div key={spine.id} className="relative h-4">
+              <svg
+                viewBox="0 0 100 100"
+                preserveAspectRatio="none"
+                className="absolute inset-0 h-full w-full origin-bottom transition-transform duration-500 ease-out"
+                style={{
+                  transform: `scaleY(${grown ? 1 : 0})`,
+                  transitionDelay: grown ? `${row * 60}ms` : "0ms",
+                }}
+                aria-hidden="true"
+              >
+                <path
+                  d={spine.plateaus}
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  opacity={0.55}
+                  vectorEffect="non-scaling-stroke"
                 />
-              );
-            })}
-          </div>
-        ))}
+                {/* The riser marks a halving, not a direction — every epoch's
+                    step gets the same accent, up or down. */}
+                {spine.risers.map((riser, i) => (
+                  <path
+                    key={i}
+                    d={riser.d}
+                    fill="none"
+                    stroke="var(--hero-accent,var(--color-signal-500))"
+                    strokeWidth={2}
+                    vectorEffect="non-scaling-stroke"
+                  />
+                ))}
+              </svg>
+
+              {/* Drawn in the DOM rather than the SVG: the viewBox is scaled
+                  non-uniformly to fill the row, which would squash a circle
+                  drawn inside it. Same bead as the cursor dot on the track
+                  below — one dot travelling four rails, not four different
+                  marks. */}
+              <div
+                className="absolute h-[2px] w-[2px] -translate-x-1/2 translate-y-1/2 rounded-full"
+                style={{
+                  left: `${position * 100}%`,
+                  bottom: `${spineY(cursor)}%`,
+                  background: "var(--hero-accent,var(--color-signal-500))",
+                  opacity: grown ? 1 : 0,
+                }}
+              />
+
+              {spine.note && (
+                <span
+                  className="pointer-events-none absolute right-0 bottom-0 font-mono text-[8px]"
+                  style={{ opacity: 0.45 }}
+                >
+                  {spine.note}
+                </span>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       {/* The track. One element takes the pointer; the knots are painted on top
@@ -325,25 +377,9 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
         }}
       >
         <div
-          className="absolute inset-x-0 top-1.5 h-px"
+          className="absolute inset-x-0 top-1.5 h-0.5"
           style={{ background: "currentColor", opacity: 0.35 }}
         />
-
-        {/* One span per band, each pinned at its own position and only ever
-            fading its opacity — the selected one lights up and the previous
-            one restores, gently, rather than a bar jumping between them. */}
-        {BANDS.map((entry) => (
-          <div
-            key={entry.epoch.id}
-            className="absolute top-1.5 h-px transition-opacity duration-700 ease-out"
-            style={{
-              left: `${entry.start * 100}%`,
-              width: `${(entry.end - entry.start) * 100}%`,
-              background: "var(--hero-accent,var(--color-signal-500))",
-              opacity: entry.epoch.id === epoch.id ? 1 : 0,
-            }}
-          />
-        ))}
 
         {BANDS.map((entry) => (
           <div
@@ -366,11 +402,14 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
 
         {/* The cursor rides the raw position, not the selected knot's centre —
             it has to sit where the pointer actually is, or dragging inside a
-            wide band looks like the widget stopped responding. */}
+            wide band looks like the widget stopped responding. A dot centred
+            on the rule, matching the spine dots above it: one bead travelling
+            four rails, rather than a line here and dots up there. */}
         <div
-          className="absolute top-0 h-3 w-px -translate-x-1/2"
+          className="absolute h-[2px] w-[2px] -translate-x-1/2 -translate-y-1/2 rounded-full"
           style={{
             left: `${position * 100}%`,
+            top: 6.5,
             background: "var(--hero-accent,var(--color-signal-500))",
           }}
         />
@@ -381,7 +420,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
           burger and each epoch's own average price — not a world index, and
           not today's rate applied backwards. */}
       <p className="mt-1 font-mono text-[9px]" style={{ opacity: 0.55 }}>
-        Data is per block during each epoch
+        average data per block during each epoch
         <br />
         Big Mac price is the US average
       </p>
