@@ -226,7 +226,7 @@ async function main() {
     const avgBigMacUsd = meanInRange(bigMac, startAt, endAt);
 
     newEpochs.push({
-      id: `e${i + 1}`,
+      id: `e${i}`,
       label: String(subsidyBtc),
       subsidyBtc,
       startHeight,
