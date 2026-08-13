@@ -97,9 +97,9 @@ export async function fetchLiveEpoch(
     const ageDays = (Date.now() - Date.parse(startDate)) / 86_400_000;
     const [tipText, adjustments, feeBuckets] = await Promise.all([
       getText(`${API}/blocks/tip/height`),
-      getJson(
-        `${API}/v1/mining/difficulty-adjustments`,
-      ) as Promise<DifficultyAdjustment[]>,
+      getJson(`${API}/v1/mining/difficulty-adjustments`) as Promise<
+        DifficultyAdjustment[]
+      >,
       getJson(
         `${API}/v1/mining/blocks/fees/${feeIntervalFor(ageDays)}`,
       ) as Promise<FeeBucket[]>,
