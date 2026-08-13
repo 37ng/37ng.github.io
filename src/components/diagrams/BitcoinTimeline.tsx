@@ -108,10 +108,25 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
 
     let frame = 0;
     let last = performance.now();
+    let pauseUntil = 0;
     const step = (now: number) => {
       const elapsed = (now - last) / 1000;
       last = now;
-      setPosition((previous) => (previous + elapsed / SWEEP_SECONDS) % 1);
+      if (now < pauseUntil) {
+        frame = requestAnimationFrame(step);
+        return;
+      }
+      const resuming = pauseUntil !== 0;
+      pauseUntil = 0;
+      setPosition((previous) => {
+        const base = resuming ? 0 : previous;
+        const next = base + elapsed / SWEEP_SECONDS;
+        if (next >= 1) {
+          pauseUntil = now + 1000;
+          return 1;
+        }
+        return next;
+      });
       frame = requestAnimationFrame(step);
     };
     frame = requestAnimationFrame(step);
