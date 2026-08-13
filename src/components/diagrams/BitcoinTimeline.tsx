@@ -182,6 +182,10 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   // ramp, which the light theme has already re-pointed at paper.
   const title = "var(--stage-title,var(--color-ink-50))";
   const body = "var(--stage-body,var(--color-ink-300))";
+  // --hero-accent is only set on the homepage stage; on a post it is unset,
+  // so this falls through to --accent (the post's own frontmatter color, set
+  // by PostLayout), and only to signal-500 if neither is present.
+  const accent = "var(--hero-accent,var(--accent,var(--color-signal-500)))";
 
   const fees = feesPerBlock(epoch);
   const unavailable = live === "failed" && epoch.id === PENDING.id;
@@ -202,7 +206,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
       style={{ color: body }}
     >
       <div className="flex items-baseline justify-between font-mono text-[10px]">
-        <span style={{ color: "var(--hero-accent,var(--color-signal-600))" }}>
+        <span style={{ color: accent }}>
           mining
         </span>
         {/* The height box reserves its widest value and left-aligns inside it,
@@ -264,9 +268,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
                     left: `${entry.tick * 100}%`,
                     height: "100%",
                     transform: `scaleY(${grown ? spine.heights[i] : 0})`,
-                    background: on
-                      ? "var(--hero-accent,var(--color-signal-500))"
-                      : "currentColor",
+                    background: on ? accent : "currentColor",
                     opacity: on ? 1 : 0.35,
                     transitionDelay: grown ? `${i * 40}ms` : "0ms",
                   }}
@@ -340,18 +342,14 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
                 className="w-px transition-all duration-200"
                 style={{
                   height: on ? 12 : 6,
-                  background: on
-                    ? "var(--hero-accent,var(--color-signal-500))"
-                    : "currentColor",
+                  background: on ? accent : "currentColor",
                   opacity: on ? 1 : 0.5,
                 }}
               />
               <span
                 className="mt-1.5 font-mono text-[9px] whitespace-nowrap transition-colors duration-200"
                 style={{
-                  color: on
-                    ? "var(--hero-accent,var(--color-signal-500))"
-                    : undefined,
+                  color: on ? accent : undefined,
                   opacity: on ? 1 : 0.6,
                 }}
               >
@@ -368,7 +366,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
           className="absolute top-0 h-3 w-px -translate-x-1/2"
           style={{
             left: `${position * 100}%`,
-            background: "var(--hero-accent,var(--color-signal-500))",
+            background: accent,
           }}
         />
       </div>
