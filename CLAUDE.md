@@ -4,14 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
-```bash
-npm run dev           # dev server at localhost:4321
-npm run build         # production build
-npm run preview       # preview the production build
-npm run format        # prettier --write
-npm run format:check  # prettier --check
-npx astro check       # type-check .astro files
-```
+Checkout commands in package.json.
 
 Prettier runs automatically on staged files via the `.githooks/pre-commit` hook. No test suite is configured.
 
@@ -70,3 +63,5 @@ Import React components at the top of the MDX file and hydrate with `client:load
 ## Misc
 
 - Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/): prefix with `feat:`, `fix:`, `docs:`, `refactor:`, `chore:`, etc. These map to Semantic Versioning bumps (`feat` → minor, `fix` → patch, `BREAKING CHANGE:` footer or `!` after the type → major).
+
+- Always create a new git worktree on new tasks. Start a new server(use different port if default port is taken) and ask to inspect. After PR is merged, spin down the server, remove git tree and the branch.
