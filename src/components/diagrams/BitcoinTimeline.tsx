@@ -268,22 +268,27 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
           Each is a step line: flat for the epoch's whole band, jumping at
           the halving, so it never draws a value the chain did not hold. */}
       <div className="mt-4 space-y-2">
-        {spines.map((spine) => (
-          <div key={spine.id} className="relative h-3">
-            {BANDS.map((entry, i) => {
-              const on = entry.epoch.id === epoch.id;
-              return (
-                <div
-                  key={entry.epoch.id}
-                  className="absolute bottom-0 w-[3px] -translate-x-1/2 origin-bottom transition-transform duration-500 ease-out"
-                  style={{
-                    left: `${entry.tick * 100}%`,
-                    height: "100%",
-                    transform: `scaleY(${grown ? spine.heights[i] : 0})`,
-                    background: on ? accent : "currentColor",
-                    opacity: on ? 1 : 0.35,
-                    transitionDelay: grown ? `${i * 40}ms` : "0ms",
-                  }}
+        {spines.map((spine, row) => {
+          const cursor = stepAt(BANDS, spine.heights, position);
+          return (
+            <div key={spine.id} className="relative h-4">
+              <svg
+                viewBox="0 0 100 100"
+                preserveAspectRatio="none"
+                className="absolute inset-0 h-full w-full origin-bottom transition-transform duration-500 ease-out"
+                style={{
+                  transform: `scaleY(${grown ? 1 : 0})`,
+                  transitionDelay: grown ? `${row * 60}ms` : "0ms",
+                }}
+                aria-hidden="true"
+              >
+                <path
+                  d={spine.plateaus}
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  opacity={0.55}
+                  vectorEffect="non-scaling-stroke"
                 />
                 {/* The riser marks a halving, not a direction — every epoch's
                     step gets the same accent, up or down. */}
@@ -292,7 +297,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
                     key={i}
                     d={riser.d}
                     fill="none"
-                    stroke="var(--hero-accent,var(--color-signal-500))"
+                    stroke={accent}
                     strokeWidth={2}
                     vectorEffect="non-scaling-stroke"
                   />
@@ -309,7 +314,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
                 style={{
                   left: `${position * 100}%`,
                   bottom: `${spineY(cursor)}%`,
-                  background: "var(--hero-accent,var(--color-signal-500))",
+                  background: accent,
                   opacity: grown ? 1 : 0,
                 }}
               />
@@ -392,26 +397,10 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
               className="mt-1.5 font-mono text-[9px] whitespace-nowrap"
               style={{ opacity: 0.6 }}
             >
-              <div
-                className="w-px transition-all duration-200"
-                style={{
-                  height: on ? 12 : 6,
-                  background: on ? accent : "currentColor",
-                  opacity: on ? 1 : 0.5,
-                }}
-              />
-              <span
-                className="mt-1.5 font-mono text-[9px] whitespace-nowrap transition-colors duration-200"
-                style={{
-                  color: on ? accent : undefined,
-                  opacity: on ? 1 : 0.6,
-                }}
-              >
-                {entry.epoch.startDate.slice(0, 4)}
-              </span>
-            </div>
-          );
-        })}
+              {entry.epoch.startDate.slice(0, 4)}
+            </span>
+          </div>
+        ))}
 
         {/* The cursor rides the raw position, not the selected knot's centre —
             it has to sit where the pointer actually is, or dragging inside a
@@ -422,6 +411,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
           className="absolute h-[2px] w-[2px] -translate-x-1/2 -translate-y-1/2 rounded-full"
           style={{
             left: `${position * 100}%`,
+            top: 6.5,
             background: accent,
           }}
         />
