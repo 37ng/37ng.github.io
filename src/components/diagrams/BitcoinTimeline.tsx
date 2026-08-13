@@ -328,38 +328,40 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
           style={{ background: "currentColor", opacity: 0.35 }}
         />
 
-        {BANDS.map((entry) => {
-          const on = entry.epoch.id === epoch.id;
-          return (
+        {/* One span per band, each pinned at its own position and only ever
+            fading its opacity — the selected one lights up and the previous
+            one restores, gently, rather than a bar jumping between them. */}
+        {BANDS.map((entry) => (
+          <div
+            key={entry.epoch.id}
+            className="absolute top-1.5 h-px transition-opacity duration-700 ease-out"
+            style={{
+              left: `${entry.start * 100}%`,
+              width: `${(entry.end - entry.start) * 100}%`,
+              background: "var(--hero-accent,var(--color-signal-500))",
+              opacity: entry.epoch.id === epoch.id ? 1 : 0,
+            }}
+          />
+        ))}
+
+        {BANDS.map((entry) => (
+          <div
+            key={entry.epoch.id}
+            className="absolute top-0 flex -translate-x-1/2 flex-col items-center"
+            style={{ left: `${entry.tick * 100}%` }}
+          >
             <div
-              key={entry.epoch.id}
-              className="absolute top-0 flex -translate-x-1/2 flex-col items-center"
-              style={{ left: `${entry.tick * 100}%` }}
+              className="w-px"
+              style={{ height: 6, background: "currentColor", opacity: 0.5 }}
+            />
+            <span
+              className="mt-1.5 font-mono text-[9px] whitespace-nowrap"
+              style={{ opacity: 0.6 }}
             >
-              <div
-                className="w-px transition-all duration-200"
-                style={{
-                  height: on ? 12 : 6,
-                  background: on
-                    ? "var(--hero-accent,var(--color-signal-500))"
-                    : "currentColor",
-                  opacity: on ? 1 : 0.5,
-                }}
-              />
-              <span
-                className="mt-1.5 font-mono text-[9px] whitespace-nowrap transition-colors duration-200"
-                style={{
-                  color: on
-                    ? "var(--hero-accent,var(--color-signal-500))"
-                    : undefined,
-                  opacity: on ? 1 : 0.6,
-                }}
-              >
-                {entry.epoch.startDate.slice(0, 4)}
-              </span>
-            </div>
-          );
-        })}
+              {entry.epoch.startDate.slice(0, 4)}
+            </span>
+          </div>
+        ))}
 
         {/* The cursor rides the raw position, not the selected knot's centre —
             it has to sit where the pointer actually is, or dragging inside a
@@ -378,9 +380,9 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
           burger and each epoch's own average price — not a world index, and
           not today's rate applied backwards. */}
       <p className="mt-1 font-mono text-[9px]" style={{ opacity: 0.55 }}>
-        Data is per block
+        Data is per block during each epoch
         <br />
-        Big mac in United States
+        Big Mac price is the US average
       </p>
     </div>
   );
