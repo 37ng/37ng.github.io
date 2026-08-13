@@ -50,6 +50,7 @@ export function PostsFan({ posts }: PostsFanProps) {
   const fanRef = useRef<HTMLDivElement>(null);
   const sensorRef = useRef<HTMLDivElement>(null);
   const raisedRef = useRef(raised);
+  const cardRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
 
   raisedRef.current = raised;
 
@@ -139,6 +140,32 @@ export function PostsFan({ posts }: PostsFanProps) {
     };
   }, []);
 
+  // Number keys are a keyboard stand-in for hover + click: the digit is the
+  // card's index (cardNo). First press raises that card, same as a hover.
+  // A second press on the same digit, while it's already up, opens it — same
+  // as a click. Routed through the real anchor's click() rather than a
+  // location change, so it keeps whatever navigation behaviour the <a> has.
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return;
+      const target = e.target as HTMLElement | null;
+      if (target && /^(input|textarea|select)$/i.test(target.tagName)) return;
+      if (!/^[0-9]$/.test(e.key)) return;
+      const idx = Number(e.key);
+      const post = sorted[idx];
+      if (!post) return;
+      e.preventDefault();
+      if (raisedRef.current && getStage() === post.id) {
+        cardRefs.current[post.id]?.click();
+        return;
+      }
+      setStage(post.id);
+      setRaised(true);
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [sorted]);
+
   // A click on a resting card raises the fan instead of opening the post —
   // on touch there is no hover pass to raise it first, and on mouse a click
   // on the sliver that shows is more likely a reach for the stack than for
@@ -204,6 +231,9 @@ export function PostsFan({ posts }: PostsFanProps) {
           {sorted.map((post, i) => (
             <a
               key={post.id}
+              ref={(el) => {
+                cardRefs.current[post.id] = el;
+              }}
               href={`/blog/${post.id}`}
               onMouseEnter={() => setStage(post.id)}
               onFocus={() => setStage(post.id)}
@@ -212,7 +242,15 @@ export function PostsFan({ posts }: PostsFanProps) {
               style={{ "--d": i - mid, "--i": i } as CSSProperties}
               className="posts-fan-card pointer-events-auto block overflow-hidden bg-paper-200 no-underline"
             >
-              <div className="relative m-3 h-[38%] overflow-hidden">
+              <div className="relative px-3.5 pt-3">
+                <div className="font-mono text-[9px] text-paper-muted">
+                  {cardNo(i)}
+                </div>
+                <div className="mt-0.5 font-[family-name:var(--font-display)] text-[15px] leading-[1.12] font-semibold text-paper-ink">
+                  {post.title}
+                </div>
+              </div>
+              <div className="relative m-3 aspect-square overflow-hidden">
                 {post.heroImage ? (
                   <div
                     className="absolute inset-0 bg-cover bg-center"
@@ -222,15 +260,57 @@ export function PostsFan({ posts }: PostsFanProps) {
                     }}
                   />
                 ) : (
-                  <div className="absolute inset-0 bg-gradient-to-br from-paper-100 to-paper-200" />
+                  // Same manila look as the fallback stage backdrop
+                  // (PaperSheet.astro) — grid, fibre and the pencil
+                  // signature — rather than a plain gradient, so a post with
+                  // no hero art still gets its own stage's look on the card.
+                  // The doodle's stroke is `.paper-doodle`, promoted to
+                  // global.css so both this component and the Astro stage can
+                  // draw the same signature.
+                  <div className="paper-sheet absolute inset-0">
+                    <div className="paper-grid absolute inset-0" />
+                    <svg
+                      className="pointer-events-none absolute inset-0 h-full w-full"
+                      viewBox="0 0 1600 900"
+                      preserveAspectRatio="xMidYMid slice"
+                      aria-hidden="true"
+                    >
+                      <filter
+                        id={`paper-pencil-${post.id}`}
+                        x="-20%"
+                        y="-20%"
+                        width="140%"
+                        height="140%"
+                      >
+                        <feTurbulence
+                          type="fractalNoise"
+                          baseFrequency="0.035"
+                          numOctaves={3}
+                          seed={7}
+                          result="grain"
+                        />
+                        <feDisplacementMap
+                          in="SourceGraphic"
+                          in2="grain"
+                          scale={3}
+                          xChannelSelector="R"
+                          yChannelSelector="G"
+                        />
+                      </filter>
+                      <g
+                        className="paper-doodle"
+                        filter={`url(#paper-pencil-${post.id})`}
+                      >
+                        <path d="M300 430 C430 355 590 320 720 336 C660 405 545 500 470 585 C440 625 470 648 505 612 C524 562 542 498 566 498 C592 498 602 578 628 578 C656 578 664 534 690 534 C716 534 724 574 752 574 C778 574 786 550 812 550 C838 550 846 570 872 566 C888 562 898 550 908 530" />
+                        <path d="M980 384 C1006 326 1016 294 1024 352 C1032 296 1050 282 1064 318 C1078 350 1104 354 1130 318" />
+                      </g>
+                    </svg>
+                    <div className="paper-fibre absolute inset-0" />
+                  </div>
                 )}
               </div>
-              <div className="relative px-3.5 pt-1 font-[family-name:var(--font-display)] text-[15px] leading-[1.12] font-semibold text-paper-ink">
-                {post.title}
-              </div>
-              <div className="absolute right-3.5 bottom-3 left-3.5 flex justify-between font-mono text-[9px] text-paper-muted">
-                <span>{cardNo(i)}</span>
-                <span>{post.date}</span>
+              <div className="absolute right-3.5 bottom-3 left-3.5 font-mono text-[9px] text-paper-muted">
+                {post.date}
               </div>
             </a>
           ))}
