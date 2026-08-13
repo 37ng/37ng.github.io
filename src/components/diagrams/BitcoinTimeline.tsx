@@ -378,9 +378,9 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
           burger and each epoch's own average price — not a world index, and
           not today's rate applied backwards. */}
       <p className="mt-1 font-mono text-[9px]" style={{ opacity: 0.55 }}>
-        Data is per block,
+        Data is per block
         <br />
-        big mac data is United States
+        Big mac in United States
       </p>
     </div>
   );
