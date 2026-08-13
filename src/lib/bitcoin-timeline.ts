@@ -70,7 +70,7 @@ export function pendingEpoch(closed: Epoch[] = EPOCHS): Epoch {
   const last = closed[closed.length - 1];
   const subsidyBtc = last.subsidyBtc / 2;
   return {
-    id: `e${closed.length + 1}`,
+    id: `e${closed.length}`,
     label: String(subsidyBtc),
     subsidyBtc,
     startHeight: last.endHeight as number,

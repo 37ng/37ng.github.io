@@ -1,7 +1,7 @@
 {
   "epochs": [
     {
-      "id": "e1",
+      "id": "e0",
       "label": "50",
       "subsidyBtc": 50,
       "startHeight": 0,
@@ -14,7 +14,7 @@
       "usBigMacUsd": 3.6333333333333333
     },
     {
-      "id": "e2",
+      "id": "e1",
       "label": "25",
       "subsidyBtc": 25,
       "startHeight": 210000,
@@ -27,7 +27,7 @@
       "usBigMacUsd": 4.26375
     },
     {
-      "id": "e3",
+      "id": "e2",
       "label": "12.5",
       "subsidyBtc": 12.5,
       "startHeight": 420000,
@@ -40,7 +40,7 @@
       "usBigMacUsd": 4.638571428571429
     },
     {
-      "id": "e4",
+      "id": "e3",
       "label": "6.25",
       "subsidyBtc": 6.25,
       "startHeight": 630000,
