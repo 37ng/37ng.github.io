@@ -209,6 +209,10 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   // ramp, which the light theme has already re-pointed at paper.
   const title = "var(--stage-title,var(--color-ink-50))";
   const body = "var(--stage-body,var(--color-ink-300))";
+  // --hero-accent is only set on the homepage stage; on a post it is unset,
+  // so this falls through to --accent (the post's own frontmatter color, set
+  // by PostLayout), and only to signal-500 if neither is present.
+  const accent = "var(--hero-accent,var(--accent,var(--color-signal-500)))";
 
   const fees = feesPerBlock(epoch);
   const unavailable = live === "failed" && epoch.id === PENDING.id;
@@ -229,9 +233,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
       style={{ color: body }}
     >
       <div className="flex items-baseline justify-between font-mono text-[10px]">
-        <span style={{ color: "var(--hero-accent,var(--color-signal-600))" }}>
-          mining
-        </span>
+        <span style={{ color: accent }}>mining</span>
         {/* The height box reserves its widest value and left-aligns inside it,
             so stepping #0 → #420,000 → #1,050,000 never drags the epoch label
             sideways with it. Pinning the right edge instead would move the
@@ -310,7 +312,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
                     key={i}
                     d={riser.d}
                     fill="none"
-                    stroke="var(--hero-accent,var(--color-signal-500))"
+                    stroke={accent}
                     strokeWidth={2}
                     vectorEffect="non-scaling-stroke"
                   />
@@ -327,7 +329,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
                 style={{
                   left: `${position * 100}%`,
                   bottom: `${spineY(cursor)}%`,
-                  background: "var(--hero-accent,var(--color-signal-500))",
+                  background: accent,
                   opacity: grown ? 1 : 0,
                 }}
               />
@@ -425,7 +427,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
           style={{
             left: `${position * 100}%`,
             top: 6.5,
-            background: "var(--hero-accent,var(--color-signal-500))",
+            background: accent,
           }}
         />
       </div>
