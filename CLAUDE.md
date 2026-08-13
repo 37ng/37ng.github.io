@@ -64,4 +64,4 @@ Import React components at the top of the MDX file and hydrate with `client:load
 
 - Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/): prefix with `feat:`, `fix:`, `docs:`, `refactor:`, `chore:`, etc. These map to Semantic Versioning bumps (`feat` → minor, `fix` → patch, `BREAKING CHANGE:` footer or `!` after the type → major).
 
-- Always create a new git worktree on new tasks. Start a new server(use different port if default port is taken) and ask to inspect. After PR is merged, spin down the server, remove git tree and the branch.
+- Always create a new git worktree on new tasks. Start a new server(use different port if default port is taken) and ask to inspect. Commit and publish a PR when you feel ready.
