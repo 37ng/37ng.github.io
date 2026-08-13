@@ -414,16 +414,6 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
           }}
         />
       </div>
-
-      {/* The basis, stated rather than assumed. A Big Mac count is only
-          comparable across epochs if the reader knows it is one country's
-          burger and each epoch's own average price — not a world index, and
-          not today's rate applied backwards. */}
-      <p className="mt-1 font-mono text-[9px]" style={{ opacity: 0.55 }}>
-        average data per block during each epoch
-        <br />
-        Big Mac price is the US average
-      </p>
     </div>
   );
 }
