@@ -5,7 +5,7 @@ import {
   type LiveEpoch,
 } from "@/lib/bitcoin-live-epoch";
 import {
-  bandUnder,
+  bandAt,
   EPOCHS,
   feesPerBlock,
   feeWorth,
@@ -38,9 +38,6 @@ const BANDS = layout(ALL_EPOCHS);
 
 /** Seconds for the cursor to travel the whole track on its own. */
 const SWEEP_SECONDS = 6;
-
-/** How close to a tick counts as touching it, as a fraction of the track. */
-const CONTACT = 0.012;
 
 /**
  * A halving epoch, read at five knots along a track.
@@ -141,7 +138,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
     setPosition(Math.min(1, Math.max(0, (clientX - left) / width)));
   };
 
-  const touched = bandUnder(BANDS, position, CONTACT);
+  const touched = bandAt(BANDS, position);
   const band = BANDS.find((entry) => entry.epoch.id === selectedId) ?? BANDS[0];
   // The live fetch only ever fills in the open epoch — every other epoch's
   // fields are already final, so merging is a no-op for them.
@@ -155,8 +152,8 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   const price = typeof btcUsd === "number" ? btcUsd : null;
 
   useEffect(() => {
-    if (touched) setSelectedId(touched.epoch.id);
-  }, [touched?.epoch.id]);
+    setSelectedId(touched.epoch.id);
+  }, [touched.epoch.id]);
 
   // Spine heights react to the live fetch: 0 until it resolves (grows in
   // once real data lands, same as the mount animation), 0 forever if it
@@ -305,15 +302,16 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
                   opacity={0.55}
                   vectorEffect="non-scaling-stroke"
                 />
-                {/* The riser marks a halving, not a direction — every epoch's
-                    step gets the same accent, up or down. */}
+                {/* A rising riser reads as the same line as the plateau; only
+                    a drop gets the accent, so orange means "down". */}
                 {spine.risers.map((riser, i) => (
                   <path
                     key={i}
                     d={riser.d}
                     fill="none"
-                    stroke={accent}
+                    stroke={riser.up ? "currentColor" : accent}
                     strokeWidth={2}
+                    opacity={riser.up ? 0.55 : 1}
                     vectorEffect="non-scaling-stroke"
                   />
                 ))}
