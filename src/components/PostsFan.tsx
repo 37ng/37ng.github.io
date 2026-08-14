@@ -268,7 +268,7 @@ export function PostsFan({ posts }: PostsFanProps) {
                   // global.css so both this component and the Astro stage can
                   // draw the same signature.
                   <div className="paper-sheet absolute inset-0">
-                    <div className="paper-grid absolute inset-0" />
+                    <div className="paper-grid paper-grid-card absolute inset-0" />
                     <svg
                       className="pointer-events-none absolute inset-0 h-full w-full"
                       viewBox="0 0 1600 900"
