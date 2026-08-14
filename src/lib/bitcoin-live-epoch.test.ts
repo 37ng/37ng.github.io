@@ -22,6 +22,7 @@ const LAST_FINISHED: Epoch = {
   avgDifficulty: 1,
   avgBtcUsd: 1,
   usBigMacUsd: 1,
+  tipHeight: null,
 };
 
 /** [timestamp, height, difficulty, adjustmentFactor] rows, newest first —

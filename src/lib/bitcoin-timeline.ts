@@ -47,6 +47,12 @@ export interface Epoch {
   startDate: string | null;
   /** null for the current, still-running epoch. */
   endDate: string | null;
+  /** The live chain tip height, only for the open epoch (`endHeight: null`).
+      `endHeight` stays null until the halving actually happens, but the fee
+      total already fetched needs *some* known height to spread over — this
+      is that height, so the open epoch's tx fees are not stuck unavailable
+      for its entire span. Null for every finished epoch. */
+  tipHeight: number | null;
   /** null until the open epoch's live fee total has been fetched, or fetch failed. */
   totalFeesBtc: number | null;
   /** null until the open epoch's live difficulty has been fetched, or fetch failed. */
@@ -105,6 +111,7 @@ export function pendingEpochs(
       subsidyBtc,
       startHeight,
       endHeight: isOpen ? null : startHeight + BLOCKS_PER_EPOCH,
+      tipHeight: isOpen ? tipHeight : null,
       // The first pending epoch's start is the last finished epoch's end —
       // known with no fetch. Every later one's start (and every non-open
       // one's end) is a real chain timestamp only the live fetch has.
@@ -260,8 +267,9 @@ export function hashrateEhs(difficulty: number): number {
     if either figure isn't known yet (the open epoch, before its live fetch
     resolves). */
 export function feesPerBlock(epoch: Epoch): number | null {
-  if (epoch.endHeight === null || epoch.totalFeesBtc === null) return null;
-  const blocks = epoch.endHeight - epoch.startHeight;
+  const upToHeight = epoch.endHeight ?? epoch.tipHeight;
+  if (upToHeight === null || epoch.totalFeesBtc === null) return null;
+  const blocks = upToHeight - epoch.startHeight;
   return blocks > 0 ? epoch.totalFeesBtc / blocks : 0;
 }
 
