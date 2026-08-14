@@ -1,12 +1,12 @@
 /**
- * Live figures fetched from the visitor's browser: the open halving epoch's
- * fees and difficulty, and the current BTC/USD price used to convert the tx
- * fees readout into dollars (and Big Macs — see bitcoin-timeline.ts).
+ * Live figures fetched from the visitor's browser: every halving epoch after
+ * the last one baked into bitcoin-epochs.json, plus the current BTC/USD
+ * price used to convert the tx fees readout into dollars (and Big Macs —
+ * see bitcoin-timeline.ts).
  *
  * Every finished epoch in bitcoin-epochs.json is permanent and baked in at
- * build time (see bitcoin-timeline.ts). The open one is not — its fees and
- * difficulty change every block, and price changes by the second — so
- * instead of rewriting the build output to chase either, the widget asks
+ * build time (see bitcoin-timeline.ts). Whatever comes after it is not — so
+ * instead of rewriting the build output to chase it, the widget asks
  * mempool.space directly, once, on mount. mempool.space is the only source
  * used here, unlike the build script, which also uses blockchain.info:
  * mempool.space is the only one of the two that serves
@@ -15,9 +15,18 @@
  * fine for the build script, which runs in Node and isn't subject to CORS,
  * but unusable from here.
  *
+ * This deliberately does not assume only one epoch is pending: it reads the
+ * live tip height first and walks forward from the last finished epoch
+ * 210,000 blocks at a time (`pendingEpochs()` in bitcoin-timeline.ts). If the
+ * site sat unbuilt across two halvings, this fetches and returns three
+ * epochs' worth of figures, not one — nothing gets silently collapsed into a
+ * single mislabeled "current" epoch.
+ *
  * Every failure path returns null and the widget shows that figure as
  * unavailable. Nothing here ever invents a number.
  */
+import { type Epoch, pendingEpochs } from "@/lib/bitcoin-timeline";
+
 const API = "https://mempool.space/api";
 const TIMEOUT_MS = 8000;
 
@@ -48,10 +57,10 @@ interface FeeBucket {
 }
 
 /** The smallest interval mempool.space's fee-bucket endpoint accepts that
-    still covers the epoch's whole age — a fresh epoch fetches a small,
-    cheap window instead of always paying for full chain history. A halving
-    epoch is at most ~4 years old, so "all" is the necessary fallback near
-    the end of one. */
+    still covers every pending epoch's whole age — a fresh single epoch
+    fetches a small, cheap window instead of always paying for full chain
+    history. Once two or more epochs are pending the span is already at
+    least one full halving old, so "all" is the necessary fallback there. */
 function feeIntervalFor(ageDays: number): string {
   const ladder = [
     { days: 90, param: "3m" },
@@ -60,12 +69,6 @@ function feeIntervalFor(ageDays: number): string {
     { days: 1095, param: "3y" },
   ];
   return ladder.find((step) => ageDays <= step.days)?.param ?? "all";
-}
-
-export interface LiveEpoch {
-  endHeight: number;
-  totalFeesBtc: number;
-  avgDifficulty: number;
 }
 
 /**
@@ -89,58 +92,102 @@ function spanBlocks<T>(
   });
 }
 
-export async function fetchLiveEpoch(
-  startHeight: number,
-  startDate: string,
-): Promise<LiveEpoch | null> {
+/** The block timestamp at a given height, as a `YYYY-MM-DD` date — the only
+    way to date a halving that happened after the last build, since it has
+    no entry in bitcoin-epochs.json to read a date from. */
+async function blockDateAt(height: number): Promise<string> {
+  const hash = await getText(`${API}/block-height/${height}`);
+  const block = (await getJson(`${API}/block/${hash.trim()}`)) as {
+    timestamp: number;
+  };
+  return new Date(block.timestamp * 1000).toISOString().slice(0, 10);
+}
+
+/**
+ * Every epoch after the last finished one, fully resolved against the live
+ * chain — one entry per 210,000-block span between the last build and
+ * today's tip, not just one. Each is a complete `Epoch`: only `avgBtcUsd`
+ * and `usBigMacUsd` stay null, since those are period averages a
+ * still-unfinished (or not-yet-built) epoch has no fixed value for.
+ */
+export async function fetchLiveEpochs(
+  closed: Epoch[],
+): Promise<Epoch[] | null> {
   try {
-    const ageDays = (Date.now() - Date.parse(startDate)) / 86_400_000;
-    const [tipText, adjustments, feeBuckets] = await Promise.all([
-      getText(`${API}/blocks/tip/height`),
+    const last = closed[closed.length - 1];
+    const tipText = await getText(`${API}/blocks/tip/height`);
+    const tipHeight = Number(tipText.trim());
+    if (!Number.isFinite(tipHeight)) return null;
+
+    const stubs = pendingEpochs(closed, tipHeight);
+    const ageDays =
+      (Date.now() - Date.parse(last.endDate as string)) / 86_400_000;
+
+    // Boundary heights this run didn't already know a date for: every stub
+    // after the first needs its start dated, and every non-open stub needs
+    // its end dated — both are the same height (one epoch's end is the
+    // next's start), so each boundary is fetched once and reused for both.
+    const boundaryHeights = stubs.slice(1).map((stub) => stub.startHeight);
+    const [adjustments, feeBuckets, boundaryDates] = await Promise.all([
       getJson(`${API}/v1/mining/difficulty-adjustments`) as Promise<
         DifficultyAdjustment[]
       >,
       getJson(
         `${API}/v1/mining/blocks/fees/${feeIntervalFor(ageDays)}`,
       ) as Promise<FeeBucket[]>,
+      Promise.all(boundaryHeights.map(blockDateAt)),
     ]);
 
-    const endHeight = Number(tipText.trim());
-    if (!Number.isFinite(endHeight)) return null;
+    return stubs.map((stub, i) => {
+      const isOpen = stub.endHeight === null;
+      const startDate =
+        i === 0 ? (last.endDate as string) : boundaryDates[i - 1];
+      const endDate = isOpen ? null : boundaryDates[i];
+      const endHeight = stub.endHeight ?? tipHeight;
 
-    const difficultySpans = spanBlocks(
-      adjustments,
-      (row) => row[1],
-      startHeight,
-      endHeight,
-    );
-    const difficultyBlocks = difficultySpans.reduce((s, r) => s + r.blocks, 0);
-    const avgDifficulty =
-      difficultyBlocks > 0
-        ? difficultySpans.reduce((s, r) => s + r.row[2] * r.blocks, 0) /
-          difficultyBlocks
-        : 0;
+      const difficultySpans = spanBlocks(
+        adjustments,
+        (row) => row[1],
+        stub.startHeight,
+        endHeight,
+      );
+      const difficultyBlocks = difficultySpans.reduce(
+        (s, r) => s + r.blocks,
+        0,
+      );
+      const avgDifficulty =
+        difficultyBlocks > 0
+          ? difficultySpans.reduce((s, r) => s + r.row[2] * r.blocks, 0) /
+            difficultyBlocks
+          : 0;
 
-    const feeSpans = spanBlocks(
-      feeBuckets,
-      (row) => row.avgHeight,
-      startHeight,
-      endHeight,
-    );
-    const totalFeesSats = feeSpans.reduce(
-      (s, r) => s + r.row.avgFees * r.blocks,
-      0,
-    );
+      const feeSpans = spanBlocks(
+        feeBuckets,
+        (row) => row.avgHeight,
+        stub.startHeight,
+        endHeight,
+      );
+      const totalFeesSats = feeSpans.reduce(
+        (s, r) => s + r.row.avgFees * r.blocks,
+        0,
+      );
 
-    return { endHeight, totalFeesBtc: totalFeesSats / 1e8, avgDifficulty };
+      return {
+        ...stub,
+        startDate,
+        endDate,
+        totalFeesBtc: totalFeesSats / 1e8,
+        avgDifficulty,
+      };
+    });
   } catch (error) {
-    console.warn("[bitcoin-timeline] live epoch unavailable:", error);
+    console.warn("[bitcoin-timeline] live epochs unavailable:", error);
     return null;
   }
 }
 
 /** Live BTC/USD, for converting a fee readout into today's dollars. Same
-    source and same reasoning as fetchLiveEpoch: this changes far too often
+    source and same reasoning as fetchLiveEpochs: this changes far too often
     to bake in at build time. */
 export async function fetchBtcUsd(): Promise<number | null> {
   try {

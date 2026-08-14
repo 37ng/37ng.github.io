@@ -1,9 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import {
-  fetchBtcUsd,
-  fetchLiveEpoch,
-  type LiveEpoch,
-} from "@/lib/bitcoin-live-epoch";
+import { fetchBtcUsd, fetchLiveEpochs } from "@/lib/bitcoin-live-epoch";
 import {
   bandUnder,
   EPOCHS,
@@ -16,7 +12,7 @@ import {
   hashrateEhs,
   layout,
   normalize,
-  pendingEpoch,
+  pendingEpochs,
   spineY,
   stepAt,
   stepPath,
@@ -29,12 +25,14 @@ interface BitcoinTimelineProps {
   variant?: "stage" | "post";
 }
 
-// The open epoch's fixed facts (id, subsidy, start) are knowable with no
-// network call — only its fees and difficulty need the live fetch below — so
-// the track's layout is stable at module scope like everything else.
-const PENDING = pendingEpoch(EPOCHS);
-const ALL_EPOCHS = [...EPOCHS, PENDING];
-const BANDS = layout(ALL_EPOCHS);
+// The optimistic, no-network-call guess: exactly one pending epoch, its
+// fixed facts (id, subsidy, start) knowable purely from the last finished
+// one. This is what a first paint shows before the live tip height is
+// known — so the layout is stable at module scope for that first paint, the
+// same as before. If the live fetch below discovers more than one epoch is
+// actually pending (the site sat unbuilt across a halving), `openEpochs`
+// replaces this guess with the real count and the track relays out.
+const INITIAL_PENDING = pendingEpochs(EPOCHS);
 
 /** Seconds for the cursor to travel the whole track on its own. */
 const SWEEP_SECONDS = 6;
@@ -45,10 +43,10 @@ const CONTACT = 0.012;
 /**
  * A halving epoch, read at five knots along a track.
  *
- * Every epoch but the last is finished, permanent history — see
- * lib/bitcoin-timeline.ts — so there is nothing to wait on for those. The
- * last one is still open: its fees and difficulty are fetched live from the
- * visitor's browser on mount (lib/bitcoin-live-epoch.ts) and show as
+ * Every epoch baked into bitcoin-epochs.json is finished, permanent history
+ * — see lib/bitcoin-timeline.ts — so there is nothing to wait on for those.
+ * Everything after it, one epoch or several, is fetched live from the
+ * visitor's browser on mount (lib/bitcoin-live-epoch.ts) and shows as
  * unavailable if that fetch fails, rather than a stale or invented number.
  * The track itself is deliberately not a linear block-height axis; each
  * knot's band is sized by that epoch's duration (see `layout`), and the
@@ -62,11 +60,15 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   // leaving, from wherever it was left, so the widget never snaps.
   const [held, setHeld] = useState(false);
   const [dragging, setDragging] = useState(false);
-  const [selectedId, setSelectedId] = useState(BANDS[0].epoch.id);
+  const [selectedId, setSelectedId] = useState(EPOCHS[0].id);
   // Spines grow in from the floor on mount rather than appearing whole — a
   // static spec sheet should still announce that this panel just switched on.
   const [grown, setGrown] = useState(false);
-  const [live, setLive] = useState<LiveEpoch | "loading" | "failed">("loading");
+  // Starts as the optimistic single-epoch guess and is replaced wholesale
+  // once the live tip height reveals how many epochs are actually pending —
+  // see the INITIAL_PENDING comment above.
+  const [openEpochs, setOpenEpochs] = useState<Epoch[]>(INITIAL_PENDING);
+  const [liveFailed, setLiveFailed] = useState(false);
   // Independent of the epoch fetch: every epoch's fee readout converts into
   // today's dollars off the same live price, not just the open epoch's.
   const [btcUsd, setBtcUsd] = useState<number | "loading" | "failed">(
@@ -75,8 +77,10 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
 
   useEffect(() => {
     let mounted = true;
-    fetchLiveEpoch(PENDING.startHeight, PENDING.startDate).then((result) => {
-      if (mounted) setLive(result ?? "failed");
+    fetchLiveEpochs(EPOCHS).then((result) => {
+      if (!mounted) return;
+      if (result) setOpenEpochs(result);
+      else setLiveFailed(true);
     });
     return () => {
       mounted = false;
@@ -126,17 +130,16 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
     setPosition(Math.min(1, Math.max(0, (clientX - left) / width)));
   };
 
-  const touched = bandUnder(BANDS, position, CONTACT);
-  const band = BANDS.find((entry) => entry.epoch.id === selectedId) ?? BANDS[0];
-  // The live fetch only ever fills in the open epoch — every other epoch's
-  // fields are already final, so merging is a no-op for them.
-  const resolveEpoch = (epoch: Epoch): Epoch =>
-    epoch.id === PENDING.id && typeof live === "object"
-      ? { ...epoch, ...live }
-      : epoch;
-  const epoch = resolveEpoch(band.epoch);
+  // Every epoch after the last finished one lives in `openEpochs`, already
+  // fully resolved by the time the live fetch lands — no separate merge step
+  // needed here the way a single always-open epoch used to require.
+  const bands = useMemo(() => layout([...EPOCHS, ...openEpochs]), [openEpochs]);
+  const touched = bandUnder(bands, position, CONTACT);
+  const band = bands.find((entry) => entry.epoch.id === selectedId) ?? bands[0];
+  const epoch = band.epoch;
   // A finished epoch prices itself at its own averages and ignores this; only
-  // the open one needs the live price, and it is null until that fetch lands.
+  // a still-pending one needs the live price, and it is null until that
+  // fetch lands.
   const price = typeof btcUsd === "number" ? btcUsd : null;
 
   useEffect(() => {
@@ -154,7 +157,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   // terms for three halvings. Difficulty stays on its own log scale; it is not
   // a value and has nothing to convert.
   const spines = useMemo(() => {
-    const resolved = BANDS.map((b) => resolveEpoch(b.epoch));
+    const resolved = bands.map((b) => b.epoch);
     const rows = [
       {
         id: "tx fees",
@@ -184,9 +187,8 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
         ),
       },
     ];
-    return rows.map((row) => ({ ...row, ...stepPath(BANDS, row.heights) }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [live, price]);
+    return rows.map((row) => ({ ...row, ...stepPath(bands, row.heights) }));
+  }, [bands, price]);
 
   const stage = variant === "stage";
   // One palette for both homes. On the stage these resolve against whichever
@@ -196,7 +198,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   const body = "var(--stage-body,var(--color-ink-300))";
 
   const fees = feesPerBlock(epoch);
-  const unavailable = live === "failed" && epoch.id === PENDING.id;
+  const unavailable = liveFailed && epoch.totalFeesBtc === null;
   // What each amount could buy, priced in the epoch that earned it — its own
   // averages if it is finished, today's live price if it is still running.
   // The Big Mac count is the comparable figure across epochs; the dollar
@@ -267,7 +269,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
           the halving, so it never draws a value the chain did not hold. */}
       <div className="mt-4 space-y-2">
         {spines.map((spine, row) => {
-          const cursor = stepAt(BANDS, spine.heights, position);
+          const cursor = stepAt(bands, spine.heights, position);
           return (
             <div key={spine.id} className="relative h-4">
               <svg
@@ -338,9 +340,9 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
         tabIndex={0}
         aria-label="Halving epoch"
         aria-valuemin={0}
-        aria-valuemax={BANDS.length - 1}
-        aria-valuenow={BANDS.indexOf(band)}
-        aria-valuetext={`${epoch.subsidyBtc} BTC subsidy, ${epoch.startDate} to ${epoch.endDate ?? "present"}`}
+        aria-valuemax={bands.length - 1}
+        aria-valuenow={bands.indexOf(band)}
+        aria-valuetext={`${epoch.subsidyBtc} BTC subsidy, ${epoch.startDate ?? "unknown"} to ${epoch.endDate ?? "present"}`}
         className="relative mt-6 h-10 cursor-ew-resize touch-none select-none"
         onPointerDown={(event) => {
           event.currentTarget.setPointerCapture(event.pointerId);
@@ -362,7 +364,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
         onFocus={() => setHeld(true)}
         onBlur={() => setHeld(false)}
         onKeyDown={(event) => {
-          const index = BANDS.indexOf(band);
+          const index = bands.indexOf(band);
           const next =
             event.key === "ArrowLeft"
               ? index - 1
@@ -372,7 +374,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
           if (next === null) return;
           event.preventDefault();
           setPosition(
-            BANDS[Math.min(BANDS.length - 1, Math.max(0, next))].tick,
+            bands[Math.min(bands.length - 1, Math.max(0, next))].tick,
           );
         }}
       >
@@ -381,7 +383,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
           style={{ background: "currentColor", opacity: 0.35 }}
         />
 
-        {BANDS.map((entry) => (
+        {bands.map((entry) => (
           <div
             key={entry.epoch.id}
             className="absolute top-0 flex -translate-x-1/2 flex-col items-center"
@@ -395,7 +397,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
               className="mt-1.5 font-mono text-[9px] whitespace-nowrap"
               style={{ opacity: 0.6 }}
             >
-              {entry.epoch.startDate.slice(0, 4)}
+              {entry.epoch.startDate?.slice(0, 4) ?? "—"}
             </span>
           </div>
         ))}

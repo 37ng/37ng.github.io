@@ -18,11 +18,17 @@
  *
  * The current, still-running epoch is deliberately not in that file: its
  * totals change every block, and rewriting the build output on every deploy
- * just to chase that is the wrong layer for it. `pendingEpoch()` below
- * derives its fixed facts (id, subsidy, start height/date — all knowable from
- * the last finished epoch) with no network call; its live figures (fees,
- * difficulty, current height) are fetched in the visitor's own browser by
- * `lib/bitcoin-live-epoch.ts` and merged in at render time. It necessarily
+ * just to chase that is the wrong layer for it. `pendingEpochs()` below
+ * derives every epoch after the last finished one from block-height
+ * arithmetic alone (id, subsidy, start height — no network call needed), and
+ * does not assume there is only one. If the site has sat unbuilt across more
+ * than one halving, the live tip height (fetched in
+ * `lib/bitcoin-live-epoch.ts`) reveals the gap and this function walks it one
+ * 210,000-block epoch at a time, so extra halvings are never silently
+ * collapsed into "the" open epoch. Only the last one it returns is actually
+ * still open; the ones before it are finished in every sense except being
+ * written to the JSON file, and their fees/difficulty/dates are fetched live
+ * the same way the open epoch's always were. The open epoch necessarily
  * prices itself at *today's* rates (live BTC/USD, and `LATEST_BIG_MAC_USD`
  * below), having no average over its own span yet.
  */
@@ -36,7 +42,9 @@ export interface Epoch {
   startHeight: number;
   /** null until the open epoch's live tip height has been fetched. */
   endHeight: number | null;
-  startDate: string;
+  /** null for a pending epoch beyond the first, before its live block
+      timestamp has been fetched — see `pendingEpochs()`. */
+  startDate: string | null;
   /** null for the current, still-running epoch. */
   endDate: string | null;
   /** null until the open epoch's live fee total has been fetched, or fetch failed. */
@@ -58,30 +66,56 @@ export const EPOCHS: Epoch[] = epochData.epochs as Epoch[];
     open epoch's live fee into Big Macs — see the module comment. */
 export const LATEST_BIG_MAC_USD: number = epochData.latestBigMacUsd;
 
+/** Every halving is exactly 210,000 blocks — the one fact that lets an epoch
+    after the last finished one be placed without a network call. */
+export const BLOCKS_PER_EPOCH = 210_000;
+
 /**
- * The open epoch's fixed facts, with no live figures yet.
+ * Every epoch after the last finished one, up to and including whichever one
+ * `tipHeight` currently falls in — fixed facts only, no live figures yet.
  *
- * Everything here follows deterministically from the last finished epoch: its
- * start is that epoch's end, its subsidy is half of that epoch's, and its id
- * is the next in line. Nothing here needs a network call — only totalFeesBtc,
- * avgDifficulty, and endHeight do, and those start out null.
+ * `tipHeight` defaults to the last finished epoch's own end height, which
+ * yields exactly one pending epoch: the optimistic, no-network-call guess
+ * that holds until a live tip height is known. Once it is, this walks
+ * forward 210,000 blocks at a time — if the real chain has moved two
+ * halvings past the last build, this returns three epochs, not one, so
+ * nothing gets silently collapsed into a single mislabeled "current" epoch.
+ * Every epoch's subsidy and id follow deterministically from its position in
+ * that walk; only the *last* one returned is actually still open (`endHeight:
+ * null`) — the ones before it are complete but were never written to the
+ * static JSON, so their startDate/endDate/fees/difficulty are left null here
+ * for the live fetch in `lib/bitcoin-live-epoch.ts` to fill in, exactly like
+ * the open epoch's always were.
  */
-export function pendingEpoch(closed: Epoch[] = EPOCHS): Epoch {
+export function pendingEpochs(
+  closed: Epoch[] = EPOCHS,
+  tipHeight: number = closed[closed.length - 1].endHeight as number,
+): Epoch[] {
   const last = closed[closed.length - 1];
-  const subsidyBtc = last.subsidyBtc / 2;
-  return {
-    id: `e${closed.length}`,
-    label: String(subsidyBtc),
-    subsidyBtc,
-    startHeight: last.endHeight as number,
-    endHeight: null,
-    startDate: last.endDate as string,
-    endDate: null,
-    totalFeesBtc: null,
-    avgDifficulty: null,
-    avgBtcUsd: null,
-    usBigMacUsd: null,
-  };
+  const lastEndHeight = last.endHeight as number;
+  const aheadBlocks = Math.max(tipHeight - lastEndHeight, 0);
+  const count = Math.floor(aheadBlocks / BLOCKS_PER_EPOCH) + 1;
+  return Array.from({ length: count }, (_, i) => {
+    const subsidyBtc = last.subsidyBtc / 2 ** (i + 1);
+    const startHeight = lastEndHeight + i * BLOCKS_PER_EPOCH;
+    const isOpen = i === count - 1;
+    return {
+      id: `e${closed.length + i}`,
+      label: String(subsidyBtc),
+      subsidyBtc,
+      startHeight,
+      endHeight: isOpen ? null : startHeight + BLOCKS_PER_EPOCH,
+      // The first pending epoch's start is the last finished epoch's end —
+      // known with no fetch. Every later one's start (and every non-open
+      // one's end) is a real chain timestamp only the live fetch has.
+      startDate: i === 0 ? (last.endDate as string) : null,
+      endDate: null,
+      totalFeesBtc: null,
+      avgDifficulty: null,
+      avgBtcUsd: null,
+      usBigMacUsd: null,
+    };
+  });
 }
 
 /** One knot's span of the track, as fractions of the whole. */
@@ -104,11 +138,16 @@ export interface Band {
  * the very left edge of the track, where the chain itself began. Selection is
  * not a range lookup: the readouts change only when the cursor touches a
  * tick, so the spans exist purely to space the ticks apart.
+ *
+ * A pending epoch beyond the first has no startDate until its live block
+ * timestamp is fetched (see `pendingEpochs()`) — callers are expected to
+ * resolve that before laying out, but a band with no date on file still
+ * falls back to `now` rather than crashing mid-render.
  */
 export function layout(epochs: Epoch[] = EPOCHS): Band[] {
   const now = Date.now();
   const durations = epochs.map((epoch) => {
-    const start = Date.parse(epoch.startDate);
+    const start = epoch.startDate ? Date.parse(epoch.startDate) : now;
     const end = epoch.endDate ? Date.parse(epoch.endDate) : now;
     return Math.max(end - start, 1);
   });
