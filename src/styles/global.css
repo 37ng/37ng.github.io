@@ -269,6 +269,17 @@ html[data-posts-open="true"] .stage-caption {
   mix-blend-mode: multiply;
   opacity: 0.12;
 }
+/* Graphite, not ink: a soft wash of the paper's own dark tone, so the marks
+   sit *in* the sheet rather than printed on top of it. Round caps and joins
+   are most of what reads as pencil. Global rather than scoped to
+   PaperSheet.astro, so the fan's card thumbnail can carry the same signature. */
+.paper-doodle {
+  fill: none;
+  stroke: color-mix(in srgb, var(--color-paper-ink) 42%, transparent);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
 
 /* Selection wears the stage's own color like everything else on it —
    --hero-accent is the current post's `color`, washed down to a tint. The

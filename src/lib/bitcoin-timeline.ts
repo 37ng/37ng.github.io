@@ -135,9 +135,10 @@ export interface Band {
  * rather than claiming equal room for unequal time. The tick sits at the
  * band's *start*, not its middle: the subsidy is a step function that takes
  * its new value exactly at the halving height, so the 50 BTC tick belongs at
- * the very left edge of the track, where the chain itself began. Selection is
- * not a range lookup: the readouts change only when the cursor touches a
- * tick, so the spans exist purely to space the ticks apart.
+ * the very left edge of the track, where the chain itself began. Selection
+ * (see `bandAt`) is a range lookup over these spans: the readouts follow
+ * whichever band the cursor is inside, not only the instant it crosses a
+ * tick.
  *
  * A pending epoch beyond the first has no startDate until its live block
  * timestamp is fetched (see `pendingEpochs()`) — callers are expected to
@@ -159,6 +160,22 @@ export function layout(epochs: Epoch[] = EPOCHS): Band[] {
     const end = cursor / total;
     return { epoch, start, end, tick: start };
   });
+}
+
+/**
+ * The band whose span the cursor is inside — the readouts follow wherever
+ * the cursor sits in a band, not only the instant it crosses the tick at the
+ * band's start. The last band's end is inclusive, so a cursor dragged all
+ * the way to 1 still resolves to it instead of falling off the end.
+ */
+export function bandAt(bands: Band[], position: number): Band {
+  return (
+    bands.find(
+      (band, i) =>
+        position >= band.start &&
+        (position < band.end || i === bands.length - 1),
+    ) ?? bands[0]
+  );
 }
 
 /**
@@ -224,22 +241,6 @@ export function stepAt(
     if (position >= bands[i].start) index = i;
   }
   return heights[index];
-}
-
-/**
- * The knot the cursor is touching, or `null` between knots. `tolerance` is a
- * fraction of the track's width — the tick's contact width, half on each side,
- * so a cursor arriving from either direction picks it up at the same distance.
- */
-export function bandUnder(
-  bands: Band[],
-  position: number,
-  tolerance: number,
-): Band | null {
-  for (const band of bands) {
-    if (Math.abs(position - band.tick) <= tolerance) return band;
-  }
-  return null;
 }
 
 /**

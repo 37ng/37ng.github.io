@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { fetchBtcUsd, fetchLiveEpochs } from "@/lib/bitcoin-live-epoch";
 import {
-  bandUnder,
+  bandAt,
   EPOCHS,
   feesPerBlock,
   feeWorth,
@@ -36,9 +36,6 @@ const INITIAL_PENDING = pendingEpochs(EPOCHS);
 
 /** Seconds for the cursor to travel the whole track on its own. */
 const SWEEP_SECONDS = 6;
-
-/** How close to a tick counts as touching it, as a fraction of the track. */
-const CONTACT = 0.012;
 
 /**
  * A halving epoch, read at five knots along a track.
@@ -112,10 +109,25 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
 
     let frame = 0;
     let last = performance.now();
+    let pauseUntil = 0;
     const step = (now: number) => {
       const elapsed = (now - last) / 1000;
       last = now;
-      setPosition((previous) => (previous + elapsed / SWEEP_SECONDS) % 1);
+      if (now < pauseUntil) {
+        frame = requestAnimationFrame(step);
+        return;
+      }
+      const resuming = pauseUntil !== 0;
+      pauseUntil = 0;
+      setPosition((previous) => {
+        const base = resuming ? 0 : previous;
+        const next = base + elapsed / SWEEP_SECONDS;
+        if (next >= 1) {
+          pauseUntil = now + 1000;
+          return 1;
+        }
+        return next;
+      });
       frame = requestAnimationFrame(step);
     };
     frame = requestAnimationFrame(step);
@@ -134,7 +146,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   // fully resolved by the time the live fetch lands — no separate merge step
   // needed here the way a single always-open epoch used to require.
   const bands = useMemo(() => layout([...EPOCHS, ...openEpochs]), [openEpochs]);
-  const touched = bandUnder(bands, position, CONTACT);
+  const touched = bandAt(bands, position);
   const band = bands.find((entry) => entry.epoch.id === selectedId) ?? bands[0];
   const epoch = band.epoch;
   // A finished epoch prices itself at its own averages and ignores this; only
@@ -143,8 +155,8 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   const price = typeof btcUsd === "number" ? btcUsd : null;
 
   useEffect(() => {
-    if (touched) setSelectedId(touched.epoch.id);
-  }, [touched?.epoch.id]);
+    setSelectedId(touched.epoch.id);
+  }, [touched.epoch.id]);
 
   // Spine heights react to the live fetch: 0 until it resolves (grows in
   // once real data lands, same as the mount animation), 0 forever if it
@@ -196,6 +208,10 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   // ramp, which the light theme has already re-pointed at paper.
   const title = "var(--stage-title,var(--color-ink-50))";
   const body = "var(--stage-body,var(--color-ink-300))";
+  // --hero-accent is only set on the homepage stage; on a post it is unset,
+  // so this falls through to --accent (the post's own frontmatter color, set
+  // by PostLayout), and only to signal-500 if neither is present.
+  const accent = "var(--hero-accent,var(--accent,var(--color-signal-500)))";
 
   const fees = feesPerBlock(epoch);
   const unavailable = liveFailed && epoch.totalFeesBtc === null;
@@ -216,9 +232,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
       style={{ color: body }}
     >
       <div className="flex items-baseline justify-between font-mono text-[10px]">
-        <span style={{ color: "var(--hero-accent,var(--color-signal-600))" }}>
-          mining
-        </span>
+        <span style={{ color: accent }}>mining</span>
         {/* The height box reserves its widest value and left-aligns inside it,
             so stepping #0 → #420,000 → #1,050,000 never drags the epoch label
             sideways with it. Pinning the right edge instead would move the
@@ -290,15 +304,16 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
                   opacity={0.55}
                   vectorEffect="non-scaling-stroke"
                 />
-                {/* The riser marks a halving, not a direction — every epoch's
-                    step gets the same accent, up or down. */}
+                {/* A rising riser reads as the same line as the plateau; only
+                    a drop gets the accent, so orange means "down". */}
                 {spine.risers.map((riser, i) => (
                   <path
                     key={i}
                     d={riser.d}
                     fill="none"
-                    stroke="var(--hero-accent,var(--color-signal-500))"
+                    stroke={riser.up ? "currentColor" : accent}
                     strokeWidth={2}
+                    opacity={riser.up ? 0.55 : 1}
                     vectorEffect="non-scaling-stroke"
                   />
                 ))}
@@ -314,7 +329,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
                 style={{
                   left: `${position * 100}%`,
                   bottom: `${spineY(cursor)}%`,
-                  background: "var(--hero-accent,var(--color-signal-500))",
+                  background: accent,
                   opacity: grown ? 1 : 0,
                 }}
               />
@@ -412,20 +427,10 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
           style={{
             left: `${position * 100}%`,
             top: 6.5,
-            background: "var(--hero-accent,var(--color-signal-500))",
+            background: accent,
           }}
         />
       </div>
-
-      {/* The basis, stated rather than assumed. A Big Mac count is only
-          comparable across epochs if the reader knows it is one country's
-          burger and each epoch's own average price — not a world index, and
-          not today's rate applied backwards. */}
-      <p className="mt-1 font-mono text-[9px]" style={{ opacity: 0.55 }}>
-        average data per block during each epoch
-        <br />
-        Big Mac price is the US average
-      </p>
     </div>
   );
 }

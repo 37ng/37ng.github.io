@@ -24,4 +24,4 @@ export function sortCurated<T extends { id: string; date: string }>(
   });
 }
 
-export const cardNo = (i: number) => "N-" + String(i).padStart(3, "0");
+export const cardNo = (i: number) => String(i).padStart(3, "0");
