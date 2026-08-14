@@ -76,6 +76,14 @@ function feeIntervalFor(ageDays: number): string {
  * weighting each row by however many blocks it covers until the next row (or
  * `toHeight` for the last one). Used for both difficulty (mean) and fees
  * (sum) — the two callers just multiply differently.
+ *
+ * Rows at or past `toHeight` are excluded up front, not just left to fall
+ * out of the weighting: with a single ever-open epoch (`toHeight` always the
+ * live tip) every row belonged to it, so an unbounded upper end never
+ * mattered. Once multiple bounded epochs share one adjustments/fee-bucket
+ * array, a row that starts inside this epoch but is followed by a row from
+ * the *next* epoch would otherwise borrow blocks past this epoch's own end —
+ * silently pulling a later epoch's data into this one's average.
  */
 function spanBlocks<T>(
   rows: T[],
@@ -84,7 +92,7 @@ function spanBlocks<T>(
   toHeight: number,
 ): Array<{ row: T; blocks: number }> {
   const inRange = rows
-    .filter((row) => heightOf(row) >= fromHeight)
+    .filter((row) => heightOf(row) >= fromHeight && heightOf(row) < toHeight)
     .sort((a, b) => heightOf(a) - heightOf(b));
   return inRange.map((row, i) => {
     const next = inRange[i + 1] ? heightOf(inRange[i + 1]) : toHeight;

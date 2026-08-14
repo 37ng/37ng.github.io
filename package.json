@@ -22,9 +22,10 @@
     "check": "astro check",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "verify": "npm run format:check && npm run check && npm run build",
+    "verify": "npm run format:check && npm run check && npm run build && npm test",
     "art": "node scripts/generate-art.mjs",
-    "bitcoin-epochs": "node scripts/generate-bitcoin-epochs.mjs"
+    "bitcoin-epochs": "node scripts/generate-bitcoin-epochs.mjs",
+    "test": "tsx --test src/**/*.test.ts"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "^7.2.2",
@@ -49,6 +50,7 @@
     "prettier": "^3.9.6",
     "prettier-plugin-astro": "^0.14.1",
     "sharp": "^0.35.3",
+    "tsx": "^4.20.6",
     "typescript": "^6.0.3"
   },
   "allowScripts": {
