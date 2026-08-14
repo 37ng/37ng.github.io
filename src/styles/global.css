@@ -260,6 +260,15 @@ html[data-posts-open="true"] .stage-caption {
     120px 120px,
     120px 120px;
 }
+/* Card thumbnail scale — same rules, smaller cells, so the sheet reads as a
+   miniature rather than a 1:1 crop of the full backdrop. */
+.paper-grid-card {
+  background-size:
+    8px 8px,
+    8px 8px,
+    40px 40px,
+    40px 40px;
+}
 /* Paper tooth. One small feTurbulence tile repeated, not a full-viewport
    filter — the filter is rasterised once at tile size this way instead of
    over every pixel on screen. multiply keeps the grain inside the paper's own
