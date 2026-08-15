@@ -217,10 +217,8 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   const unavailable = liveFailed && epoch.totalFeesBtc === null;
   // What each amount could buy, priced in the epoch that earned it — its own
   // averages if it is finished, today's live price if it is still running.
-  // The Big Mac count is the comparable figure across epochs; the dollar
-  // figure above it is only there to make the count legible.
-  const feesUnit = worthLines(feeWorth(epoch, price));
-  const subsidyUnit = worthLines(subsidyWorth(epoch, price));
+  const feesUnit = worthLine(feeWorth(epoch, price));
+  const subsidyUnit = worthLine(subsidyWorth(epoch, price));
 
   return (
     <div
@@ -435,15 +433,9 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   );
 }
 
-/** Dollars over Big Macs, always two lines whether or not the conversion
-    resolved — a cell that grows a line when the live price lands would shove
-    the spines and the track down with it. */
-function worthLines(worth: { usd: number; bigMacs: number } | null): string[] {
-  if (!worth) return ["—", "— Big Macs"];
-  return [
-    formatUsd(worth.usd),
-    `${worth.bigMacs.toLocaleString("en-US", { maximumFractionDigits: 0 })} Big Macs`,
-  ];
+function worthLine(worth: { usd: number; bigMacs: number } | null): string {
+  if (!worth) return "—";
+  return formatUsd(worth.usd);
 }
 
 function Readout({
