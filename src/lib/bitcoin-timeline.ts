@@ -29,8 +29,11 @@
  * still open; the ones before it are finished in every sense except being
  * written to the JSON file, and their fees/difficulty/dates are fetched live
  * the same way the open epoch's always were. The open epoch necessarily
- * prices itself at *today's* rates (live BTC/USD, and `LATEST_BIG_MAC_USD`
- * below), having no average over its own span yet.
+ * prices itself at *today's* rates — both live BTC/USD and the live Big Mac
+ * price (`fetchLatestBigMacUsd` in `lib/bitcoin-live-epoch.ts`, fetched the
+ * same way and for the same reason as the epoch data above: "latest" is a
+ * moving target, so baking it into the build would go stale) — having no
+ * average over its own span yet.
  */
 import epochData from "@/lib/bitcoin-epochs.json";
 
@@ -61,16 +64,15 @@ export interface Epoch {
       average over its span yet and uses a live price instead. */
   avgBtcUsd: number | null;
   /** This epoch's own average US Big Mac price. Null for the open epoch, same
-      reason — it falls back to LATEST_BIG_MAC_USD. */
+      reason — it falls back to a live-fetched price (see
+      lib/bitcoin-live-epoch.ts's `fetchLatestBigMacUsd`), never a build-time
+      constant: unlike a finished epoch's average, "the latest price" is a
+      moving target and goes stale the moment it's baked in. */
   usBigMacUsd: number | null;
 }
 
 /** Every finished halving epoch — permanent, baked in at build time. */
 export const EPOCHS: Epoch[] = epochData.epochs as Epoch[];
-
-/** The most recent Big Mac Index US dollar price on file, for converting the
-    open epoch's live fee into Big Macs — see the module comment. */
-export const LATEST_BIG_MAC_USD: number = epochData.latestBigMacUsd;
 
 /** Every halving is exactly 210,000 blocks — the one fact that lets an epoch
     after the last finished one be placed without a network call. */
@@ -123,6 +125,29 @@ export function pendingEpochs(
       usBigMacUsd: null,
     };
   });
+}
+
+/**
+ * Which epochs the track should draw.
+ *
+ * If the live epoch fetch failed outright (`liveEpochsFailed`), `openEpochs`
+ * is left holding nothing but `pendingEpochs()`'s no-network-call guess —
+ * fixed facts only, no fee/difficulty/date behind them. Drawing that guess
+ * as a normal band would show a knot with a date, a fee figure, and a spine
+ * height that all *look* like data, when they are actually the one-epoch
+ * placeholder computed with no network call at all. So a failed fetch drops
+ * the open epoch(s) from the track entirely rather than pass off the guess as
+ * real — the widget falls back to only the epochs it has a permanent, sourced
+ * answer for. The caller pairs this with a visible note (see
+ * `BitcoinTimeline.tsx`) so a visitor sees *why* the track stops early,
+ * rather than assuming the chain itself stopped.
+ */
+export function visibleEpochs(
+  closed: Epoch[],
+  openEpochs: Epoch[],
+  liveEpochsFailed: boolean,
+): Epoch[] {
+  return liveEpochsFailed ? closed : [...closed, ...openEpochs];
 }
 
 /** One knot's span of the track, as fractions of the whole. */
@@ -282,13 +307,17 @@ export function formatBtcPerBlock(btc: number): string {
 }
 
 /**
- * What a BTC amount was worth in that epoch, in dollars and in Big Macs.
+ * What a BTC amount was worth in that epoch, in dollars and (where the Big
+ * Mac price is known) in Big Macs.
  *
- * The Big Mac count is the point: it is the fee's *purchasing power*, so a
- * 2012 fee and a 2024 fee can be compared without the dollar's own inflation
- * sitting in the middle of the comparison. A finished epoch prices itself at
- * its own averages; the open epoch has none yet, so it uses the live BTC/USD
- * price passed in against the most recent Big Mac price on file.
+ * `usd` needs only a BTC/USD price, so it resolves whenever one is known — a
+ * finished epoch's own average, or the live price for the still-open one.
+ * `bigMacs` additionally needs a Big Mac price — a finished epoch's own
+ * average, or `liveBigMacUsd` (fetched fresh from the visitor's browser, see
+ * `fetchLatestBigMacUsd` in lib/bitcoin-live-epoch.ts) for the still-open
+ * one — and is null without one, rather than pulling the whole readout down
+ * with it: a caller that only wants purchasing power can treat a null
+ * `bigMacs` as unavailable while still showing `usd`.
  *
  * Both are derived, not stored — the JSON keeps only the two source prices.
  */
@@ -296,24 +325,94 @@ export function btcWorth(
   btc: number | null,
   epoch: Epoch,
   liveBtcUsd: number | null,
-): { usd: number; bigMacs: number } | null {
+  liveBigMacUsd: number | null,
+): { usd: number; bigMacs: number | null } | null {
   if (btc === null) return null;
   const btcUsd = epoch.avgBtcUsd ?? liveBtcUsd;
-  const bigMacUsd = epoch.usBigMacUsd ?? LATEST_BIG_MAC_USD;
-  if (btcUsd === null || !(bigMacUsd > 0)) return null;
+  if (btcUsd === null) return null;
   const usd = btc * btcUsd;
-  return { usd, bigMacs: usd / bigMacUsd };
+  const bigMacUsd = epoch.usBigMacUsd ?? liveBigMacUsd;
+  const bigMacs = bigMacUsd !== null && bigMacUsd > 0 ? usd / bigMacUsd : null;
+  return { usd, bigMacs };
 }
 
 /** One block's fees, priced in the epoch that earned them. */
-export function feeWorth(epoch: Epoch, liveBtcUsd: number | null) {
-  return btcWorth(feesPerBlock(epoch), epoch, liveBtcUsd);
+export function feeWorth(
+  epoch: Epoch,
+  liveBtcUsd: number | null,
+  liveBigMacUsd: number | null,
+) {
+  return btcWorth(feesPerBlock(epoch), epoch, liveBtcUsd, liveBigMacUsd);
 }
 
 /** One block's subsidy, priced the same way — the comparison the fee figure
     only means something against. */
-export function subsidyWorth(epoch: Epoch, liveBtcUsd: number | null) {
-  return btcWorth(epoch.subsidyBtc, epoch, liveBtcUsd);
+export function subsidyWorth(
+  epoch: Epoch,
+  liveBtcUsd: number | null,
+  liveBigMacUsd: number | null,
+) {
+  return btcWorth(epoch.subsidyBtc, epoch, liveBtcUsd, liveBigMacUsd);
+}
+
+/** Which unit the fee/subsidy spines are drawn in. */
+export type WorthBasis = "bigMacs" | "usd" | "btc";
+
+/**
+ * Pick one basis for the *whole* spine, not per band.
+ *
+ * Big Macs is the ideal — purchasing power is the one figure actually
+ * comparable across epochs, which is the entire point of these two spines
+ * (see the module comment on the spines in BitcoinTimeline.tsx). But every
+ * band on a spine has to share a basis, or the step from a real Big Mac
+ * count at a finished epoch to a 0 at the open one (because the live price
+ * didn't resolve) would read as the open epoch's fees or subsidy crashing to
+ * nothing, not as a missing conversion. So a live-price failure demotes the
+ * *entire* spine, not just the open epoch's own band — even for a finished
+ * epoch whose own Big Mac price is sitting right there in bitcoin-epochs.json.
+ * That is a deliberate loss: this function looks only at the two live
+ * prices, never at any epoch's own on-file average, because the basis has to
+ * be something every band can share, including whichever one is still open.
+ *
+ * The ladder: Big Macs needs both live prices, since the open epoch can only
+ * be priced in Big Macs by first pricing it in dollars. Failing that, USD
+ * only needs live BTC/USD. Failing that, raw BTC needs nothing live at all —
+ * every band already carries its own fee/subsidy amount.
+ */
+export function worthBasis(
+  liveBtcUsd: number | null,
+  liveBigMacUsd: number | null,
+): WorthBasis {
+  if (liveBtcUsd === null) return "btc";
+  if (liveBigMacUsd === null) return "usd";
+  return "bigMacs";
+}
+
+/**
+ * One band's spine height, in whichever basis `worthBasis` picked for the
+ * whole spine.
+ *
+ * `"btc"` returns the raw amount untouched — no epoch or live price involved
+ * at all, so it can't fail. `"usd"`/`"bigMacs"` go through `btcWorth`, which
+ * is guaranteed to resolve here: `worthBasis` only ever returns `"usd"` when
+ * `liveBtcUsd` is known (so every band's own average-or-live BTC/USD
+ * resolves) and only ever returns `"bigMacs"` when both live prices are
+ * known (so both conversions resolve for every band, finished or open). The
+ * `?? 0` fallbacks exist for the type checker, not because they are expected
+ * to fire.
+ */
+export function spineValue(
+  epoch: Epoch,
+  btc: number | null,
+  liveBtcUsd: number | null,
+  liveBigMacUsd: number | null,
+  basis: WorthBasis,
+): number {
+  if (btc === null) return 0;
+  if (basis === "btc") return btc;
+  const worth = btcWorth(btc, epoch, liveBtcUsd, liveBigMacUsd);
+  if (!worth) return 0;
+  return basis === "bigMacs" ? (worth.bigMacs ?? 0) : worth.usd;
 }
 
 export function formatUsd(usd: number): string {

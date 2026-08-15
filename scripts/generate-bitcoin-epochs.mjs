@@ -40,9 +40,14 @@
  * All of this runs at build time — `npm run build` runs it automatically via
  * the `prebuild` script in package.json — and the widget reads the committed
  * JSON with no runtime fetch for any *finished* epoch. The open epoch has no
- * average of its own yet, so it uses a live BTC/USD price against
- * `latestBigMacUsd` below; the index publishes about twice a year, which is
- * far too infrequent to be worth a live fetch of its own.
+ * average of its own yet, so it prices itself off live figures fetched
+ * straight from the visitor's browser instead — live BTC/USD, and the latest
+ * US Big Mac price (src/lib/bitcoin-live-epoch.ts's `fetchLatestBigMacUsd`,
+ * which reads this same CSV). That price is deliberately *not* written to
+ * this JSON: "the latest one" is a moving target the index updates outside
+ * this script's own release cadence, and a build-time snapshot of it goes
+ * stale the moment a new edition lands — unlike a finished epoch's own
+ * average, which is permanent history once the epoch is over.
  *
  * A failed fetch does not fail the build: the committed JSON is already a
  * valid, usable epoch list, so a network hiccup during CI just means this
@@ -140,13 +145,14 @@ function sumInRange(series, start, end) {
 async function readExisting() {
   try {
     const parsed = JSON.parse(await readFile(OUT, "utf8"));
-    // Earlier versions of this file were a bare array. Normalize so a stale
-    // checkout doesn't crash the read.
-    return Array.isArray(parsed)
-      ? { epochs: parsed, latestBigMacUsd: null }
-      : parsed;
+    // Earlier versions of this file were a bare array, and later ones also
+    // carried a `latestBigMacUsd` field (now fetched live in the browser
+    // instead — see the module comment). Normalize both away so a stale
+    // checkout doesn't crash the read or resurrect the dropped field.
+    const { epochs } = Array.isArray(parsed) ? { epochs: parsed } : parsed;
+    return { epochs };
   } catch {
-    return { epochs: [], latestBigMacUsd: null };
+    return { epochs: [] };
   }
 }
 
@@ -207,10 +213,6 @@ async function main() {
     fetchSeries("market-price"),
     fetchBigMacSeries(),
   ]);
-  const latestBigMacUsd = bigMac.reduce(
-    (latest, row) => (row.at > latest.at ? row : latest),
-    bigMac[0],
-  ).value;
 
   const newEpochs = [];
   for (let i = existing.epochs.length; i < finishedCount; i++) {
@@ -242,10 +244,7 @@ async function main() {
 
   const epochs = [...existing.epochs, ...newEpochs];
 
-  await writeFile(
-    OUT,
-    JSON.stringify({ epochs, latestBigMacUsd }, null, 2) + "\n",
-  );
+  await writeFile(OUT, JSON.stringify({ epochs }, null, 2) + "\n");
   console.log(
     `wrote ${epochs.length} epochs (${newEpochs.length} newly finished) to ${OUT}`,
   );

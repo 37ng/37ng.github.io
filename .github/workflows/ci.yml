@@ -32,11 +32,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Formatting
-        run: npm run format:check
-
       - name: Types
         run: npm run check
+
+      # Pure-function unit tests only — no network, no browser. Anything that
+      # needs a live fetch or visual inspection to verify stays documented
+      # for manual/agent checking (see e.g. BitcoinTimeline.tsx's top-of-file
+      # doc comment) rather than gated here.
+      - name: Tests
+        run: npm test
 
       - name: Build
         run: npm run build

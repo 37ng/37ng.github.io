@@ -1,5 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { fetchBtcUsd, fetchLiveEpochs } from "@/lib/bitcoin-live-epoch";
+import {
+  fetchBtcUsd,
+  fetchLatestBigMacUsd,
+  fetchLiveEpochs,
+} from "@/lib/bitcoin-live-epoch";
 import {
   bandAt,
   EPOCHS,
@@ -13,10 +17,13 @@ import {
   layout,
   normalize,
   pendingEpochs,
+  spineValue,
   spineY,
   stepAt,
   stepPath,
   subsidyWorth,
+  visibleEpochs,
+  worthBasis,
   type Epoch,
 } from "@/lib/bitcoin-timeline";
 
@@ -43,12 +50,50 @@ const SWEEP_SECONDS = 6;
  * Every epoch baked into bitcoin-epochs.json is finished, permanent history
  * — see lib/bitcoin-timeline.ts — so there is nothing to wait on for those.
  * Everything after it, one epoch or several, is fetched live from the
- * visitor's browser on mount (lib/bitcoin-live-epoch.ts) and shows as
- * unavailable if that fetch fails, rather than a stale or invented number.
- * The track itself is deliberately not a linear block-height axis; each
- * knot's band is sized by that epoch's duration (see `layout`), and the
- * readouts change only when the cursor touches a knot, from either
- * direction, holding it until the next.
+ * visitor's browser on mount (lib/bitcoin-live-epoch.ts). If that fetch
+ * fails outright, the track falls back to only the finished epochs — no
+ * open-epoch knot drawn from an unresolved guess — and a note below it says
+ * why (see `visibleEpochs` in lib/bitcoin-timeline.ts and the `liveFailed`
+ * note near the end of this component's render). The two live prices
+ * (BTC/USD, latest Big Mac) are independent of that and of each other: a
+ * missing BTC/USD price blanks a readout's whole sub-body line, a missing
+ * Big Mac price only drops the Big Macs half of it and still shows the
+ * dollar figure (see `worthLine` below and `btcWorth` in
+ * lib/bitcoin-timeline.ts). The two fee/subsidy *spines* (the sparklines
+ * under the readouts, not the readout text) go further: they pick one basis
+ * — Big Macs, USD, or raw BTC — for the *whole* spine from those same two
+ * live prices, via `worthBasis` + `spineValue` in lib/bitcoin-timeline.ts.
+ * A missing live price there demotes every band on the spine, even a
+ * finished epoch whose own average is sitting right there in
+ * bitcoin-epochs.json — see `worthBasis`'s doc comment for why. Nothing here
+ * ever shows a stale or invented number in place of a real one. The track
+ * itself is deliberately not a linear block-height axis; each knot's band is
+ * sized by that epoch's duration (see `layout`), and the readouts change
+ * only when the cursor touches a knot, from either direction, holding it
+ * until the next.
+ *
+ * To see the failure states in a real browser: open devtools' Network panel,
+ * switch throttling to "Offline" (or block the `mempool.space` and
+ * `raw.githubusercontent.com` requests specifically — real devtools request
+ * blocking survives a reload, unlike a `window.fetch` monkey-patch, which a
+ * fresh navigation always discards along with the rest of the JS realm),
+ * then reload the page with this widget on it. Reloading with only
+ * `raw.githubusercontent.com` blocked drops the spines to a USD basis and
+ * the readouts to showing only the dollar figure; blocking `mempool.space`
+ * too drops the open epoch, the spines to a raw-BTC basis, and shows the
+ * "live data unavailable" note.
+ *
+ * For an agent without a real devtools panel: the fastest reliable check is
+ * calling the live-fetch functions directly against the real network with
+ * `fetch` monkey-patched to reject one endpoint, then feeding the results
+ * into `worthBasis` — e.g. `npx tsx -e "..."` importing
+ * `fetchBtcUsd`/`fetchLatestBigMacUsd` from lib/bitcoin-live-epoch.ts and
+ * `worthBasis` from lib/bitcoin-timeline.ts. That exercises the same code
+ * this component calls, without a browser's navigation/HMR state (a stale
+ * browser tab reused across many rapid reloads can wedge a fetch in
+ * "loading" forever — a tab or environment artifact, not a bug in this
+ * widget — so prefer a fresh tab, or this direct-fetch check, over reusing
+ * one tab across many simulated-failure reloads).
  */
 export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   const trackRef = useRef<HTMLDivElement>(null);
@@ -71,6 +116,12 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   const [btcUsd, setBtcUsd] = useState<number | "loading" | "failed">(
     "loading",
   );
+  // Same independence as btcUsd: every epoch's Big Macs figure converts off
+  // this one live price, fetched fresh rather than baked in at build time —
+  // "the latest Big Mac price" goes stale the moment it's written down.
+  const [bigMacUsd, setBigMacUsd] = useState<number | "loading" | "failed">(
+    "loading",
+  );
 
   useEffect(() => {
     let mounted = true;
@@ -88,6 +139,16 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
     let mounted = true;
     fetchBtcUsd().then((price) => {
       if (mounted) setBtcUsd(price ?? "failed");
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+    fetchLatestBigMacUsd().then((price) => {
+      if (mounted) setBigMacUsd(price ?? "failed");
     });
     return () => {
       mounted = false;
@@ -144,8 +205,14 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
 
   // Every epoch after the last finished one lives in `openEpochs`, already
   // fully resolved by the time the live fetch lands — no separate merge step
-  // needed here the way a single always-open epoch used to require.
-  const bands = useMemo(() => layout([...EPOCHS, ...openEpochs]), [openEpochs]);
+  // needed here the way a single always-open epoch used to require. If that
+  // fetch failed outright, `visibleEpochs` drops the unresolved guess from
+  // the track rather than draw it as if it were real data — see its doc
+  // comment in lib/bitcoin-timeline.ts.
+  const bands = useMemo(
+    () => layout(visibleEpochs(EPOCHS, openEpochs, liveFailed)),
+    [openEpochs, liveFailed],
+  );
   const touched = bandAt(bands, position);
   const band = bands.find((entry) => entry.epoch.id === selectedId) ?? bands[0];
   const epoch = band.epoch;
@@ -153,6 +220,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   // a still-pending one needs the live price, and it is null until that
   // fetch lands.
   const price = typeof btcUsd === "number" ? btcUsd : null;
+  const bigMacPrice = typeof bigMacUsd === "number" ? bigMacUsd : null;
 
   useEffect(() => {
     setSelectedId(touched.epoch.id);
@@ -162,28 +230,40 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   // once real data lands, same as the mount animation), 0 forever if it
   // fails rather than a fabricated reading.
   //
-  // Fees and subsidy are drawn in Big Macs, not BTC. In BTC the subsidy spine
-  // is just the halving — four steps, each half the last, saying only what
-  // the label already says. Priced in what it bought at the time, the same series
-  // says something the numbers alone don't: the subsidy kept growing in real
-  // terms for three halvings. Difficulty stays on its own log scale; it is not
-  // a value and has nothing to convert.
+  // Fees and subsidy are drawn in Big Macs where possible, not BTC. In BTC
+  // the subsidy spine is just the halving — four steps, each half the last,
+  // saying only what the label already says. Priced in what it bought at the
+  // time, the same series says something the numbers alone don't: the
+  // subsidy kept growing in real terms for three halvings. `worthBasis`
+  // picks one unit for *both* spines together, from the two live prices
+  // only — see its doc comment in lib/bitcoin-timeline.ts for why a missing
+  // live price demotes the whole spine rather than just the open epoch's own
+  // band, even when a finished epoch's own Big Mac price is sitting right
+  // there on file. Difficulty stays on its own log scale regardless; it is
+  // not a value and has nothing to convert.
+  const basis = worthBasis(price, bigMacPrice);
   const spines = useMemo(() => {
     const resolved = bands.map((b) => b.epoch);
+    const basisNote =
+      basis === "bigMacs" ? null : basis === "usd" ? "usd" : "raw ₿";
     const rows = [
       {
         id: "tx fees",
-        note: null,
+        note: basisNote,
         heights: normalize(
-          resolved.map((e) => feeWorth(e, price)?.bigMacs ?? 0),
+          resolved.map((e) =>
+            spineValue(e, feesPerBlock(e), price, bigMacPrice, basis),
+          ),
           { floor: 0 },
         ),
       },
       {
         id: "subsidy",
-        note: null,
+        note: basisNote,
         heights: normalize(
-          resolved.map((e) => subsidyWorth(e, price)?.bigMacs ?? 0),
+          resolved.map((e) =>
+            spineValue(e, e.subsidyBtc, price, bigMacPrice, basis),
+          ),
           { floor: 0 },
         ),
       },
@@ -200,7 +280,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
       },
     ];
     return rows.map((row) => ({ ...row, ...stepPath(bands, row.heights) }));
-  }, [bands, price]);
+  }, [bands, price, bigMacPrice, basis]);
 
   const stage = variant === "stage";
   // One palette for both homes. On the stage these resolve against whichever
@@ -214,11 +294,10 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   const accent = "var(--hero-accent,var(--accent,var(--color-signal-500)))";
 
   const fees = feesPerBlock(epoch);
-  const unavailable = liveFailed && epoch.totalFeesBtc === null;
   // What each amount could buy, priced in the epoch that earned it — its own
   // averages if it is finished, today's live price if it is still running.
-  const feesUnit = worthLine(feeWorth(epoch, price));
-  const subsidyUnit = worthLine(subsidyWorth(epoch, price));
+  const feesUnit = worthLine(feeWorth(epoch, price, bigMacPrice));
+  const subsidyUnit = worthLine(subsidyWorth(epoch, price, bigMacPrice));
 
   return (
     <div
@@ -248,14 +327,12 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
           label="tx fees"
           value={fees === null ? null : formatBtcPerBlock(fees)}
           unit={feesUnit}
-          unavailable={unavailable}
           title={title}
         />
         <Readout
           label="subsidy"
           value={`₿${epoch.label}`}
           unit={subsidyUnit}
-          unavailable={false}
           title={title}
         />
         <Readout
@@ -270,7 +347,6 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
               ? "EH/s"
               : `${formatCompact(hashrateEhs(epoch.avgDifficulty))} EH/s`
           }
-          unavailable={unavailable}
           title={title}
         />
       </dl>
@@ -429,58 +505,71 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
           }}
         />
       </div>
+
+      {/* Only shown once the live fetch has actually failed, never while it's
+          still loading — see the useEffect above and `visibleEpochs`'s doc
+          comment for why the open epoch itself is dropped from the track
+          rather than drawn from its no-network-call guess. */}
+      {liveFailed && (
+        <p
+          className="mt-3 font-mono text-[9px] whitespace-nowrap"
+          style={{ opacity: 0.6 }}
+        >
+          live data unavailable — showing finished epochs only
+        </p>
+      )}
     </div>
   );
 }
 
-function worthLine(worth: { usd: number; bigMacs: number } | null): string {
-  if (!worth) return "—";
-  return formatUsd(worth.usd);
+/** The dollar figure, or nothing at all if even that isn't known — no dash,
+    since a dash under a value that's already shown reads as a second, empty
+    fact rather than a missing one. */
+function worthLine(
+  worth: { usd: number; bigMacs: number | null } | null,
+): string | null {
+  return worth ? formatUsd(worth.usd) : null;
 }
 
 function Readout({
   label,
   value,
   unit,
-  unavailable,
   title,
 }: {
   label: string;
+  /** null renders as a dimmed "—" — the epoch's band is on the track, its
+      figure just isn't known yet (or ever, for a dropped live epoch's stub
+      that never reaches the track — see `visibleEpochs`). */
   value: string | null;
-  /** One line, or several stacked under the value. */
-  unit: string | string[];
-  unavailable: boolean;
+  /** One line, or several stacked under the value. A null entry (or unit
+      itself being null) renders no sub-body line at all, rather than a dash. */
+  unit: string | (string | null)[] | null;
   title: string;
 }) {
-  const units = Array.isArray(unit) ? unit : [unit];
+  const units = (Array.isArray(unit) ? unit : [unit]).filter(
+    (line): line is string => line !== null,
+  );
   return (
     <div>
       <dt className="font-mono text-[9px]" style={{ opacity: 0.7 }}>
         {label}
       </dt>
-      {unavailable ? (
-        <dd className="mt-1 font-mono text-[10px]" style={{ opacity: 0.6 }}>
-          unavailable
+      <dd
+        className="mt-1 font-[family-name:var(--font-display)] text-xl font-semibold tabular-nums"
+        style={{ color: title, opacity: value === null ? 0.4 : 1 }}
+      >
+        {value ?? "—"}
+      </dd>
+      {units.map((line) => (
+        <dd
+          key={line}
+          className="font-mono text-[9px] whitespace-nowrap"
+          style={{ opacity: 0.7 }}
+        >
+          {line}
         </dd>
-      ) : (
-        <>
-          <dd
-            className="mt-1 font-[family-name:var(--font-display)] text-xl font-semibold tabular-nums"
-            style={{ color: title, opacity: value === null ? 0.4 : 1 }}
-          >
-            {value ?? "—"}
-          </dd>
-          {units.map((line) => (
-            <dd
-              key={line}
-              className="font-mono text-[9px] whitespace-nowrap"
-              style={{ opacity: 0.7 }}
-            >
-              {line}
-            </dd>
-          ))}
-        </>
-      )}
+      ))}
     </div>
   );
 }

@@ -1,8 +1,8 @@
 /**
  * Live figures fetched from the visitor's browser: every halving epoch after
- * the last one baked into bitcoin-epochs.json, plus the current BTC/USD
- * price used to convert the tx fees readout into dollars (and Big Macs —
- * see bitcoin-timeline.ts).
+ * the last one baked into bitcoin-epochs.json, the current BTC/USD price
+ * used to convert the tx fees readout into dollars, and the latest US Big
+ * Mac price used to convert that into Big Macs (see bitcoin-timeline.ts).
  *
  * Every finished epoch in bitcoin-epochs.json is permanent and baked in at
  * build time (see bitcoin-timeline.ts). Whatever comes after it is not — so
@@ -29,6 +29,13 @@ import { type Epoch, pendingEpochs } from "@/lib/bitcoin-timeline";
 
 const API = "https://mempool.space/api";
 const TIMEOUT_MS = 8000;
+
+/** Same CSV `scripts/generate-bitcoin-epochs.mjs` reads at build time for
+    each finished epoch's own average — see that script for why United
+    States only and why this dataset over a world figure. raw.githubusercontent.com
+    serves it with `Access-Control-Allow-Origin: *`, so a browser fetch works. */
+const BIG_MAC_SOURCE =
+  "https://raw.githubusercontent.com/TheEconomist/big-mac-data/master/output-data/big-mac-full-index.csv";
 
 async function getJson(url: string): Promise<unknown> {
   const res = await fetch(url, {
@@ -203,6 +210,41 @@ export async function fetchBtcUsd(): Promise<number | null> {
     return typeof price.USD === "number" ? price.USD : null;
   } catch (error) {
     console.warn("[bitcoin-timeline] BTC/USD price unavailable:", error);
+    return null;
+  }
+}
+
+/** Latest US Big Mac Index price, for converting the still-open epoch's
+    fee/subsidy readouts into Big Macs. The Economist publishes about twice a
+    year, so this isn't chasing a fast-moving number the way BTC/USD is — but
+    it does move, and a build-time constant goes stale the moment a new
+    edition lands. There's no per-country endpoint, so this downloads the same
+    full CSV the build script parses and picks the most recent United States
+    row, rather than baking "the latest one at last build" into the JSON. */
+export async function fetchLatestBigMacUsd(): Promise<number | null> {
+  try {
+    const csv = await getText(BIG_MAC_SOURCE);
+    const [header, ...lines] = csv.trim().split("\n");
+    const columns = header.split(",");
+    const dateCol = columns.indexOf("date");
+    const nameCol = columns.indexOf("name");
+    const priceCol = columns.indexOf("dollar_price");
+    if (dateCol < 0 || nameCol < 0 || priceCol < 0) return null;
+
+    const usRows = lines
+      .map((line) => line.split(","))
+      .filter((cells) => cells[nameCol] === "United States")
+      .map((cells) => ({
+        at: Date.parse(cells[dateCol] + "T00:00:00Z"),
+        price: Number(cells[priceCol]),
+      }))
+      .filter((row) => Number.isFinite(row.at) && Number.isFinite(row.price));
+    if (usRows.length === 0) return null;
+
+    return usRows.reduce((latest, row) => (row.at > latest.at ? row : latest))
+      .price;
+  } catch (error) {
+    console.warn("[bitcoin-timeline] Big Mac price unavailable:", error);
     return null;
   }
 }
