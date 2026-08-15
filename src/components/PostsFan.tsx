@@ -25,6 +25,21 @@ interface PostsFanProps {
   posts: PostSummary[];
 }
 
+// The card title sits above an in-flow image, with the date pinned
+// absolute at the card's bottom edge — a second line would push the image
+// down into the date instead of wrapping harmlessly. Shrinking the font
+// until the (nowrap) text fits keeps it to one line at any card width.
+const TITLE_MAX_PX = 15;
+const TITLE_MIN_PX = 9;
+function fitTitleToOneLine(el: HTMLElement) {
+  let size = TITLE_MAX_PX;
+  el.style.fontSize = `${size}px`;
+  while (el.scrollWidth > el.clientWidth && size > TITLE_MIN_PX) {
+    size -= 0.5;
+    el.style.fontSize = `${size}px`;
+  }
+}
+
 /**
  * The homepage index, as a hand of cream index cards held at the bottom edge.
  * It is not an overlay any more — the fan is the landing page's own furniture:
@@ -51,6 +66,7 @@ export function PostsFan({ posts }: PostsFanProps) {
   const sensorRef = useRef<HTMLDivElement>(null);
   const raisedRef = useRef(raised);
   const cardRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
+  const titleRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   raisedRef.current = raised;
 
@@ -139,6 +155,19 @@ export function PostsFan({ posts }: PostsFanProps) {
       delete document.documentElement.dataset.postsOpen;
     };
   }, []);
+
+  // --fan-w is a vw-based clamp(), so a viewport resize changes the card
+  // (and so the title's available width) without any of these elements
+  // themselves resizing.
+  useEffect(() => {
+    const refit = () => {
+      for (const el of Object.values(titleRefs.current)) {
+        if (el) fitTitleToOneLine(el);
+      }
+    };
+    window.addEventListener("resize", refit);
+    return () => window.removeEventListener("resize", refit);
+  }, [sorted]);
 
   // Number keys are a keyboard stand-in for hover + click: the digit is the
   // card's index (cardNo). First press raises that card, same as a hover.
@@ -246,7 +275,13 @@ export function PostsFan({ posts }: PostsFanProps) {
                 <div className="font-mono text-[9px] text-paper-muted">
                   {cardNo(i)}
                 </div>
-                <div className="mt-0.5 font-[family-name:var(--font-display)] text-[15px] leading-[1.12] font-semibold text-paper-ink">
+                <div
+                  ref={(el) => {
+                    titleRefs.current[post.id] = el;
+                    if (el) fitTitleToOneLine(el);
+                  }}
+                  className="mt-0.5 overflow-hidden font-[family-name:var(--font-display)] text-[15px] leading-[1.12] font-semibold whitespace-nowrap text-ellipsis text-paper-ink"
+                >
                   {post.title}
                 </div>
               </div>
