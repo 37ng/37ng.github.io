@@ -127,6 +127,29 @@ export function pendingEpochs(
   });
 }
 
+/**
+ * Which epochs the track should draw.
+ *
+ * If the live epoch fetch failed outright (`liveEpochsFailed`), `openEpochs`
+ * is left holding nothing but `pendingEpochs()`'s no-network-call guess —
+ * fixed facts only, no fee/difficulty/date behind them. Drawing that guess
+ * as a normal band would show a knot with a date, a fee figure, and a spine
+ * height that all *look* like data, when they are actually the one-epoch
+ * placeholder computed with no network call at all. So a failed fetch drops
+ * the open epoch(s) from the track entirely rather than pass off the guess as
+ * real — the widget falls back to only the epochs it has a permanent, sourced
+ * answer for. The caller pairs this with a visible note (see
+ * `BitcoinTimeline.tsx`) so a visitor sees *why* the track stops early,
+ * rather than assuming the chain itself stopped.
+ */
+export function visibleEpochs(
+  closed: Epoch[],
+  openEpochs: Epoch[],
+  liveEpochsFailed: boolean,
+): Epoch[] {
+  return liveEpochsFailed ? closed : [...closed, ...openEpochs];
+}
+
 /** One knot's span of the track, as fractions of the whole. */
 export interface Band {
   epoch: Epoch;
