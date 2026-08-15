@@ -1,5 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { fetchBtcUsd, fetchLiveEpochs } from "@/lib/bitcoin-live-epoch";
+import {
+  fetchBtcUsd,
+  fetchLatestBigMacUsd,
+  fetchLiveEpochs,
+} from "@/lib/bitcoin-live-epoch";
 import {
   bandAt,
   EPOCHS,
@@ -71,6 +75,12 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   const [btcUsd, setBtcUsd] = useState<number | "loading" | "failed">(
     "loading",
   );
+  // Same independence as btcUsd: every epoch's Big Macs figure converts off
+  // this one live price, fetched fresh rather than baked in at build time —
+  // "the latest Big Mac price" goes stale the moment it's written down.
+  const [bigMacUsd, setBigMacUsd] = useState<number | "loading" | "failed">(
+    "loading",
+  );
 
   useEffect(() => {
     let mounted = true;
@@ -88,6 +98,16 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
     let mounted = true;
     fetchBtcUsd().then((price) => {
       if (mounted) setBtcUsd(price ?? "failed");
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+    fetchLatestBigMacUsd().then((price) => {
+      if (mounted) setBigMacUsd(price ?? "failed");
     });
     return () => {
       mounted = false;
@@ -153,6 +173,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   // a still-pending one needs the live price, and it is null until that
   // fetch lands.
   const price = typeof btcUsd === "number" ? btcUsd : null;
+  const bigMacPrice = typeof bigMacUsd === "number" ? bigMacUsd : null;
 
   useEffect(() => {
     setSelectedId(touched.epoch.id);
@@ -175,7 +196,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
         id: "tx fees",
         note: null,
         heights: normalize(
-          resolved.map((e) => feeWorth(e, price)?.bigMacs ?? 0),
+          resolved.map((e) => feeWorth(e, price, bigMacPrice)?.bigMacs ?? 0),
           { floor: 0 },
         ),
       },
@@ -183,7 +204,9 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
         id: "subsidy",
         note: null,
         heights: normalize(
-          resolved.map((e) => subsidyWorth(e, price)?.bigMacs ?? 0),
+          resolved.map(
+            (e) => subsidyWorth(e, price, bigMacPrice)?.bigMacs ?? 0,
+          ),
           { floor: 0 },
         ),
       },
@@ -200,7 +223,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
       },
     ];
     return rows.map((row) => ({ ...row, ...stepPath(bands, row.heights) }));
-  }, [bands, price]);
+  }, [bands, price, bigMacPrice]);
 
   const stage = variant === "stage";
   // One palette for both homes. On the stage these resolve against whichever
@@ -217,8 +240,8 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   const unavailable = liveFailed && epoch.totalFeesBtc === null;
   // What each amount could buy, priced in the epoch that earned it — its own
   // averages if it is finished, today's live price if it is still running.
-  const feesUnit = worthLine(feeWorth(epoch, price));
-  const subsidyUnit = worthLine(subsidyWorth(epoch, price));
+  const feesUnit = worthLine(feeWorth(epoch, price, bigMacPrice));
+  const subsidyUnit = worthLine(subsidyWorth(epoch, price, bigMacPrice));
 
   return (
     <div
@@ -433,9 +456,13 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   );
 }
 
-function worthLine(worth: { usd: number; bigMacs: number } | null): string {
-  if (!worth) return "—";
-  return formatUsd(worth.usd);
+/** The dollar figure, or nothing at all if even that isn't known — no dash,
+    since a dash under a value that's already shown reads as a second, empty
+    fact rather than a missing one. */
+function worthLine(
+  worth: { usd: number; bigMacs: number | null } | null,
+): string | null {
+  return worth ? formatUsd(worth.usd) : null;
 }
 
 function Readout({
@@ -447,12 +474,15 @@ function Readout({
 }: {
   label: string;
   value: string | null;
-  /** One line, or several stacked under the value. */
-  unit: string | string[];
+  /** One line, or several stacked under the value. A null entry (or unit
+      itself being null) renders no sub-body line at all, rather than a dash. */
+  unit: string | (string | null)[] | null;
   unavailable: boolean;
   title: string;
 }) {
-  const units = Array.isArray(unit) ? unit : [unit];
+  const units = (Array.isArray(unit) ? unit : [unit]).filter(
+    (line): line is string => line !== null,
+  );
   return (
     <div>
       <dt className="font-mono text-[9px]" style={{ opacity: 0.7 }}>

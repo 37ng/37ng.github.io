@@ -29,8 +29,11 @@
  * still open; the ones before it are finished in every sense except being
  * written to the JSON file, and their fees/difficulty/dates are fetched live
  * the same way the open epoch's always were. The open epoch necessarily
- * prices itself at *today's* rates (live BTC/USD, and `LATEST_BIG_MAC_USD`
- * below), having no average over its own span yet.
+ * prices itself at *today's* rates — both live BTC/USD and the live Big Mac
+ * price (`fetchLatestBigMacUsd` in `lib/bitcoin-live-epoch.ts`, fetched the
+ * same way and for the same reason as the epoch data above: "latest" is a
+ * moving target, so baking it into the build would go stale) — having no
+ * average over its own span yet.
  */
 import epochData from "@/lib/bitcoin-epochs.json";
 
@@ -61,16 +64,15 @@ export interface Epoch {
       average over its span yet and uses a live price instead. */
   avgBtcUsd: number | null;
   /** This epoch's own average US Big Mac price. Null for the open epoch, same
-      reason — it falls back to LATEST_BIG_MAC_USD. */
+      reason — it falls back to a live-fetched price (see
+      lib/bitcoin-live-epoch.ts's `fetchLatestBigMacUsd`), never a build-time
+      constant: unlike a finished epoch's average, "the latest price" is a
+      moving target and goes stale the moment it's baked in. */
   usBigMacUsd: number | null;
 }
 
 /** Every finished halving epoch — permanent, baked in at build time. */
 export const EPOCHS: Epoch[] = epochData.epochs as Epoch[];
-
-/** The most recent Big Mac Index US dollar price on file, for converting the
-    open epoch's live fee into Big Macs — see the module comment. */
-export const LATEST_BIG_MAC_USD: number = epochData.latestBigMacUsd;
 
 /** Every halving is exactly 210,000 blocks — the one fact that lets an epoch
     after the last finished one be placed without a network call. */
@@ -282,13 +284,17 @@ export function formatBtcPerBlock(btc: number): string {
 }
 
 /**
- * What a BTC amount was worth in that epoch, in dollars and in Big Macs.
+ * What a BTC amount was worth in that epoch, in dollars and (where the Big
+ * Mac price is known) in Big Macs.
  *
- * The Big Mac count is the point: it is the fee's *purchasing power*, so a
- * 2012 fee and a 2024 fee can be compared without the dollar's own inflation
- * sitting in the middle of the comparison. A finished epoch prices itself at
- * its own averages; the open epoch has none yet, so it uses the live BTC/USD
- * price passed in against the most recent Big Mac price on file.
+ * `usd` needs only a BTC/USD price, so it resolves whenever one is known — a
+ * finished epoch's own average, or the live price for the still-open one.
+ * `bigMacs` additionally needs a Big Mac price — a finished epoch's own
+ * average, or `liveBigMacUsd` (fetched fresh from the visitor's browser, see
+ * `fetchLatestBigMacUsd` in lib/bitcoin-live-epoch.ts) for the still-open
+ * one — and is null without one, rather than pulling the whole readout down
+ * with it: a caller that only wants purchasing power can treat a null
+ * `bigMacs` as unavailable while still showing `usd`.
  *
  * Both are derived, not stored — the JSON keeps only the two source prices.
  */
@@ -296,24 +302,34 @@ export function btcWorth(
   btc: number | null,
   epoch: Epoch,
   liveBtcUsd: number | null,
-): { usd: number; bigMacs: number } | null {
+  liveBigMacUsd: number | null,
+): { usd: number; bigMacs: number | null } | null {
   if (btc === null) return null;
   const btcUsd = epoch.avgBtcUsd ?? liveBtcUsd;
-  const bigMacUsd = epoch.usBigMacUsd ?? LATEST_BIG_MAC_USD;
-  if (btcUsd === null || !(bigMacUsd > 0)) return null;
+  if (btcUsd === null) return null;
   const usd = btc * btcUsd;
-  return { usd, bigMacs: usd / bigMacUsd };
+  const bigMacUsd = epoch.usBigMacUsd ?? liveBigMacUsd;
+  const bigMacs = bigMacUsd !== null && bigMacUsd > 0 ? usd / bigMacUsd : null;
+  return { usd, bigMacs };
 }
 
 /** One block's fees, priced in the epoch that earned them. */
-export function feeWorth(epoch: Epoch, liveBtcUsd: number | null) {
-  return btcWorth(feesPerBlock(epoch), epoch, liveBtcUsd);
+export function feeWorth(
+  epoch: Epoch,
+  liveBtcUsd: number | null,
+  liveBigMacUsd: number | null,
+) {
+  return btcWorth(feesPerBlock(epoch), epoch, liveBtcUsd, liveBigMacUsd);
 }
 
 /** One block's subsidy, priced the same way — the comparison the fee figure
     only means something against. */
-export function subsidyWorth(epoch: Epoch, liveBtcUsd: number | null) {
-  return btcWorth(epoch.subsidyBtc, epoch, liveBtcUsd);
+export function subsidyWorth(
+  epoch: Epoch,
+  liveBtcUsd: number | null,
+  liveBigMacUsd: number | null,
+) {
+  return btcWorth(epoch.subsidyBtc, epoch, liveBtcUsd, liveBigMacUsd);
 }
 
 export function formatUsd(usd: number): string {
