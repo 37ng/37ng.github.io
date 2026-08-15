@@ -1,5 +1,5 @@
 /**
- * Coverage for the three "what if a live figure never arrives" paths a
+ * Coverage for the four "what if a live figure never arrives" paths a
  * visitor can hit:
  *
  *  1. BTC/USD is unknown (open epoch, live price fetch failed or hasn't
@@ -11,20 +11,29 @@
  *  3. The live epoch fetch itself fails -> `visibleEpochs` drops the
  *     unresolved open-epoch guess from the track instead of drawing it as
  *     if it were real data.
+ *  4. The tx-fees/subsidy *spines* (the sparklines, not the readout text)
+ *     pick one basis for every band at once, via `worthBasis` +
+ *     `spineValue`: Big Macs only if both live prices resolved, else USD
+ *     only if live BTC/USD resolved, else raw BTC. A missing live price
+ *     demotes the whole spine, even for a finished epoch whose own average
+ *     is sitting right there in bitcoin-epochs.json — see `worthBasis`'s doc
+ *     comment for why a per-band basis would misread as a value crash.
  *
  * These are pure functions specifically so this behavior can be pinned down
  * without a browser: BitcoinTimeline.tsx just wires each one's result to a
- * `<Readout>`/the track — see that component's top-of-file doc comment for
- * how to reproduce all three live, in a real browser, with devtools network
- * throttling.
+ * `<Readout>`/a spine/the track — see that component's top-of-file doc
+ * comment for how to reproduce all four live, in a real browser, with
+ * devtools network throttling.
  */
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
   btcWorth,
   feeWorth,
+  spineValue,
   subsidyWorth,
   visibleEpochs,
+  worthBasis,
   type Epoch,
 } from "@/lib/bitcoin-timeline";
 
@@ -111,4 +120,41 @@ test("visibleEpochs: live fetch failed -> open epochs (even a stale guess) are d
 test("visibleEpochs: failed fetch with no open epochs pending is a no-op either way", () => {
   assert.deepEqual(visibleEpochs([FINISHED], [], true), [FINISHED]);
   assert.deepEqual(visibleEpochs([FINISHED], [], false), [FINISHED]);
+});
+
+test("worthBasis: both live prices known -> Big Macs, the ideal basis", () => {
+  assert.equal(worthBasis(10, 4), "bigMacs");
+});
+
+test("worthBasis: live BTC/USD known, live Big Mac price missing -> usd", () => {
+  assert.equal(worthBasis(10, null), "usd");
+});
+
+test("worthBasis: live BTC/USD missing -> btc, regardless of the Big Mac price", () => {
+  assert.equal(worthBasis(null, 4), "btc");
+  assert.equal(worthBasis(null, null), "btc");
+});
+
+test("spineValue: btc basis returns the raw amount, ignoring the epoch's own on-file prices entirely", () => {
+  // FINISHED carries its own avgBtcUsd/usBigMacUsd, but the btc basis must
+  // still render the untouched amount — this is the "even a finished epoch
+  // with its own Big Mac price on file doesn't get shown in Big Macs" rule.
+  assert.equal(spineValue(FINISHED, 3, 999, 999, "btc"), 3);
+  assert.equal(spineValue(OPEN, 3, null, null, "btc"), 3);
+});
+
+test("spineValue: usd basis converts every band to dollars, even one with its own Big Mac price on file", () => {
+  assert.equal(spineValue(FINISHED, 3, 999, 999, "usd"), 30); // 3 * FINISHED.avgBtcUsd (10), not live
+  assert.equal(spineValue(OPEN, 3, 10, null, "usd"), 30); // 3 * live btcUsd (10)
+});
+
+test("spineValue: bigMacs basis converts every band to Big Macs, own price or live", () => {
+  assert.equal(spineValue(FINISHED, 3, 999, 999, "bigMacs"), 15); // (3*10) / usBigMacUsd (2)
+  assert.equal(spineValue(OPEN, 3, 10, 5, "bigMacs"), 6); // (3*10) / live bigMacUsd (5)
+});
+
+test("spineValue: null btc amount (still-loading band) -> 0, no matter the basis", () => {
+  assert.equal(spineValue(FINISHED, null, 10, 10, "btc"), 0);
+  assert.equal(spineValue(FINISHED, null, 10, 10, "usd"), 0);
+  assert.equal(spineValue(FINISHED, null, 10, 10, "bigMacs"), 0);
 });

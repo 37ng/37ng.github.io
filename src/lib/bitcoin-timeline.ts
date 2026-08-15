@@ -355,6 +355,66 @@ export function subsidyWorth(
   return btcWorth(epoch.subsidyBtc, epoch, liveBtcUsd, liveBigMacUsd);
 }
 
+/** Which unit the fee/subsidy spines are drawn in. */
+export type WorthBasis = "bigMacs" | "usd" | "btc";
+
+/**
+ * Pick one basis for the *whole* spine, not per band.
+ *
+ * Big Macs is the ideal — purchasing power is the one figure actually
+ * comparable across epochs, which is the entire point of these two spines
+ * (see the module comment on the spines in BitcoinTimeline.tsx). But every
+ * band on a spine has to share a basis, or the step from a real Big Mac
+ * count at a finished epoch to a 0 at the open one (because the live price
+ * didn't resolve) would read as the open epoch's fees or subsidy crashing to
+ * nothing, not as a missing conversion. So a live-price failure demotes the
+ * *entire* spine, not just the open epoch's own band — even for a finished
+ * epoch whose own Big Mac price is sitting right there in bitcoin-epochs.json.
+ * That is a deliberate loss: this function looks only at the two live
+ * prices, never at any epoch's own on-file average, because the basis has to
+ * be something every band can share, including whichever one is still open.
+ *
+ * The ladder: Big Macs needs both live prices, since the open epoch can only
+ * be priced in Big Macs by first pricing it in dollars. Failing that, USD
+ * only needs live BTC/USD. Failing that, raw BTC needs nothing live at all —
+ * every band already carries its own fee/subsidy amount.
+ */
+export function worthBasis(
+  liveBtcUsd: number | null,
+  liveBigMacUsd: number | null,
+): WorthBasis {
+  if (liveBtcUsd === null) return "btc";
+  if (liveBigMacUsd === null) return "usd";
+  return "bigMacs";
+}
+
+/**
+ * One band's spine height, in whichever basis `worthBasis` picked for the
+ * whole spine.
+ *
+ * `"btc"` returns the raw amount untouched — no epoch or live price involved
+ * at all, so it can't fail. `"usd"`/`"bigMacs"` go through `btcWorth`, which
+ * is guaranteed to resolve here: `worthBasis` only ever returns `"usd"` when
+ * `liveBtcUsd` is known (so every band's own average-or-live BTC/USD
+ * resolves) and only ever returns `"bigMacs"` when both live prices are
+ * known (so both conversions resolve for every band, finished or open). The
+ * `?? 0` fallbacks exist for the type checker, not because they are expected
+ * to fire.
+ */
+export function spineValue(
+  epoch: Epoch,
+  btc: number | null,
+  liveBtcUsd: number | null,
+  liveBigMacUsd: number | null,
+  basis: WorthBasis,
+): number {
+  if (btc === null) return 0;
+  if (basis === "btc") return btc;
+  const worth = btcWorth(btc, epoch, liveBtcUsd, liveBigMacUsd);
+  if (!worth) return 0;
+  return basis === "bigMacs" ? (worth.bigMacs ?? 0) : worth.usd;
+}
+
 export function formatUsd(usd: number): string {
   return `$${usd.toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
 }

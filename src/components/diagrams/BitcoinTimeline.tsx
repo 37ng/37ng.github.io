@@ -17,11 +17,13 @@ import {
   layout,
   normalize,
   pendingEpochs,
+  spineValue,
   spineY,
   stepAt,
   stepPath,
   subsidyWorth,
   visibleEpochs,
+  worthBasis,
   type Epoch,
 } from "@/lib/bitcoin-timeline";
 
@@ -57,18 +59,41 @@ const SWEEP_SECONDS = 6;
  * missing BTC/USD price blanks a readout's whole sub-body line, a missing
  * Big Mac price only drops the Big Macs half of it and still shows the
  * dollar figure (see `worthLine` below and `btcWorth` in
- * lib/bitcoin-timeline.ts). Nothing here ever shows a stale or invented
- * number in place of a real one. The track itself is deliberately not a
- * linear block-height axis; each knot's band is sized by that epoch's
- * duration (see `layout`), and the readouts change only when the cursor
- * touches a knot, from either direction, holding it until the next.
+ * lib/bitcoin-timeline.ts). The two fee/subsidy *spines* (the sparklines
+ * under the readouts, not the readout text) go further: they pick one basis
+ * — Big Macs, USD, or raw BTC — for the *whole* spine from those same two
+ * live prices, via `worthBasis` + `spineValue` in lib/bitcoin-timeline.ts.
+ * A missing live price there demotes every band on the spine, even a
+ * finished epoch whose own average is sitting right there in
+ * bitcoin-epochs.json — see `worthBasis`'s doc comment for why. Nothing here
+ * ever shows a stale or invented number in place of a real one. The track
+ * itself is deliberately not a linear block-height axis; each knot's band is
+ * sized by that epoch's duration (see `layout`), and the readouts change
+ * only when the cursor touches a knot, from either direction, holding it
+ * until the next.
  *
- * To see the failure states in a browser: open devtools' Network panel,
+ * To see the failure states in a real browser: open devtools' Network panel,
  * switch throttling to "Offline" (or block the `mempool.space` and
- * `raw.githubusercontent.com` requests specifically), then reload the page
- * with this widget on it. Reloading with only `raw.githubusercontent.com`
- * blocked shows the Big-Mac-unavailable fallback without touching the track;
- * blocking `mempool.space` too drops the open epoch and shows the note.
+ * `raw.githubusercontent.com` requests specifically — real devtools request
+ * blocking survives a reload, unlike a `window.fetch` monkey-patch, which a
+ * fresh navigation always discards along with the rest of the JS realm),
+ * then reload the page with this widget on it. Reloading with only
+ * `raw.githubusercontent.com` blocked drops the spines to a USD basis and
+ * the readouts to showing only the dollar figure; blocking `mempool.space`
+ * too drops the open epoch, the spines to a raw-BTC basis, and shows the
+ * "live data unavailable" note.
+ *
+ * For an agent without a real devtools panel: the fastest reliable check is
+ * calling the live-fetch functions directly against the real network with
+ * `fetch` monkey-patched to reject one endpoint, then feeding the results
+ * into `worthBasis` — e.g. `npx tsx -e "..."` importing
+ * `fetchBtcUsd`/`fetchLatestBigMacUsd` from lib/bitcoin-live-epoch.ts and
+ * `worthBasis` from lib/bitcoin-timeline.ts. That exercises the same code
+ * this component calls, without a browser's navigation/HMR state (a stale
+ * browser tab reused across many rapid reloads can wedge a fetch in
+ * "loading" forever — a tab or environment artifact, not a bug in this
+ * widget — so prefer a fresh tab, or this direct-fetch check, over reusing
+ * one tab across many simulated-failure reloads).
  */
 export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   const trackRef = useRef<HTMLDivElement>(null);
@@ -205,29 +230,39 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   // once real data lands, same as the mount animation), 0 forever if it
   // fails rather than a fabricated reading.
   //
-  // Fees and subsidy are drawn in Big Macs, not BTC. In BTC the subsidy spine
-  // is just the halving — four steps, each half the last, saying only what
-  // the label already says. Priced in what it bought at the time, the same series
-  // says something the numbers alone don't: the subsidy kept growing in real
-  // terms for three halvings. Difficulty stays on its own log scale; it is not
-  // a value and has nothing to convert.
+  // Fees and subsidy are drawn in Big Macs where possible, not BTC. In BTC
+  // the subsidy spine is just the halving — four steps, each half the last,
+  // saying only what the label already says. Priced in what it bought at the
+  // time, the same series says something the numbers alone don't: the
+  // subsidy kept growing in real terms for three halvings. `worthBasis`
+  // picks one unit for *both* spines together, from the two live prices
+  // only — see its doc comment in lib/bitcoin-timeline.ts for why a missing
+  // live price demotes the whole spine rather than just the open epoch's own
+  // band, even when a finished epoch's own Big Mac price is sitting right
+  // there on file. Difficulty stays on its own log scale regardless; it is
+  // not a value and has nothing to convert.
+  const basis = worthBasis(price, bigMacPrice);
   const spines = useMemo(() => {
     const resolved = bands.map((b) => b.epoch);
+    const basisNote =
+      basis === "bigMacs" ? null : basis === "usd" ? "usd" : "raw ₿";
     const rows = [
       {
         id: "tx fees",
-        note: null,
+        note: basisNote,
         heights: normalize(
-          resolved.map((e) => feeWorth(e, price, bigMacPrice)?.bigMacs ?? 0),
+          resolved.map((e) =>
+            spineValue(e, feesPerBlock(e), price, bigMacPrice, basis),
+          ),
           { floor: 0 },
         ),
       },
       {
         id: "subsidy",
-        note: null,
+        note: basisNote,
         heights: normalize(
-          resolved.map(
-            (e) => subsidyWorth(e, price, bigMacPrice)?.bigMacs ?? 0,
+          resolved.map((e) =>
+            spineValue(e, e.subsidyBtc, price, bigMacPrice, basis),
           ),
           { floor: 0 },
         ),
@@ -245,7 +280,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
       },
     ];
     return rows.map((row) => ({ ...row, ...stepPath(bands, row.heights) }));
-  }, [bands, price, bigMacPrice]);
+  }, [bands, price, bigMacPrice, basis]);
 
   const stage = variant === "stage";
   // One palette for both homes. On the stage these resolve against whichever
