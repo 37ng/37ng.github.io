@@ -26,5 +26,3 @@ export function Clock() {
     </p>
   );
 }
-
-export default Clock;

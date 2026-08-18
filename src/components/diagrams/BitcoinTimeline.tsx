@@ -44,6 +44,23 @@ const INITIAL_PENDING = pendingEpochs(EPOCHS);
 /** Seconds for the cursor to travel the whole track on its own. */
 const SWEEP_SECONDS = 6;
 
+/** A live price, from mount until it resolves or fails. Never a stale or
+    invented number — "failed" is a state the readouts render, not a zero. */
+function useLivePrice(fetchPrice: () => Promise<number | null>) {
+  const [price, setPrice] = useState<number | "loading" | "failed">("loading");
+  useEffect(() => {
+    let mounted = true;
+    fetchPrice().then((value) => {
+      if (mounted) setPrice(value ?? "failed");
+    });
+    return () => {
+      mounted = false;
+    };
+    // Each caller passes a module-level function, so the fetch runs once.
+  }, [fetchPrice]);
+  return typeof price === "number" ? price : null;
+}
+
 /**
  * A halving epoch, read at five knots along a track.
  *
@@ -111,17 +128,13 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   // see the INITIAL_PENDING comment above.
   const [openEpochs, setOpenEpochs] = useState<Epoch[]>(INITIAL_PENDING);
   const [liveFailed, setLiveFailed] = useState(false);
-  // Independent of the epoch fetch: every epoch's fee readout converts into
-  // today's dollars off the same live price, not just the open epoch's.
-  const [btcUsd, setBtcUsd] = useState<number | "loading" | "failed">(
-    "loading",
-  );
-  // Same independence as btcUsd: every epoch's Big Macs figure converts off
-  // this one live price, fetched fresh rather than baked in at build time —
-  // "the latest Big Mac price" goes stale the moment it's written down.
-  const [bigMacUsd, setBigMacUsd] = useState<number | "loading" | "failed">(
-    "loading",
-  );
+  // Both prices are independent of the epoch fetch and of each other: every
+  // epoch's readout — not just the open one's — converts off them. Fetched
+  // fresh rather than baked in at build time, since "the latest price" goes
+  // stale the moment it is written down. Null until each one lands, so a
+  // finished epoch's own average is what prices it either way.
+  const price = useLivePrice(fetchBtcUsd);
+  const bigMacPrice = useLivePrice(fetchLatestBigMacUsd);
 
   useEffect(() => {
     let mounted = true;
@@ -129,26 +142,6 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
       if (!mounted) return;
       if (result) setOpenEpochs(result);
       else setLiveFailed(true);
-    });
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    let mounted = true;
-    fetchBtcUsd().then((price) => {
-      if (mounted) setBtcUsd(price ?? "failed");
-    });
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    let mounted = true;
-    fetchLatestBigMacUsd().then((price) => {
-      if (mounted) setBigMacUsd(price ?? "failed");
     });
     return () => {
       mounted = false;
@@ -216,11 +209,6 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   const touched = bandAt(bands, position);
   const band = bands.find((entry) => entry.epoch.id === selectedId) ?? bands[0];
   const epoch = band.epoch;
-  // A finished epoch prices itself at its own averages and ignores this; only
-  // a still-pending one needs the live price, and it is null until that
-  // fetch lands.
-  const price = typeof btcUsd === "number" ? btcUsd : null;
-  const bigMacPrice = typeof bigMacUsd === "number" ? bigMacUsd : null;
 
   useEffect(() => {
     setSelectedId(touched.epoch.id);
@@ -525,9 +513,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
 /** The dollar figure, or nothing at all if even that isn't known — no dash,
     since a dash under a value that's already shown reads as a second, empty
     fact rather than a missing one. */
-function worthLine(
-  worth: { usd: number; bigMacs: number | null } | null,
-): string | null {
+function worthLine(worth: { usd: number } | null): string | null {
   return worth ? formatUsd(worth.usd) : null;
 }
 
@@ -542,14 +528,11 @@ function Readout({
       figure just isn't known yet (or ever, for a dropped live epoch's stub
       that never reaches the track — see `visibleEpochs`). */
   value: string | null;
-  /** One line, or several stacked under the value. A null entry (or unit
-      itself being null) renders no sub-body line at all, rather than a dash. */
-  unit: string | (string | null)[] | null;
+  /** The line under the value. Null renders no sub-body line at all, rather
+      than a dash. */
+  unit: string | null;
   title: string;
 }) {
-  const units = (Array.isArray(unit) ? unit : [unit]).filter(
-    (line): line is string => line !== null,
-  );
   return (
     <div>
       <dt className="font-mono text-[9px]" style={{ opacity: 0.7 }}>
@@ -561,17 +544,14 @@ function Readout({
       >
         {value ?? "—"}
       </dd>
-      {units.map((line) => (
+      {unit !== null && (
         <dd
-          key={line}
           className="font-mono text-[9px] whitespace-nowrap"
           style={{ opacity: 0.7 }}
         >
-          {line}
+          {unit}
         </dd>
-      ))}
+      )}
     </div>
   );
 }
-
-export default BitcoinTimeline;

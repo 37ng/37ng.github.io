@@ -12,6 +12,7 @@ import {
   subscribeStage,
 } from "@/lib/stage";
 import { cardNo, sortCurated } from "@/lib/fan";
+import { PaperSheet } from "@/components/stages/PaperSheet";
 
 export interface PostSummary {
   id: string;
@@ -295,53 +296,10 @@ export function PostsFan({ posts }: PostsFanProps) {
                     }}
                   />
                 ) : (
-                  // Same manila look as the fallback stage backdrop
-                  // (PaperSheet.astro) — grid, fibre and the pencil
-                  // signature — rather than a plain gradient, so a post with
-                  // no hero art still gets its own stage's look on the card.
-                  // The doodle's stroke is `.paper-doodle`, promoted to
-                  // global.css so both this component and the Astro stage can
-                  // draw the same signature.
-                  <div className="paper-sheet absolute inset-0">
-                    <div className="paper-grid paper-grid-card absolute inset-0" />
-                    <svg
-                      className="pointer-events-none absolute inset-0 h-full w-full"
-                      viewBox="0 0 1600 900"
-                      preserveAspectRatio="xMidYMid slice"
-                      aria-hidden="true"
-                    >
-                      <filter
-                        id={`paper-pencil-${post.id}`}
-                        x="-20%"
-                        y="-20%"
-                        width="140%"
-                        height="140%"
-                      >
-                        <feTurbulence
-                          type="fractalNoise"
-                          baseFrequency="0.035"
-                          numOctaves={3}
-                          seed={7}
-                          result="grain"
-                        />
-                        <feDisplacementMap
-                          in="SourceGraphic"
-                          in2="grain"
-                          scale={3}
-                          xChannelSelector="R"
-                          yChannelSelector="G"
-                        />
-                      </filter>
-                      <g
-                        className="paper-doodle"
-                        filter={`url(#paper-pencil-${post.id})`}
-                      >
-                        <path d="M300 430 C430 355 590 320 720 336 C660 405 545 500 470 585 C440 625 470 648 505 612 C524 562 542 498 566 498 C592 498 602 578 628 578 C656 578 664 534 690 534 C716 534 724 574 752 574 C778 574 786 550 812 550 C838 550 846 570 872 566 C888 562 898 550 908 530" />
-                        <path d="M980 384 C1006 326 1016 294 1024 352 C1032 296 1050 282 1064 318 C1078 350 1104 354 1130 318" />
-                      </g>
-                    </svg>
-                    <div className="paper-fibre absolute inset-0" />
-                  </div>
+                  <PaperSheet
+                    filterId={`paper-pencil-${post.id}`}
+                    grid="card"
+                  />
                 )}
               </div>
               <div className="absolute right-3.5 bottom-3 left-3.5 font-mono text-[9px] text-paper-muted">
@@ -354,5 +312,3 @@ export function PostsFan({ posts }: PostsFanProps) {
     </div>
   );
 }
-
-export default PostsFan;

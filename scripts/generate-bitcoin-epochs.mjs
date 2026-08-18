@@ -142,17 +142,16 @@ function sumInRange(series, start, end) {
     .reduce((sum, row) => sum + row.value, 0);
 }
 
-async function readExisting() {
+async function readExistingEpochs() {
   try {
     const parsed = JSON.parse(await readFile(OUT, "utf8"));
     // Earlier versions of this file were a bare array, and later ones also
     // carried a `latestBigMacUsd` field (now fetched live in the browser
     // instead — see the module comment). Normalize both away so a stale
     // checkout doesn't crash the read or resurrect the dropped field.
-    const { epochs } = Array.isArray(parsed) ? { epochs: parsed } : parsed;
-    return { epochs };
+    return Array.isArray(parsed) ? parsed : parsed.epochs;
   } catch {
-    return { epochs: [] };
+    return [];
   }
 }
 
@@ -175,35 +174,35 @@ async function main() {
   // exactly how many epochs that describes.
   const finishedCount = Math.floor(tipHeight / HALVING_INTERVAL);
 
-  const onFile = await readExisting();
+  const onFile = await readExistingEpochs();
   // A row written by an older version of this script is missing fields the
   // widget now reads. Those come from full-history series this run downloads
   // anyway, so the cheapest correct answer is to recompute every epoch rather
   // than patch rows in place.
-  const stale = onFile.epochs.some(
+  const stale = onFile.some(
     (epoch) =>
       typeof epoch.avgBtcUsd !== "number" ||
       typeof epoch.usBigMacUsd !== "number",
   );
-  const existing = stale ? { ...onFile, epochs: [] } : onFile;
+  const existing = stale ? [] : onFile;
   if (stale)
     console.log("rebuilding: rows on file predate avgBtcUsd/usBigMacUsd");
 
-  if (existing.epochs.length >= finishedCount) {
+  if (existing.length >= finishedCount) {
     console.log(
-      `up to date: ${existing.epochs.length} finished epochs on file, tip #${tipHeight} implies ${finishedCount}`,
+      `up to date: ${existing.length} finished epochs on file, tip #${tipHeight} implies ${finishedCount}`,
     );
     return;
   }
 
   // Only the boundary heights bracketing newly-finished epochs need a fresh
-  // mempool.space lookup — existing.epochs.length of them are already on
+  // mempool.space lookup — existing.length of them are already on
   // file with their startDate known, so only the ones from there through
   // finishedCount (inclusive, since each new epoch needs both its start and
   // end) are new.
   const boundaryHeights = Array.from(
-    { length: finishedCount - existing.epochs.length + 1 },
-    (_, k) => (existing.epochs.length + k) * HALVING_INTERVAL,
+    { length: finishedCount - existing.length + 1 },
+    (_, k) => (existing.length + k) * HALVING_INTERVAL,
   );
   const boundaryTimes = await Promise.all(boundaryHeights.map(blockTimestamp));
 
@@ -215,8 +214,8 @@ async function main() {
   ]);
 
   const newEpochs = [];
-  for (let i = existing.epochs.length; i < finishedCount; i++) {
-    const k = i - existing.epochs.length;
+  for (let i = existing.length; i < finishedCount; i++) {
+    const k = i - existing.length;
     const startAt = boundaryTimes[k];
     const endAt = boundaryTimes[k + 1];
     const subsidyBtc = INITIAL_SUBSIDY_BTC / 2 ** i;
@@ -242,7 +241,7 @@ async function main() {
     });
   }
 
-  const epochs = [...existing.epochs, ...newEpochs];
+  const epochs = [...existing, ...newEpochs];
 
   await writeFile(OUT, JSON.stringify({ epochs }, null, 2) + "\n");
   console.log(

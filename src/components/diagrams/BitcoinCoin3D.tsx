@@ -247,5 +247,3 @@ export function BitcoinCoin3D({ frame = true }: BitcoinCoin3DProps) {
     </div>
   );
 }
-
-export default BitcoinCoin3D;

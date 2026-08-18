@@ -268,11 +268,8 @@ export function stepAt(
   heights: number[],
   position: number,
 ): number {
-  let index = 0;
-  for (let i = 0; i < bands.length; i++) {
-    if (position >= bands[i].start) index = i;
-  }
-  return heights[index];
+  const index = bands.findLastIndex((band) => position >= band.start);
+  return heights[Math.max(index, 0)];
 }
 
 /**

@@ -91,5 +91,3 @@ function MoonIcon() {
     </svg>
   );
 }
-
-export default ThemeToggle;
