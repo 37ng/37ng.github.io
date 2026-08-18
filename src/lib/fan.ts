@@ -11,17 +11,20 @@
 /** Curated order for the fan — edit this to reorder. Anything not listed falls in after, newest first. */
 export const CURATED_ORDER: string[] = ["prologue", "bitcoin", "rust-vecdb"];
 
+/** Anything not in CURATED_ORDER ranks after everything that is. */
+const rankOf = (id: string) => {
+  const rank = CURATED_ORDER.indexOf(id);
+  return rank === -1 ? CURATED_ORDER.length : rank;
+};
+
 export function sortCurated<T extends { id: string; date: string }>(
   posts: T[],
 ): T[] {
-  return [...posts].sort((a, b) => {
-    const rankA = CURATED_ORDER.indexOf(a.id);
-    const rankB = CURATED_ORDER.indexOf(b.id);
-    const ra = rankA === -1 ? CURATED_ORDER.length : rankA;
-    const rb = rankB === -1 ? CURATED_ORDER.length : rankB;
-    if (ra !== rb) return ra - rb;
-    return new Date(b.date).getTime() - new Date(a.date).getTime();
-  });
+  return [...posts].sort(
+    (a, b) =>
+      rankOf(a.id) - rankOf(b.id) ||
+      new Date(b.date).getTime() - new Date(a.date).getTime(),
+  );
 }
 
 export const cardNo = (i: number) => String(i).padStart(3, "0");

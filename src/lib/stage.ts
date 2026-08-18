@@ -28,7 +28,7 @@ export type Backdrop =
   | { kind: "paper"; tone: "light" };
 
 /**
- * The fallback backdrop: PaperSheet.astro, which is manila. Its tone is a fact
+ * The fallback backdrop: PaperSheet, which is manila. Its tone is a fact
  * about that component, declared here because this is where the fact is used.
  * If it ever stops being pale, change it here and every reader follows.
  */
