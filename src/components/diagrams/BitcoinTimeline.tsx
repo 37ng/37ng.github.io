@@ -388,7 +388,7 @@ function Readout({
         {label}
       </dt>
       <dd
-        className="mt-1 font-[family-name:var(--font-display)] text-xl font-semibold tabular-nums"
+        className="mt-1 overflow-hidden font-[family-name:var(--font-display)] text-xl font-semibold tabular-nums whitespace-nowrap"
         style={{ color: title }}
       >
         {value}

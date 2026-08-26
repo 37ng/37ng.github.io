@@ -158,16 +158,43 @@ export function subsidyWorth(bar: Bar) {
   return btcWorth(subsidyAt(bar.startHeight), bar);
 }
 
+/** Below this, decimal notation is mostly leading zeros — "₿0.00000878"
+    reads as a wall of zeros before the digits that matter, and is wide
+    enough on its own to wrap a readout onto a second line. */
+const COMPACT_BELOW = 0.0001;
+
 /** ₿ prefix, matching how a $ prefix reads on a dollar figure. Three
     significant figures rather than a fixed number of decimals: fee per block
     runs from a few thousandths of a satoshi to several BTC, and any fixed
-    width prints one end of that as ₿0.000. */
+    width prints one end of that as ₿0.000. Below COMPACT_BELOW, switches to
+    a bare exponent (145e-7) rather than counting zeros — see
+    compactExponent. */
 export function formatBtc(btc: number): string {
+  if (btc > 0 && btc < COMPACT_BELOW) return `₿${compactExponent(btc, 3)}`;
   return `₿${trimZeros(btc.toPrecision(3))}`;
 }
 
 function trimZeros(text: string): string {
   return text.includes(".") ? text.replace(/\.?0+$/, "") : text;
+}
+
+/**
+ * A tiny number as a bare integer mantissa times ten-to-the — "145e-7"
+ * rather than "1.45e-7" or "0.0000145" — so a readout with several of these
+ * side by side stays one line wide instead of each number's width varying
+ * with how many leading zeros it has.
+ *
+ * Built from `toExponential`, which already gives `sigFigs` significant
+ * digits as `d.ddde±X`; the decimal point is dropped and its digits folded
+ * into the exponent (145e-7 is exactly 1.45e-5 with the point moved two
+ * places), and any trailing zeros the mantissa picked up from rounding are
+ * trimmed the same way `trimZeros` does for decimal notation.
+ */
+function compactExponent(value: number, sigFigs: number): string {
+  const decimals = sigFigs - 1;
+  const [mantissa, exponent] = value.toExponential(decimals).split("e");
+  const digits = mantissa.replace(".", "").replace(/0+$/, "") || "0";
+  return `${digits}e${Number(exponent) - decimals}`;
 }
 
 /**
@@ -183,13 +210,15 @@ export function formatSubsidy(btc: number): string {
 /**
  * Dollars, at whatever precision the amount deserves: a 2009 fee is worth
  * small fractions of a cent, a 2017 one several hundred dollars, and one
- * rule for both prints either "$0" or "$412.00".
+ * rule for both prints either "$0" or "$412.00". Below COMPACT_BELOW, same
+ * bare-exponent treatment as formatBtc, for the same reason.
  */
 export function formatUsd(usd: number): string {
   if (usd >= 1000) {
     return `$${usd.toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
   }
   if (usd >= 1) return `$${usd.toFixed(2)}`;
+  if (usd > 0 && usd < COMPACT_BELOW) return `$${compactExponent(usd, 2)}`;
   return `$${trimZeros(usd.toPrecision(2))}`;
 }
 
