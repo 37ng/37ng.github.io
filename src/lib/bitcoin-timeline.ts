@@ -158,10 +158,14 @@ export function subsidyWorth(bar: Bar) {
   return btcWorth(subsidyAt(bar.startHeight), bar);
 }
 
-/** Below this, decimal notation is mostly leading zeros — "₿0.00000878"
-    reads as a wall of zeros before the digits that matter, and is wide
-    enough on its own to wrap a readout onto a second line. */
-const COMPACT_BELOW = 0.0001;
+/** Below this, decimal notation runs at least three digits deeper than the
+    three that matter — "₿0.000524" is a wall of zeros in front of "524",
+    and a readout showing two of these side by side (onchain/offchain, each
+    already carrying a BTC and a dollar figure) doesn't have the width to
+    spare. Set well above the point where decimal notation merely looks
+    long, since it's the combined line's width that has to fit, not any one
+    number's on its own. */
+const COMPACT_BELOW = 0.01;
 
 /** ₿ prefix, matching how a $ prefix reads on a dollar figure. Three
     significant figures rather than a fixed number of decimals: fee per block
@@ -198,6 +202,18 @@ function compactExponent(value: number, sigFigs: number): string {
 }
 
 /**
+ * A large number as "89.7k" or "1.23m" rather than "$89,700" or
+ * "$1,234,000" — comma grouping keeps every digit, which is exactly what
+ * makes it grow without bound; a reader gets the same "how big" read from
+ * three significant figures and a letter.
+ */
+function compactSuffix(value: number, sigFigs: number): string {
+  const [divisor, suffix] =
+    Math.abs(value) >= 1_000_000 ? [1_000_000, "m"] : [1000, "k"];
+  return `${trimZeros((value / divisor).toPrecision(sigFigs))}${suffix}`;
+}
+
+/**
  * The subsidy is an exact binary fraction the protocol defines, not a
  * measurement — 3.125, never 3.13. Printed in full while that stays short,
  * and to three significant figures below a hundredth of a BTC, where the
@@ -210,13 +226,14 @@ export function formatSubsidy(btc: number): string {
 /**
  * Dollars, at whatever precision the amount deserves: a 2009 fee is worth
  * small fractions of a cent, a 2017 one several hundred dollars, and one
- * rule for both prints either "$0" or "$412.00". Below COMPACT_BELOW, same
- * bare-exponent treatment as formatBtc, for the same reason.
+ * rule for both prints either "$0" or "$412.00". At either extreme it
+ * compacts rather than growing wider: below COMPACT_BELOW as a bare exponent
+ * (see formatBtc), at or above $1,000 as k/m (see compactSuffix) — a
+ * comma-grouped "$1,234,000" has no upper bound on width the way those two
+ * do.
  */
 export function formatUsd(usd: number): string {
-  if (usd >= 1000) {
-    return `$${usd.toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
-  }
+  if (usd >= 1000) return `$${compactSuffix(usd, 3)}`;
   if (usd >= 1) return `$${usd.toFixed(2)}`;
   if (usd > 0 && usd < COMPACT_BELOW) return `$${compactExponent(usd, 2)}`;
   return `$${trimZeros(usd.toPrecision(2))}`;

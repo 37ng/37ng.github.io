@@ -153,13 +153,13 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
     <div
       className={
         stage
-          ? "pointer-events-auto w-full max-w-lg"
+          ? "pointer-events-auto w-full max-w-xl"
           : "not-prose my-10 w-full border border-ink-700 p-5"
       }
       style={{ color: title }}
     >
       <div className="flex items-baseline justify-between font-mono text-[10px]">
-        <span style={{ color: accent }}>miner revenue</span>
+        <span style={{ color: accent }}>bitcoin tx fees</span>
         {/* The height box reserves its widest value and left-aligns inside it,
             so stepping #0 → #496,875 → #958,125 never drags the month label
             sideways with it. Pinning the right edge instead would move the
