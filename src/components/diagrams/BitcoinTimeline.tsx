@@ -313,18 +313,18 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
       {/* The figures are a stand-in until the real per-bar measurements land
           — see lib/bitcoin-timeline.ts. Said on the widget's face, not only
           in the source, since every other number on this page is real. */}
-      <p
+      <div
         className="mt-1 font-mono text-[9px] whitespace-nowrap"
         style={{ opacity: 0.6 }}
       >
         pseudo data · {formatHeight(BLOCKS_PER_BAR)} blocks(~1 month) per bar
-      </p>
-      <p
+      </div>
+      <div
         className="font-mono text-[9px] whitespace-nowrap"
         style={{ opacity: 0.6 }}
       >
         fees + subsidy · per block · big macs · log
-      </p>
+      </div>
     </div>
   );
 }
