@@ -241,25 +241,20 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
                 />
               ))}
             </g>
-            {/* The bar being read: a faint column the full height of the
-                chart, then the bar itself at full strength. The column is
-                what finds it — one bar a shade brighter would not stand out
-                among 220 of them — and it keeps the highlight out of the
-                colour channel, which stays the accent's alone. */}
-            <rect
-              x={selected}
-              width={1}
-              y={0}
-              height={100}
-              fill="currentColor"
-              opacity={0.12}
-            />
+            {/* The bar being read, redrawn in the accent. One mark, not two:
+                an earlier version put a faint full-height column behind it as
+                well, on the theory that one bar among 220 is hard to find —
+                but a bar that changes *colour* is found at a glance, and the
+                column only added a second highlight to read past. The axis
+                tick below is the same accent, so the cursor stays one colour
+                wherever it appears. Set through `style` because a CSS
+                variable is not read from an SVG presentation attribute. */}
             <rect
               x={selected + 0.08}
               width={0.84}
               y={100 - spineY(barHeights[selected])}
               height={spineY(barHeights[selected])}
-              fill="currentColor"
+              style={{ fill: accent }}
             />
           </svg>
 
