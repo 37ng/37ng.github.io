@@ -186,13 +186,15 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
         {/* Placeholder for a real off-chain measurement — see
             FAKE_OUT_OF_BAND_RATIO. Kept rather than dropped so the layout
             does not have to change again once the real figure lands. Same
-            btc-slash-dollar treatment as onchain, so the two read the same
-            way. */}
+            btc-slash-dollar treatment as onchain, and dimmed by the same
+            OFFCHAIN_TONE_RATIO as its bar, so the readout and the segment it
+            describes read as the same grey. */}
         <Readout
           label="offchain"
           value={`${formatBtc(outOfBandBtc)} / ${formatUsd(outOfBandWorth.usd)}`}
           sub={`annualized ${formatShare(outOfBandShare)}`}
           title={title}
+          opacity={OFFCHAIN_TONE_RATIO}
         />
       </dl>
 
@@ -375,15 +377,21 @@ function Readout({
   value,
   sub,
   title,
+  opacity = 1,
 }: {
   label: string;
   value: string;
   /** The line under the headline value — already formatted. */
   sub: string;
   title: string;
+  /** Dims the whole readout to match its bar's tone on the chart — e.g.
+      OFFCHAIN_TONE_RATIO, so the offchain readout reads as the same grey as
+      the offchain segment it describes, rather than the two only being
+      linked by a label. */
+  opacity?: number;
 }) {
   return (
-    <div>
+    <div style={{ opacity }}>
       <dt className="font-mono text-[9px]" style={{ opacity: 0.85 }}>
         {label}
       </dt>
