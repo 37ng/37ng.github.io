@@ -4,8 +4,8 @@ import {
   barAt,
   barX,
   BLOCKS_PER_BAR,
-  blockWorth,
   btcWorth,
+  feeOnlyShare,
   feeWorth,
   formatBtc,
   formatHeight,
@@ -13,10 +13,7 @@ import {
   formatUsd,
   halvingIndices,
   normalize,
-  onchainShare,
   spineY,
-  subsidyAt,
-  subsidyWorth,
 } from "@/lib/bitcoin-timeline";
 
 /**
@@ -59,30 +56,27 @@ interface BitcoinTimelineProps {
 }
 
 /**
- * Seventeen years of onchain revenue, one bar per 4,375 blocks.
+ * Seventeen years of onchain tx fee revenue, one bar per 4,375 blocks.
  *
- * One bar per period, and one bar only: a block pays its miner the subsidy
- * *and* the fees, so the bar is what that block was worth, drawn as a single
- * mark in a single tone. How that total splits is two numbers, and the
- * readouts above the chart print both for whichever bar is being read —
- * putting the split in the picture instead only adds a boundary the reader
- * has to decode, and one series per row would be worse still: each would
- * fill its own box, and a fee a hundredth the size of a subsidy would look
- * just as tall.
+ * The subsidy is deliberately left out of the chart and the onchain
+ * readout: it is protocol-issued, not paid by anyone using the chain, and
+ * mixing it into "onchain revenue" answered a different question (what did
+ * mining pay) than the one this widget asks (what did the chain's own
+ * activity pay). Fees only, so the bar is one payment in one tone.
  *
- * The bar is drawn and read in **Big Macs**, not BTC. In BTC the subsidy is
- * just the halving — a staircase saying only what the label already says —
- * and the fee is a number whose unit changed value ten-thousandfold along
- * the axis it is plotted against. Priced in what it bought at the time, the
- * same figures say the thing the raw numbers hide: for three halvings a
- * block's pay kept growing in real terms even as the subsidy behind it
- * halved.
+ * The bar is drawn and read in **Big Macs**, not BTC. A fee in BTC says
+ * nothing across seventeen years, and the fee is a number whose unit changed
+ * value ten-thousandfold along the axis it is plotted against. Priced in
+ * what it bought at the time, the same figures say the thing the raw numbers
+ * hide.
  *
  * The axis is block height, not the calendar: 4,375 blocks is 210,000 / 48,
- * so a halving is always a bar edge. Nothing is fetched — every figure is in
- * `bitcoin-bars.json`, which is currently pseudo data (real heights,
- * invented fees and prices). The widget says so under the chart rather than
- * letting a stand-in pass as a measurement.
+ * so a halving is always a bar edge — kept as the axis's only ticks even
+ * though the subsidy itself is off the chart, since it is still the one
+ * event in Bitcoin's history worth marking. Nothing is fetched — every
+ * figure is in `bitcoin-bars.json`, which is currently pseudo data (real
+ * heights, invented fees and prices). The widget says so under the chart
+ * rather than letting a stand-in pass as a measurement.
  *
  * Reading is by hover: the bar under the pointer is the one the readouts
  * describe, and it stays there when the pointer leaves — until one has been
@@ -99,14 +93,13 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   const [hovered, setHovered] = useState<number | null>(null);
   const selected = hovered ?? BARS.length - 1;
   const bar = BARS[selected];
-  const subsidy = subsidyAt(bar.startHeight);
   const halvings = useMemo(() => halvingIndices(BARS), []);
 
   // Fake, and tied to the real payment only so it tracks the bar under the
   // cursor — see FAKE_OUT_OF_BAND_RATIO.
-  const outOfBandBtc = (bar.feePerBlockBtc + subsidy) * FAKE_OUT_OF_BAND_RATIO;
+  const outOfBandBtc = bar.feePerBlockBtc * FAKE_OUT_OF_BAND_RATIO;
   const outOfBandWorth = btcWorth(outOfBandBtc, bar);
-  const outOfBandShare = onchainShare(bar) * FAKE_OUT_OF_BAND_RATIO;
+  const outOfBandShare = feeOnlyShare(bar) * FAKE_OUT_OF_BAND_RATIO;
 
   // The bar heights, computed once: 220 rects is enough geometry that
   // redoing it on every pointer move would be waste, and none of it depends
@@ -114,7 +107,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   const barHeights = useMemo(
     () =>
       normalize(
-        BARS.map((entry) => floorBigMacs(blockWorth(entry).bigMacs)),
+        BARS.map((entry) => floorBigMacs(feeWorth(entry).bigMacs)),
         { log: true, floor: 0.03 },
       ),
     [],
@@ -163,14 +156,14 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
       </div>
 
       <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3">
-        {/* The headline is the one payment, added up, with its dollar worth
-            parenthesised alongside rather than broken out into its own line.
-            Its share of the year's issuance moved down to where the dollar
-            figure used to sit — the sub line. */}
+        {/* Fees only — the subsidy is protocol issuance, not something
+            anyone using the chain paid, so it has no place in a reading of
+            onchain revenue. Dollar worth parenthesised alongside the
+            headline; its share of the year's issuance is the sub line. */}
         <Readout
           label="onchain"
-          value={`${formatBtc(bar.feePerBlockBtc + subsidy)}(${formatUsd(feeWorth(bar).usd + subsidyWorth(bar).usd)})`}
-          sub={formatShare(onchainShare(bar))}
+          value={`${formatBtc(bar.feePerBlockBtc)}(${formatUsd(feeWorth(bar).usd)})`}
+          sub={formatShare(feeOnlyShare(bar))}
           title={title}
         />
         {/* Placeholder for a real off-chain measurement — see
@@ -197,7 +190,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
         aria-valuemin={0}
         aria-valuemax={BARS.length - 1}
         aria-valuenow={selected}
-        aria-valuetext={`${bar.month}, block ${bar.startHeight}, ${subsidy} BTC subsidy, ${formatShare(onchainShare(bar))} of all BTC paid to miners per year`}
+        aria-valuetext={`${bar.month}, block ${bar.startHeight}, ${formatBtc(bar.feePerBlockBtc)} fees per block, ${formatShare(feeOnlyShare(bar))} of all BTC issued per year`}
         className="mt-4 cursor-crosshair touch-none select-none"
         onPointerMove={(event) => readFromEvent(event.clientX)}
         onKeyDown={(event) => {
@@ -212,11 +205,9 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
           setHovered(Math.min(BARS.length - 1, Math.max(0, next)));
         }}
       >
-        {/* One bar per period, one tone. The bar is what a block paid its
-            miner — subsidy plus fees — and it is drawn as one mark, because
-            that is one payment. Splitting it into two shades put a boundary
-            in the picture that a reader has to decode; the split is a pair of
-            numbers, and the readouts above already print them. */}
+        {/* One bar per period, one tone: what a block's transactions paid
+            the miner, fees only — the subsidy is left off, since it is
+            issuance rather than something the chain's own use paid for. */}
         <div className="relative h-20">
           {/* Drawn at full height from the first paint. An earlier version
               grew the bars in from the floor on mount, gated on a
@@ -325,7 +316,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
         className="font-mono text-[9px] whitespace-nowrap"
         style={{ opacity: 0.6 }}
       >
-        fees + subsidy · per block · big macs · log
+        fees · per block · big macs · log
       </div>
     </div>
   );
