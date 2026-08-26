@@ -18,10 +18,10 @@ import {
 
 /**
  * Placeholder for a real off-chain measurement that does not exist yet: a
- * fixed fraction of the on-chain payment, so the readout moves with the bar
- * being read instead of sitting frozen while everything beside it changes.
- * Replace with the real figure once it exists — same as the rest of the
- * chart's pseudo data.
+ * fixed fraction of the on-chain payment, so both the readout and the bar it
+ * stacks on the chart move with the bar being read instead of sitting frozen
+ * while everything beside them changes. Replace with the real figure once it
+ * exists — same as the rest of the chart's pseudo data.
  */
 const FAKE_OUT_OF_BAND_RATIO = 0.35;
 
@@ -41,14 +41,16 @@ function floorBigMacs(count: number): number {
   return Math.max(count, MIN_BIG_MACS);
 }
 
-/**
- * The one lightness the bars are drawn in.
- *
- * One tone, not two: the bar is a single payment, and the hovered bar goes
- * to full strength so the reader can see which one the numbers above belong
- * to. Colour is left to the accent, which marks position, not data.
- */
+/** The onchain segment's opacity — full strength, since it is the real
+    figure the axis and readouts are built on. */
 const BAR_TONE = 0.55;
+
+/** The offchain segment's opacity relative to onchain's, applied to both the
+    resting grey and the accent when its bar is being read — so the same
+    lighter-on-top relationship holds whether or not a bar is selected. Below
+    1: offchain is fake, and reading lighter than onchain says so before the
+    label does. */
+const OFFCHAIN_TONE_RATIO = 0.5;
 
 interface BitcoinTimelineProps {
   /** Stage furniture is a wide strip; in a post it is a boxed figure. */
@@ -103,15 +105,23 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
 
   // The bar heights, computed once: 220 rects is enough geometry that
   // redoing it on every pointer move would be waste, and none of it depends
-  // on which bar is under the cursor.
-  const barHeights = useMemo(
-    () =>
-      normalize(
-        BARS.map((entry) => floorBigMacs(feeWorth(entry).bigMacs)),
-        { log: true, floor: 0.03 },
-      ),
-    [],
-  );
+  // on which bar is under the cursor. Onchain and offchain are normalized
+  // together, interleaved into one series before the log scale sees them,
+  // so a bar's two segments are comparable heights rather than each series
+  // separately stretched to fill the same range.
+  const barHeights = useMemo(() => {
+    const interleaved = BARS.flatMap((entry) => [
+      floorBigMacs(feeWorth(entry).bigMacs),
+      floorBigMacs(feeWorth(entry).bigMacs * FAKE_OUT_OF_BAND_RATIO),
+    ]);
+    const normalized = normalize(interleaved, { log: true, floor: 0.03 });
+    const onchain: number[] = [];
+    const offchain: number[] = [];
+    normalized.forEach((height, i) =>
+      (i % 2 === 0 ? onchain : offchain).push(height),
+    );
+    return { onchain, offchain };
+  }, []);
 
   const readFromEvent = (clientX: number) => {
     const chart = chartRef.current;
@@ -205,9 +215,11 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
           setHovered(Math.min(BARS.length - 1, Math.max(0, next)));
         }}
       >
-        {/* One bar per period, one tone: what a block's transactions paid
-            the miner, fees only — the subsidy is left off, since it is
-            issuance rather than something the chain's own use paid for. */}
+        {/* One bar per period, two segments: onchain fees at the base, the
+            fake offchain figure stacked on top of it in a lighter tone —
+            see OFFCHAIN_TONE_RATIO. The subsidy is left off both, since it
+            is issuance rather than something the chain's own use paid
+            for. */}
         <div className="relative h-20">
           {/* Drawn at full height from the first paint. An earlier version
               grew the bars in from the floor on mount, gated on a
@@ -223,32 +235,61 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
           >
             {/* The bars are drawn once and never redrawn: only the highlight
                 moves with the pointer, so a pointer move does not re-diff 220
-                rects. */}
-            <g fill="currentColor" opacity={BAR_TONE}>
-              {barHeights.map((height, i) => (
+                rects. Onchain is the base of the stack; offchain sits above
+                it, at its own (lighter) opacity, in the same pass since
+                neither ever needs to redraw on its own. */}
+            <g fill="currentColor">
+              {barHeights.onchain.map((height, i) => (
                 <rect
                   key={i}
                   x={i + 0.08}
                   width={0.84}
                   y={100 - spineY(height)}
                   height={spineY(height)}
+                  opacity={BAR_TONE}
                 />
               ))}
+              {barHeights.offchain.map((height, i) => {
+                const onchainTop = 100 - spineY(barHeights.onchain[i]);
+                return (
+                  <rect
+                    key={i}
+                    x={i + 0.08}
+                    width={0.84}
+                    y={onchainTop - spineY(height)}
+                    height={spineY(height)}
+                    opacity={BAR_TONE * OFFCHAIN_TONE_RATIO}
+                  />
+                );
+              })}
             </g>
-            {/* The bar being read, redrawn in the accent. One mark, not two:
-                an earlier version put a faint full-height column behind it as
-                well, on the theory that one bar among 220 is hard to find —
-                but a bar that changes *colour* is found at a glance, and the
-                column only added a second highlight to read past. The axis
-                tick below is the same accent, so the cursor stays one colour
-                wherever it appears. Set through `style` because a CSS
-                variable is not read from an SVG presentation attribute. */}
+            {/* The bar being read, redrawn in the accent — both of its
+                segments, at the same relative opacities as the resting grey,
+                so the onchain/offchain distinction survives being
+                highlighted. One mark per segment, not a second highlight
+                layered behind: a bar that changes *colour* is found at a
+                glance, and a backing column only adds something to read
+                past. The axis tick below is the same accent, so the cursor
+                stays one colour wherever it appears. Set through `style`
+                because a CSS variable is not read from an SVG presentation
+                attribute. */}
             <rect
               x={selected + 0.08}
               width={0.84}
-              y={100 - spineY(barHeights[selected])}
-              height={spineY(barHeights[selected])}
+              y={100 - spineY(barHeights.onchain[selected])}
+              height={spineY(barHeights.onchain[selected])}
               style={{ fill: accent }}
+            />
+            <rect
+              x={selected + 0.08}
+              width={0.84}
+              y={
+                100 -
+                spineY(barHeights.onchain[selected]) -
+                spineY(barHeights.offchain[selected])
+              }
+              height={spineY(barHeights.offchain[selected])}
+              style={{ fill: accent, opacity: OFFCHAIN_TONE_RATIO }}
             />
           </svg>
         </div>
@@ -316,7 +357,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
         className="font-mono text-[9px] whitespace-nowrap"
         style={{ opacity: 0.6 }}
       >
-        fees · per block · big macs · log
+        onchain, offchain(fake) · per block · big macs · log
       </div>
     </div>
   );
