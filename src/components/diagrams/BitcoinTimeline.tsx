@@ -164,26 +164,27 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
       </div>
 
       <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3">
-        {/* The headline is the one payment, added up, with its share of the
-            year's issuance parenthesised alongside rather than broken out
-            into a panel of its own. The breakdown the total is made of gets
-            its own line above the dollar figure. */}
+        {/* The headline is the one payment, added up, with its dollar worth
+            parenthesised alongside rather than broken out into its own line.
+            Its share of the year's issuance moved down to where the dollar
+            figure used to sit — the sub line. The breakdown the total is
+            made of gets its own line above that. */}
         <Readout
           label="onchain"
-          value={`${formatBtc(bar.feePerBlockBtc + subsidy)} (${formatShare(onchainShare(bar))})`}
+          value={`${formatBtc(bar.feePerBlockBtc + subsidy)}(${formatUsd(feeWorth(bar).usd + subsidyWorth(bar).usd)})`}
           detail={`₿${formatBtc(bar.feePerBlockBtc).slice(1)}+${formatSubsidy(subsidy).slice(1)}`}
-          sub={formatUsd(feeWorth(bar).usd + subsidyWorth(bar).usd)}
+          sub={formatShare(onchainShare(bar))}
           title={title}
         />
         {/* Placeholder for a real off-chain measurement — see
             FAKE_OUT_OF_BAND_RATIO. Kept rather than dropped so the layout
             does not have to change again once the real figure lands. Same
-            parenthesised-share treatment as onchain, so the two read the
+            parenthesised-dollar treatment as onchain, so the two read the
             same way. */}
         <Readout
           label="offchain"
-          value={`${formatBtc(outOfBandBtc)} (${formatShare(outOfBandShare)})`}
-          sub={formatUsd(outOfBandWorth.usd)}
+          value={`${formatBtc(outOfBandBtc)}(${formatUsd(outOfBandWorth.usd)})`}
+          sub={formatShare(outOfBandShare)}
           title={title}
         />
       </dl>
