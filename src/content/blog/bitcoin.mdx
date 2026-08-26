@@ -12,6 +12,7 @@ import BitcoinTimeline from "@/components/diagrams/BitcoinTimeline.astro";
 import FlagRateMempool from "@/components/diagrams/FlagRateMempool.astro";
 import FlaggedBlocks from "@/components/diagrams/FlaggedBlocks.astro";
 import PoolFlagHeatmap from "@/components/diagrams/PoolFlagHeatmap.astro";
+import { OffchainRevenue } from "@/components/diagrams/OffchainRevenue";
 
 <BitcoinTimeline variant="post" />
 
@@ -70,6 +71,32 @@ on the same scale.
 <PoolFlagHeatmap />
 
 The numbers here are placeholder data, not measurements.
+
+## What a pool earns off the book
+
+A block has a floor: the lowest feerate it accepted, call it `floor_B`. Every
+transaction in that block should pay at least that much, because a transaction
+paying less was, by the pool's own revealed preference, not worth the space.
+When one shows up under the floor anyway, the pool put it there for a reason
+that the chain does not record.
+
+The size of that reason is measurable. For each flagged transaction,
+`(floor_B − actual feerate) × vsize` is the fee the pool declined to collect
+publicly — so it is a lower bound on what it was paid privately. A bound, not
+an estimate: the private payment can be larger, never smaller.
+
+Run that over one month of blocks and the shape of the practice appears. Most
+blocks are clean. A minority carry a transaction that skipped the auction, and
+a few of those carry a consolidation big enough that the implied payment runs
+into six figures of sats.
+
+<OffchainRevenue client:visible />
+
+Two things worth reading off it. The revenue is concentrated — a handful of
+blocks account for most of the month's total, so this is not a steady toll on
+every block but an occasional large one. And the flagged share moves with the
+mempool: when the floor rises, skipping the auction is worth more, and more
+people pay to skip it.
 
 ## The energy cost of mining
 
