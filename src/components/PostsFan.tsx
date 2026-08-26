@@ -264,7 +264,7 @@ export function PostsFan({ posts }: PostsFanProps) {
               ref={(el) => {
                 cardRefs.current[post.id] = el;
               }}
-              href={`/blog/${post.id}`}
+              href={`/posts/${post.id}`}
               onMouseEnter={() => setStage(post.id)}
               onFocus={() => setStage(post.id)}
               onClick={guardTap}
