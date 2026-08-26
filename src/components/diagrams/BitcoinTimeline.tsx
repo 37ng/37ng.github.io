@@ -105,20 +105,25 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
 
   // The bar heights, computed once: 220 rects is enough geometry that
   // redoing it on every pointer move would be waste, and none of it depends
-  // on which bar is under the cursor. Onchain and offchain are normalized
-  // together, interleaved into one series before the log scale sees them,
-  // so a bar's two segments are comparable heights rather than each series
-  // separately stretched to fill the same range.
+  // on which bar is under the cursor.
+  //
+  // Onchain and offchain are stacked, so what gets normalized to fill the
+  // chart is each bar's *combined* height — not the two segments
+  // independently. Normalizing them separately let each reach 1 on its own,
+  // so a bar's two segments could sum past the top of the chart and get
+  // clipped by the viewBox; normalizing the total instead means the tallest
+  // stack on the chart, and only that one, ever reaches the top.
   const barHeights = useMemo(() => {
-    const interleaved = BARS.flatMap((entry) => [
-      floorBigMacs(feeWorth(entry).bigMacs),
-      floorBigMacs(feeWorth(entry).bigMacs * FAKE_OUT_OF_BAND_RATIO),
-    ]);
-    const normalized = normalize(interleaved, { log: true, floor: 0.03 });
-    const onchain: number[] = [];
-    const offchain: number[] = [];
-    normalized.forEach((height, i) =>
-      (i % 2 === 0 ? onchain : offchain).push(height),
+    const totals = BARS.map((entry) =>
+      floorBigMacs(feeWorth(entry).bigMacs * (1 + FAKE_OUT_OF_BAND_RATIO)),
+    );
+    const totalHeights = normalize(totals, { log: true, floor: 0.03 });
+    // The split within each bar's total: fixed by FAKE_OUT_OF_BAND_RATIO,
+    // the same fraction of the total for every bar.
+    const onchainShare = 1 / (1 + FAKE_OUT_OF_BAND_RATIO);
+    const onchain = totalHeights.map((height) => height * onchainShare);
+    const offchain = totalHeights.map(
+      (height) => height * (1 - onchainShare),
     );
     return { onchain, offchain };
   }, []);
