@@ -1,160 +1,167 @@
 /**
- * Coverage for the four "what if a live figure never arrives" paths a
- * visitor can hit:
+ * The parts of the bar timeline a reader could catch being wrong.
  *
- *  1. BTC/USD is unknown (open epoch, live price fetch failed or hasn't
- *     landed) -> `btcWorth` returns null outright, so the widget shows no
- *     dollar or Big Mac line at all rather than a "$NaN" or a stale number.
- *  2. BTC/USD is known but the Big Mac price isn't -> `btcWorth` still
- *     returns a usable `usd`, only `bigMacs` is null, so the widget falls
- *     back to showing the dollar figure alone.
- *  3. The live epoch fetch itself fails -> `visibleEpochs` drops the
- *     unresolved open-epoch guess from the track instead of drawing it as
- *     if it were real data.
- *  4. The tx-fees/subsidy *spines* (the sparklines, not the readout text)
- *     pick one basis for every band at once, via `worthBasis` +
- *     `spineValue`: Big Macs only if both live prices resolved, else USD
- *     only if live BTC/USD resolved, else raw BTC. A missing live price
- *     demotes the whole spine, even for a finished epoch whose own average
- *     is sitting right there in bitcoin-epochs.json — see `worthBasis`'s doc
- *     comment for why a per-band basis would misread as a value crash.
+ * Nothing in this widget is fetched any more, so there are no "the figure
+ * never arrived" paths left to cover. What is left is the arithmetic that
+ * has to agree with the chain — the subsidy at a height, and the claim the
+ * whole 4,375-block grid rests on: that a halving is always a bar *edge* and
+ * never a point inside a bar — plus the two things a 220-bar chart does
+ * differently from the old five-knot track: a log scale whose values are
+ * almost all *below* 1, and a bar that is one payment rather than two
+ * series.
  *
- * These are pure functions specifically so this behavior can be pinned down
- * without a browser: BitcoinTimeline.tsx just wires each one's result to a
- * `<Readout>`/a spine/the track — see that component's top-of-file doc
- * comment for how to reproduce all four live, in a real browser, with
- * devtools network throttling.
+ * These are pure functions specifically so that behavior can be pinned down
+ * without a browser: BitcoinTimeline.tsx only wires each result to a
+ * `<Readout>`, a rect, or the axis.
  */
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
+  BARS,
+  barAt,
+  barX,
+  BLOCKS_PER_BAR,
+  BLOCKS_PER_HALVING,
+  blockWorth,
   btcWorth,
   feeWorth,
-  spineValue,
+  formatBigMacs,
+  formatBtc,
+  formatSubsidy,
+  formatUsd,
+  halvingIndices,
+  normalize,
+  subsidyAt,
   subsidyWorth,
-  visibleEpochs,
-  worthBasis,
-  type Epoch,
+  type Bar,
 } from "@/lib/bitcoin-timeline";
 
-/** A finished epoch: both period averages on file, nothing live needed. */
-const FINISHED: Epoch = {
-  id: "e0",
-  label: "50",
-  subsidyBtc: 50,
-  startHeight: 0,
-  endHeight: 210_000,
-  startDate: "2009-01-03",
-  endDate: "2012-11-28",
-  tipHeight: null,
-  totalFeesBtc: 10,
-  avgDifficulty: 1,
-  avgBtcUsd: 10,
-  usBigMacUsd: 2,
-};
-
-/** The still-open epoch: no averages of its own yet — everything about its
-    worth depends on whatever live prices the caller passes in. */
-const OPEN: Epoch = {
-  id: "e1",
-  label: "25",
-  subsidyBtc: 25,
-  startHeight: 210_000,
-  endHeight: null,
-  startDate: "2012-11-28",
-  endDate: null,
-  tipHeight: 210_100,
-  totalFeesBtc: 1,
-  avgDifficulty: 1,
-  avgBtcUsd: null,
-  usBigMacUsd: null,
-};
-
-test("btcWorth: a finished epoch prices itself, ignoring the live prices entirely", () => {
-  const worth = btcWorth(2, FINISHED, 999, 999);
-  assert.deepEqual(worth, { usd: 20, bigMacs: 10 });
+const BAR = (over: Partial<Bar> = {}): Bar => ({
+  startHeight: 240_000,
+  month: "2013-06",
+  feePerBlockBtc: 0.06,
+  btcUsd: 100,
+  bigMacUsd: 4,
+  ...over,
 });
 
-test("btcWorth: no BTC/USD anywhere (open epoch, live price unknown) -> null, not a half-answer", () => {
-  assert.equal(btcWorth(2, OPEN, null, 5), null);
+test("a halving is always a bar edge — the reason the axis is height, not the calendar", () => {
+  assert.equal(BLOCKS_PER_HALVING % BLOCKS_PER_BAR, 0);
+  assert.equal(BLOCKS_PER_HALVING / BLOCKS_PER_BAR, 48);
 });
 
-test("btcWorth: BTC/USD known, Big Mac price unknown -> usd resolves, bigMacs falls back to null", () => {
-  const worth = btcWorth(2, OPEN, 10, null);
-  assert.deepEqual(worth, { usd: 20, bigMacs: null });
+test("every bar covers exactly one subsidy, start to last block", () => {
+  for (const bar of BARS) {
+    assert.equal(
+      subsidyAt(bar.startHeight),
+      subsidyAt(bar.startHeight + BLOCKS_PER_BAR - 1),
+      `bar at #${bar.startHeight} straddles a halving`,
+    );
+  }
 });
 
-test("btcWorth: both live prices known -> both resolve", () => {
-  const worth = btcWorth(2, OPEN, 10, 4);
-  assert.deepEqual(worth, { usd: 20, bigMacs: 5 });
+test("bars tile the chain with no gap and no overlap", () => {
+  BARS.forEach((bar, i) => {
+    assert.equal(bar.startHeight, i * BLOCKS_PER_BAR);
+  });
 });
 
-test("btcWorth: a zero or negative Big Mac price is treated as unknown, not a divide-by-zero", () => {
-  assert.deepEqual(btcWorth(2, OPEN, 10, 0), { usd: 20, bigMacs: null });
-  assert.deepEqual(btcWorth(2, OPEN, 10, -1), { usd: 20, bigMacs: null });
+test("subsidyAt: halves at every 210,000th block, exactly on the boundary", () => {
+  assert.equal(subsidyAt(0), 50);
+  assert.equal(subsidyAt(209_999), 50);
+  assert.equal(subsidyAt(210_000), 25);
+  assert.equal(subsidyAt(419_999), 25);
+  assert.equal(subsidyAt(420_000), 12.5);
+  assert.equal(subsidyAt(840_000), 3.125);
 });
 
-test("btcWorth: null btc amount -> null, no matter what prices are available", () => {
-  assert.equal(btcWorth(null, FINISHED, 10, 10), null);
+test("subsidyAt: pays nothing from the 33rd halving on, where a satoshi rounds away", () => {
+  assert.equal(subsidyAt(32 * 210_000) > 0, true);
+  assert.equal(subsidyAt(33 * 210_000), 0);
 });
 
-test("feeWorth: the open epoch's fees aren't fetched yet -> null, same as btcWorth(null, ...)", () => {
-  const stillLoading: Epoch = { ...OPEN, totalFeesBtc: null };
-  assert.equal(feeWorth(stillLoading, 10, 10), null);
+test("barAt: a uniform grid, with both ends landing inside the chart", () => {
+  assert.equal(barAt(0, 220), 0);
+  assert.equal(barAt(0.5, 220), 110);
+  // Dragged past the last bar's left edge, and exactly to the end.
+  assert.equal(barAt(219.5 / 220, 220), 219);
+  assert.equal(barAt(1, 220), 219);
 });
 
-test("subsidyWorth: prices the fixed subsidy the same way feeWorth prices fees", () => {
-  assert.deepEqual(subsidyWorth(OPEN, 10, 4), { usd: 250, bigMacs: 62.5 });
+test("barX: a bar's left edge is its share of the chart", () => {
+  assert.equal(barX(0, 220), 0);
+  assert.equal(barX(110, 220), 0.5);
 });
 
-test("visibleEpochs: live fetch succeeded -> open epochs are appended to the track", () => {
-  const result = visibleEpochs([FINISHED], [OPEN], false);
-  assert.deepEqual(result, [FINISHED, OPEN]);
+test("halvingIndices: every 48th bar, starting at genesis", () => {
+  const marks = halvingIndices(BARS);
+  assert.deepEqual(marks.slice(0, 5), [0, 48, 96, 144, 192]);
+  assert.deepEqual(
+    marks.map((i) => subsidyAt(BARS[i].startHeight)),
+    [50, 25, 12.5, 6.25, 3.125],
+  );
 });
 
-test("visibleEpochs: live fetch failed -> open epochs (even a stale guess) are dropped entirely", () => {
-  const result = visibleEpochs([FINISHED], [OPEN], true);
-  assert.deepEqual(result, [FINISHED]);
+test("halvingIndices: the marked bars are the months the halvings happened", () => {
+  assert.deepEqual(
+    halvingIndices(BARS).map((i) => BARS[i].month),
+    ["2009-01", "2012-11", "2016-07", "2020-05", "2024-04"],
+  );
 });
 
-test("visibleEpochs: failed fetch with no open epochs pending is a no-op either way", () => {
-  assert.deepEqual(visibleEpochs([FINISHED], [], true), [FINISHED]);
-  assert.deepEqual(visibleEpochs([FINISHED], [], false), [FINISHED]);
+test("btcWorth: prices an amount in the bar's own two prices, never a live one", () => {
+  assert.deepEqual(btcWorth(2, BAR()), { usd: 200, bigMacs: 50 });
 });
 
-test("worthBasis: both live prices known -> Big Macs, the ideal basis", () => {
-  assert.equal(worthBasis(10, 4), "bigMacs");
+test("feeWorth / subsidyWorth: the same conversion over the two amounts on the row", () => {
+  const bar = BAR({ feePerBlockBtc: 0.5, startHeight: 240_000 });
+  assert.deepEqual(feeWorth(bar), { usd: 50, bigMacs: 12.5 });
+  // 240,000 is inside the second epoch, so 25 BTC — not a stored figure.
+  assert.deepEqual(subsidyWorth(bar), { usd: 2500, bigMacs: 625 });
 });
 
-test("worthBasis: live BTC/USD known, live Big Mac price missing -> usd", () => {
-  assert.equal(worthBasis(10, null), "usd");
+test("normalize: a log series of sub-1 values keeps its shape instead of collapsing", () => {
+  // Every value here is far below 1, which a fixed clamp at 1 would flatten
+  // to a single row — the first decade of Big Mac counts is exactly this.
+  assert.deepEqual(
+    normalize([0.000001, 0.0001, 0.01], { log: true, floor: 0 }),
+    [0, 0.5, 1],
+  );
 });
 
-test("worthBasis: live BTC/USD missing -> btc, regardless of the Big Mac price", () => {
-  assert.equal(worthBasis(null, 4), "btc");
-  assert.equal(worthBasis(null, null), "btc");
+test("normalize: a zero in a log series sits at the floor, not at -Infinity", () => {
+  const heights = normalize([0, 0.5, 1], { log: true, floor: 0 });
+  assert.equal(Number.isFinite(heights[0]), true);
+  assert.equal(heights[0], 0);
 });
 
-test("spineValue: btc basis returns the raw amount, ignoring the epoch's own on-file prices entirely", () => {
-  // FINISHED carries its own avgBtcUsd/usBigMacUsd, but the btc basis must
-  // still render the untouched amount — this is the "even a finished epoch
-  // with its own Big Mac price on file doesn't get shown in Big Macs" rule.
-  assert.equal(spineValue(FINISHED, 3, 999, 999, "btc"), 3);
-  assert.equal(spineValue(OPEN, 3, null, null, "btc"), 3);
+test("blockWorth: the bar is the whole payment, subsidy plus fees", () => {
+  const bar = BAR({ feePerBlockBtc: 0.5, startHeight: 240_000 });
+  const total = blockWorth(bar);
+  assert.equal(total.usd, feeWorth(bar).usd + subsidyWorth(bar).usd);
+  assert.equal(
+    total.bigMacs,
+    feeWorth(bar).bigMacs + subsidyWorth(bar).bigMacs,
+  );
 });
 
-test("spineValue: usd basis converts every band to dollars, even one with its own Big Mac price on file", () => {
-  assert.equal(spineValue(FINISHED, 3, 999, 999, "usd"), 30); // 3 * FINISHED.avgBtcUsd (10), not live
-  assert.equal(spineValue(OPEN, 3, 10, null, "usd"), 30); // 3 * live btcUsd (10)
+test("formatBtc: three significant figures, so both ends of the range stay readable", () => {
+  assert.equal(formatBtc(3.2), "₿3.2");
+  assert.equal(formatBtc(0.0203), "₿0.0203");
+  assert.equal(formatBtc(0.0000029), "₿0.0000029");
 });
 
-test("spineValue: bigMacs basis converts every band to Big Macs, own price or live", () => {
-  assert.equal(spineValue(FINISHED, 3, 999, 999, "bigMacs"), 15); // (3*10) / usBigMacUsd (2)
-  assert.equal(spineValue(OPEN, 3, 10, 5, "bigMacs"), 6); // (3*10) / live bigMacUsd (5)
+test("formatSubsidy: the protocol's exact fraction, not a rounded measurement", () => {
+  assert.equal(formatSubsidy(50), "₿50");
+  assert.equal(formatSubsidy(6.25), "₿6.25");
+  assert.equal(formatSubsidy(3.125), "₿3.125");
 });
 
-test("spineValue: null btc amount (still-loading band) -> 0, no matter the basis", () => {
-  assert.equal(spineValue(FINISHED, null, 10, 10, "btc"), 0);
-  assert.equal(spineValue(FINISHED, null, 10, 10, "usd"), 0);
-  assert.equal(spineValue(FINISHED, null, 10, 10, "bigMacs"), 0);
+test("formatUsd / formatBigMacs: precision follows the size of the amount", () => {
+  assert.equal(formatUsd(15530), "$15,530");
+  assert.equal(formatUsd(412.5), "$412.50");
+  assert.equal(formatUsd(0.0000024), "$0.0000024");
+  assert.equal(formatBigMacs(2947), "2,947");
+  assert.equal(formatBigMacs(12.34), "12.3");
+  assert.equal(formatBigMacs(0.00042), "0.00042");
 });
