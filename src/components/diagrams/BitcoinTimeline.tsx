@@ -5,10 +5,9 @@ import {
   barX,
   BLOCKS_PER_BAR,
   blockWorth,
-  feeOnlyShare,
+  btcWorth,
   feeWorth,
   formatBtc,
-  formatBtcBulk,
   formatHeight,
   formatShare,
   formatSubsidy,
@@ -19,8 +18,16 @@ import {
   spineY,
   subsidyAt,
   subsidyWorth,
-  supplyAfter,
 } from "@/lib/bitcoin-timeline";
+
+/**
+ * Placeholder for a real off-chain measurement that does not exist yet: a
+ * fixed fraction of the on-chain payment, so the readout moves with the bar
+ * being read instead of sitting frozen while everything beside it changes.
+ * Replace with the real figure once it exists — same as the rest of the
+ * chart's pseudo data.
+ */
+const FAKE_OUT_OF_BAND_RATIO = 0.35;
 
 /**
  * The bottom of the scale, in Big Macs.
@@ -96,6 +103,12 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   const subsidy = subsidyAt(bar.startHeight);
   const halvings = useMemo(() => halvingIndices(BARS), []);
 
+  // Fake, and tied to the real payment only so it tracks the bar under the
+  // cursor — see FAKE_OUT_OF_BAND_RATIO.
+  const outOfBandBtc = (bar.feePerBlockBtc + subsidy) * FAKE_OUT_OF_BAND_RATIO;
+  const outOfBandWorth = btcWorth(outOfBandBtc, bar);
+  const outOfBandShare = onchainShare(bar) * FAKE_OUT_OF_BAND_RATIO;
+
   // The bar heights, computed once: 220 rects is enough geometry that
   // redoing it on every pointer move would be waste, and none of it depends
   // on which bar is under the cursor.
@@ -137,7 +150,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
       style={{ color: body }}
     >
       <div className="flex items-baseline justify-between font-mono text-[10px]">
-        <span style={{ color: accent }}>onchain revenue</span>
+        <span style={{ color: accent }}>miner revenue</span>
         {/* The height box reserves its widest value and left-aligns inside it,
             so stepping #0 → #496,875 → #958,125 never drags the month label
             sideways with it. Pinning the right edge instead would move the
@@ -150,38 +163,29 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
         </span>
       </div>
 
-      <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3">
+      <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3">
+        {/* The headline is the one payment, added up, with its share of the
+            year's issuance parenthesised alongside rather than broken out
+            into a panel of its own. The breakdown the total is made of gets
+            its own line above the dollar figure. */}
         <Readout
-          label="tx fees / block"
-          value={formatBtc(bar.feePerBlockBtc)}
-          worth={feeWorth(bar)}
+          label="onchain"
+          value={`${formatBtc(bar.feePerBlockBtc + subsidy)} (${formatShare(onchainShare(bar))})`}
+          detail={`₿${formatBtc(bar.feePerBlockBtc).slice(1)}+${formatSubsidy(subsidy).slice(1)}`}
+          sub={formatUsd(feeWorth(bar).usd + subsidyWorth(bar).usd)}
           title={title}
         />
+        {/* Placeholder for a real off-chain measurement — see
+            FAKE_OUT_OF_BAND_RATIO. Kept rather than dropped so the layout
+            does not have to change again once the real figure lands. Same
+            parenthesised-share treatment as onchain, so the two read the
+            same way. */}
         <Readout
-          label="subsidy / block"
-          value={formatSubsidy(subsidy)}
-          worth={subsidyWorth(bar)}
+          label="offchain"
+          value={`${formatBtc(outOfBandBtc)} (${formatShare(outOfBandShare)})`}
+          sub={formatUsd(outOfBandWorth.usd)}
           title={title}
         />
-        {/* The same payment as a share of what it defends: a year of it over
-            every coin issued. Both sides are BTC, so the price cancels and
-            this column is protocol arithmetic — it does not move with the
-            two prices the columns beside it are priced in. */}
-        <div className="col-span-2 sm:col-span-1">
-          <dt className="font-mono text-[9px]" style={{ opacity: 0.7 }}>
-            onchain % / year
-          </dt>
-          <dd
-            className="mt-1 font-[family-name:var(--font-display)] text-xl font-semibold tabular-nums"
-            style={{ color: title }}
-          >
-            {formatShare(onchainShare(bar))}
-          </dd>
-          <dd className="font-mono text-[9px]" style={{ opacity: 0.7 }}>
-            of {formatBtcBulk(supplyAfter(bar))} · fees{" "}
-            {formatShare(feeOnlyShare(bar))}
-          </dd>
-        </div>
       </dl>
 
       {/* The chart takes the pointer as a single surface — the bars are
@@ -332,18 +336,24 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
 function Readout({
   label,
   value,
-  worth,
+  detail,
+  sub,
   title,
+  className,
 }: {
   label: string;
   value: string;
-  /** What that amount bought in the bar that earned it — the dollar figure,
-      then the one comparable across the whole chart. */
-  worth: { usd: number; bigMacs: number };
+  /** An optional breakdown line between the headline and the dollar figure —
+      e.g. the fee and subsidy that the headline is the sum of, kept visible
+      but out of the headline itself. */
+  detail?: string;
+  /** The dollar line under the headline value — already formatted. */
+  sub: string;
   title: string;
+  className?: string;
 }) {
   return (
-    <div>
+    <div className={className}>
       <dt className="font-mono text-[9px]" style={{ opacity: 0.7 }}>
         {label}
       </dt>
@@ -353,11 +363,19 @@ function Readout({
       >
         {value}
       </dd>
+      {detail && (
+        <dd
+          className="font-mono text-[9px] whitespace-nowrap"
+          style={{ opacity: 0.7 }}
+        >
+          {detail}
+        </dd>
+      )}
       <dd
         className="font-mono text-[9px] whitespace-nowrap"
         style={{ opacity: 0.7 }}
       >
-        {formatUsd(worth.usd)}
+        {sub}
       </dd>
     </div>
   );
