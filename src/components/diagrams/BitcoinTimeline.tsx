@@ -328,7 +328,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
         className="mt-1 font-mono text-[9px] whitespace-nowrap"
         style={{ opacity: 0.6 }}
       >
-        pseudo data · {formatHeight(BLOCKS_PER_BAR)} blocks per bar
+        pseudo data · {formatHeight(BLOCKS_PER_BAR)} blocks(~1 month) per bar
       </p>
     </div>
   );
