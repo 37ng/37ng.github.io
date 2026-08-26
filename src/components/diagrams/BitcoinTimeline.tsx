@@ -10,7 +10,6 @@ import {
   formatBtc,
   formatHeight,
   formatShare,
-  formatSubsidy,
   formatUsd,
   halvingIndices,
   normalize,
@@ -167,12 +166,10 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
         {/* The headline is the one payment, added up, with its dollar worth
             parenthesised alongside rather than broken out into its own line.
             Its share of the year's issuance moved down to where the dollar
-            figure used to sit — the sub line. The breakdown the total is
-            made of gets its own line above that. */}
+            figure used to sit — the sub line. */}
         <Readout
           label="onchain"
           value={`${formatBtc(bar.feePerBlockBtc + subsidy)}(${formatUsd(feeWorth(bar).usd + subsidyWorth(bar).usd)})`}
-          detail={`₿${formatBtc(bar.feePerBlockBtc).slice(1)}+${formatSubsidy(subsidy).slice(1)}`}
           sub={formatShare(onchainShare(bar))}
           title={title}
         />
@@ -337,17 +334,12 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
 function Readout({
   label,
   value,
-  detail,
   sub,
   title,
 }: {
   label: string;
   value: string;
-  /** An optional breakdown line between the headline and the dollar figure —
-      e.g. the fee and subsidy that the headline is the sum of, kept visible
-      but out of the headline itself. */
-  detail?: string;
-  /** The dollar line under the headline value — already formatted. */
+  /** The line under the headline value — already formatted. */
   sub: string;
   title: string;
 }) {
@@ -362,14 +354,6 @@ function Readout({
       >
         {value}
       </dd>
-      {detail && (
-        <dd
-          className="font-mono text-[9px] whitespace-nowrap"
-          style={{ opacity: 0.7 }}
-        >
-          {detail}
-        </dd>
-      )}
       <dd
         className="font-mono text-[9px] whitespace-nowrap"
         style={{ opacity: 0.7 }}
