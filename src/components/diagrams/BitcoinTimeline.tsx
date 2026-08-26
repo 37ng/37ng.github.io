@@ -339,7 +339,6 @@ function Readout({
   detail,
   sub,
   title,
-  className,
 }: {
   label: string;
   value: string;
@@ -350,10 +349,9 @@ function Readout({
   /** The dollar line under the headline value — already formatted. */
   sub: string;
   title: string;
-  className?: string;
 }) {
   return (
-    <div className={className}>
+    <div>
       <dt className="font-mono text-[9px]" style={{ opacity: 0.7 }}>
         {label}
       </dt>
