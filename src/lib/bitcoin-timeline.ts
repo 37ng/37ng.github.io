@@ -158,16 +158,59 @@ export function subsidyWorth(bar: Bar) {
   return btcWorth(subsidyAt(bar.startHeight), bar);
 }
 
+/** Below this, decimal notation runs at least three digits deeper than the
+    three that matter — "₿0.000524" is a wall of zeros in front of "524",
+    and a readout showing two of these side by side (onchain/offchain, each
+    already carrying a BTC and a dollar figure) doesn't have the width to
+    spare. Set well above the point where decimal notation merely looks
+    long, since it's the combined line's width that has to fit, not any one
+    number's on its own. */
+const COMPACT_BELOW = 0.01;
+
 /** ₿ prefix, matching how a $ prefix reads on a dollar figure. Three
     significant figures rather than a fixed number of decimals: fee per block
     runs from a few thousandths of a satoshi to several BTC, and any fixed
-    width prints one end of that as ₿0.000. */
+    width prints one end of that as ₿0.000. Below COMPACT_BELOW, switches to
+    a bare exponent (145e-7) rather than counting zeros — see
+    compactExponent. */
 export function formatBtc(btc: number): string {
+  if (btc > 0 && btc < COMPACT_BELOW) return `₿${compactExponent(btc, 3)}`;
   return `₿${trimZeros(btc.toPrecision(3))}`;
 }
 
 function trimZeros(text: string): string {
   return text.includes(".") ? text.replace(/\.?0+$/, "") : text;
+}
+
+/**
+ * A tiny number as a bare integer mantissa times ten-to-the — "145e-7"
+ * rather than "1.45e-7" or "0.0000145" — so a readout with several of these
+ * side by side stays one line wide instead of each number's width varying
+ * with how many leading zeros it has.
+ *
+ * Built from `toExponential`, which already gives `sigFigs` significant
+ * digits as `d.ddde±X`; the decimal point is dropped and its digits folded
+ * into the exponent (145e-7 is exactly 1.45e-5 with the point moved two
+ * places), and any trailing zeros the mantissa picked up from rounding are
+ * trimmed the same way `trimZeros` does for decimal notation.
+ */
+function compactExponent(value: number, sigFigs: number): string {
+  const decimals = sigFigs - 1;
+  const [mantissa, exponent] = value.toExponential(decimals).split("e");
+  const digits = mantissa.replace(".", "").replace(/0+$/, "") || "0";
+  return `${digits}e${Number(exponent) - decimals}`;
+}
+
+/**
+ * A large number as "89.7k" or "1.23m" rather than "$89,700" or
+ * "$1,234,000" — comma grouping keeps every digit, which is exactly what
+ * makes it grow without bound; a reader gets the same "how big" read from
+ * three significant figures and a letter.
+ */
+function compactSuffix(value: number, sigFigs: number): string {
+  const [divisor, suffix] =
+    Math.abs(value) >= 1_000_000 ? [1_000_000, "m"] : [1000, "k"];
+  return `${trimZeros((value / divisor).toPrecision(sigFigs))}${suffix}`;
 }
 
 /**
@@ -183,13 +226,16 @@ export function formatSubsidy(btc: number): string {
 /**
  * Dollars, at whatever precision the amount deserves: a 2009 fee is worth
  * small fractions of a cent, a 2017 one several hundred dollars, and one
- * rule for both prints either "$0" or "$412.00".
+ * rule for both prints either "$0" or "$412.00". At either extreme it
+ * compacts rather than growing wider: below COMPACT_BELOW as a bare exponent
+ * (see formatBtc), at or above $1,000 as k/m (see compactSuffix) — a
+ * comma-grouped "$1,234,000" has no upper bound on width the way those two
+ * do.
  */
 export function formatUsd(usd: number): string {
-  if (usd >= 1000) {
-    return `$${usd.toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
-  }
+  if (usd >= 1000) return `$${compactSuffix(usd, 3)}`;
   if (usd >= 1) return `$${usd.toFixed(2)}`;
+  if (usd > 0 && usd < COMPACT_BELOW) return `$${compactExponent(usd, 2)}`;
   return `$${trimZeros(usd.toPrecision(2))}`;
 }
 

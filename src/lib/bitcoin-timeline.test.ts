@@ -148,7 +148,9 @@ test("blockWorth: the bar is the whole payment, subsidy plus fees", () => {
 test("formatBtc: three significant figures, so both ends of the range stay readable", () => {
   assert.equal(formatBtc(3.2), "₿3.2");
   assert.equal(formatBtc(0.0203), "₿0.0203");
-  assert.equal(formatBtc(0.0000029), "₿0.0000029");
+  // Below COMPACT_BELOW, a bare exponent rather than a wall of leading
+  // zeros — see compactExponent.
+  assert.equal(formatBtc(0.0000029), "₿29e-8");
 });
 
 test("formatSubsidy: the protocol's exact fraction, not a rounded measurement", () => {
@@ -158,9 +160,12 @@ test("formatSubsidy: the protocol's exact fraction, not a rounded measurement", 
 });
 
 test("formatUsd / formatBigMacs: precision follows the size of the amount", () => {
-  assert.equal(formatUsd(15530), "$15,530");
+  // At $1,000 and up, k/m rather than comma grouping — see compactSuffix.
+  assert.equal(formatUsd(15530), "$15.5k");
+  assert.equal(formatUsd(2_400_000), "$2.4m");
   assert.equal(formatUsd(412.5), "$412.50");
-  assert.equal(formatUsd(0.0000024), "$0.0000024");
+  // Below COMPACT_BELOW, a bare exponent — see compactExponent.
+  assert.equal(formatUsd(0.0000024), "$24e-7");
   assert.equal(formatBigMacs(2947), "2,947");
   assert.equal(formatBigMacs(12.34), "12.3");
   assert.equal(formatBigMacs(0.00042), "0.00042");
