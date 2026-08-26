@@ -10,6 +10,7 @@ stageTone: "dark"
 
 import BitcoinTimeline from "@/components/diagrams/BitcoinTimeline.astro";
 import FlagRateMempool from "@/components/diagrams/FlagRateMempool.astro";
+import FlaggedBlocks from "@/components/diagrams/FlaggedBlocks.astro";
 
 <BitcoinTimeline variant="post" />
 
@@ -54,6 +55,11 @@ The two curves rise together, but not at the same moment. Private inclusion
 answers the spike a couple of days late — the public market prices congestion
 first, and the out-of-band route fills up after. **The numbers here are
 pseudo data**, placeholders for a real series.
+
+A softer version of the same risk is easier to see: which pools mine the
+blocks that carry flagged transactions, and how that share moves.
+
+<FlaggedBlocks />
 
 ## The energy cost of mining
 
