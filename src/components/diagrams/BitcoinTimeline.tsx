@@ -170,22 +170,22 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
       <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3">
         {/* Fees only — the subsidy is protocol issuance, not something
             anyone using the chain paid, so it has no place in a reading of
-            onchain revenue. Dollar worth parenthesised alongside the
-            headline; its share of the year's issuance is the sub line. */}
+            onchain revenue. Dollar worth alongside the headline; its share
+            of the year's issuance is the sub line. */}
         <Readout
           label="onchain"
-          value={`${formatBtc(bar.feePerBlockBtc)}(${formatUsd(feeWorth(bar).usd)})`}
+          value={`${formatBtc(bar.feePerBlockBtc)} / ${formatUsd(feeWorth(bar).usd)}`}
           sub={formatShare(feeOnlyShare(bar))}
           title={title}
         />
         {/* Placeholder for a real off-chain measurement — see
             FAKE_OUT_OF_BAND_RATIO. Kept rather than dropped so the layout
             does not have to change again once the real figure lands. Same
-            parenthesised-dollar treatment as onchain, so the two read the
-            same way. */}
+            btc-slash-dollar treatment as onchain, so the two read the same
+            way. */}
         <Readout
           label="offchain"
-          value={`${formatBtc(outOfBandBtc)}(${formatUsd(outOfBandWorth.usd)})`}
+          value={`${formatBtc(outOfBandBtc)} / ${formatUsd(outOfBandWorth.usd)}`}
           sub={formatShare(outOfBandShare)}
           title={title}
         />
