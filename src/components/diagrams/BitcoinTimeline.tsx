@@ -278,10 +278,19 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
             className="absolute inset-x-0 top-0 h-px"
             style={{ background: "currentColor", opacity: 0.35 }}
           />
-          {halvings.map((index) => (
+          {/* The knot is the 1px line, and it has to land on the boundary
+              exactly: this row and the bars above it are the same axis, and
+              the cursor tick below is placed the same way. So the label is
+              taken out of flow — inside a flex column it made the box as wide
+              as "2009" and centred the line inside that, which pushed every
+              knot half a label to the right of the halving it marks and left
+              genesis floating inside the chart instead of on its left edge.
+              The first label is left-aligned rather than centred, since half
+              of it would hang off the edge. */}
+          {halvings.map((index, order) => (
             <div
               key={index}
-              className="absolute top-0 flex flex-col items-center"
+              className="absolute top-0"
               style={{ left: `${barX(index, BARS.length) * 100}%` }}
             >
               <div
@@ -289,7 +298,9 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
                 style={{ height: 5, background: "currentColor", opacity: 0.5 }}
               />
               <span
-                className="mt-1 -translate-x-1/2 font-mono text-[9px] whitespace-nowrap"
+                className={`absolute top-[9px] font-mono text-[9px] whitespace-nowrap ${
+                  order === 0 ? "left-0" : "left-0 -translate-x-1/2"
+                }`}
                 style={{ opacity: 0.6 }}
               >
                 {BARS[index].month.slice(0, 4)}
