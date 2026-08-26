@@ -699,3 +699,22 @@ html[data-theme="light"]:has(#post) {
     color-mix(in srgb, var(--chart-surface) 40%, transparent) 4px 6px
   );
 }
+
+/* Heatmap cells grow in from their own baseline. Driven by CSS, not by island
+   state: the panel is server-rendered long before it hydrates, so a JS-held
+   "grown" flag would leave the static markup invisible. */
+@keyframes heat-cell-in {
+  from {
+    opacity: 0;
+    transform: scaleY(0.2);
+  }
+}
+.heat-cell {
+  transform-origin: 50% 100%;
+  animation: heat-cell-in 320ms ease-out backwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .heat-cell {
+    animation: none;
+  }
+}

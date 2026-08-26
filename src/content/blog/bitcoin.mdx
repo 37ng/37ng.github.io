@@ -11,6 +11,7 @@ stageTone: "dark"
 import BitcoinTimeline from "@/components/diagrams/BitcoinTimeline.astro";
 import FlagRateMempool from "@/components/diagrams/FlagRateMempool.astro";
 import FlaggedBlocks from "@/components/diagrams/FlaggedBlocks.astro";
+import PoolFlagHeatmap from "@/components/diagrams/PoolFlagHeatmap.astro";
 
 <BitcoinTimeline variant="post" />
 
@@ -60,6 +61,15 @@ A softer version of the same risk is easier to see: which pools mine the
 blocks that carry flagged transactions, and how that share moves.
 
 <FlaggedBlocks />
+
+One thing is easier to count: which pool mined a block, and whether that block
+carried a flagged transaction. Each cell below is one pool in one month —
+flagged blocks divided by blocks won, so a small pool and a large one are read
+on the same scale.
+
+<PoolFlagHeatmap />
+
+The numbers here are placeholder data, not measurements.
 
 ## The energy cost of mining
 
