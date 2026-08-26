@@ -80,13 +80,17 @@ interface BitcoinTimelineProps {
  * letting a stand-in pass as a measurement.
  *
  * Reading is by hover: the bar under the pointer is the one the readouts
- * describe, and with the pointer away they describe the most recent bar.
+ * describe, and it stays there when the pointer leaves — until one has been
+ * read, they describe the most recent bar.
  * Nothing moves on its own.
  */
 export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   const chartRef = useRef<HTMLDivElement>(null);
-  // null = not being read; the readouts fall back to the most recent bar, so
-  // the panel always states something rather than sitting blank.
+  // null = never read; the readouts fall back to the most recent bar, so the
+  // panel always states something rather than sitting blank. Nothing sets it
+  // back to null: where the pointer left is where the cursor stays, so a
+  // reader can look away from the chart to the numbers without the bar they
+  // were reading snapping back to today.
   const [hovered, setHovered] = useState<number | null>(null);
   const selected = hovered ?? BARS.length - 1;
   const bar = BARS[selected];
@@ -195,8 +199,6 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
         aria-valuetext={`${bar.month}, block ${bar.startHeight}, ${subsidy} BTC subsidy, ${formatShare(onchainShare(bar))} of all BTC paid to miners per year`}
         className="mt-4 cursor-crosshair touch-none select-none"
         onPointerMove={(event) => readFromEvent(event.clientX)}
-        onPointerLeave={() => setHovered(null)}
-        onBlur={() => setHovered(null)}
         onKeyDown={(event) => {
           const next =
             event.key === "ArrowLeft"
