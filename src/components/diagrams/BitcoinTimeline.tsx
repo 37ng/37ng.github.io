@@ -175,7 +175,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
         <Readout
           label="onchain"
           value={`${formatBtc(bar.feePerBlockBtc)} / ${formatUsd(feeWorth(bar).usd)}`}
-          sub={formatShare(feeOnlyShare(bar))}
+          sub={`annualized ${formatShare(feeOnlyShare(bar))}`}
           title={title}
         />
         {/* Placeholder for a real off-chain measurement — see
@@ -186,7 +186,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
         <Readout
           label="offchain"
           value={`${formatBtc(outOfBandBtc)} / ${formatUsd(outOfBandWorth.usd)}`}
-          sub={formatShare(outOfBandShare)}
+          sub={`annualized ${formatShare(outOfBandShare)}`}
           title={title}
         />
       </dl>
