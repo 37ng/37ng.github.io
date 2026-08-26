@@ -15,11 +15,13 @@ const { Content } = await render(post);
 ---
 
 <PostLayout
+  id={post.id}
   title={post.data.title}
   description={post.data.description}
   date={post.data.date}
   github={post.data.github}
   color={post.data.color}
+  hasStageArt={Boolean(post.data.heroImage)}
 >
   <Content />
 </PostLayout>

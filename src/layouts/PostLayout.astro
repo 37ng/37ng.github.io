@@ -3,14 +3,20 @@ import BaseLayout from "./BaseLayout.astro";
 import { ThemeToggle } from "../components/ThemeToggle";
 
 interface Props {
+  id: string;
   title: string;
   description?: string;
   date: string;
   github?: string;
   color?: string;
+  /** Whether this post has its own hero art — a paper-sheet post (e.g. the
+   * prologue) has no stage worth priming, so direct entry falls back to the
+   * curated landing stage instead. */
+  hasStageArt?: boolean;
 }
 
-const { title, description, date, github, color } = Astro.props;
+const { id, title, description, date, github, color, hasStageArt } =
+  Astro.props;
 // Fraunces, like the title above it and the prose below it — this line sits
 // between the two, and it was the only thing on the page still reading in the
 // body sans. The stage caption and the fan's panel already set the same face.
@@ -28,6 +34,7 @@ const headingClass =
        so it stays even though nothing else reads it now. -->
   <main
     id="post"
+    data-post-id={hasStageArt ? id : undefined}
     class="mx-auto max-w-3xl px-6 py-16"
     style={`--accent: ${color ?? "var(--color-signal-500)"}`}
   >
@@ -77,4 +84,27 @@ const headingClass =
     if (event.key !== "Escape" || event.defaultPrevented) return;
     document.querySelector<HTMLAnchorElement>("[data-back-home]")?.click();
   });
+
+  // A reader who lands straight on a post (a shared link, a search result)
+  // has no stage saved yet, so home's bootstrap would fall back to the fixed
+  // landing stage on Escape — a different subject than the one just read.
+  // Only fill the gap when it's empty: hovering a card in the fan already
+  // saved this post's stage before the click that opened it, and that choice
+  // must win. Re-read the post id from the DOM on every page-load (fired for
+  // the first load and every soft navigation) rather than closing over it,
+  // since the same module keeps running across post-to-post navigation. A
+  // paper-sheet post (no hero art, e.g. the prologue) carries no data-post-id
+  // at all, so this is a no-op there and home's own default takes over.
+  function primeStage() {
+    let id;
+    try {
+      if (sessionStorage.getItem("stage")) return;
+      id = document.getElementById("post")?.dataset.postId;
+      if (id) sessionStorage.setItem("stage", id);
+    } catch {
+      // Storage throws outright in some privacy modes.
+    }
+  }
+  primeStage();
+  document.addEventListener("astro:page-load", primeStage);
 </script>
