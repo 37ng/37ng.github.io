@@ -9,6 +9,7 @@ stageTone: "dark"
 ---
 
 import BitcoinTimeline from "@/components/diagrams/BitcoinTimeline.astro";
+import FlagRateMempool from "@/components/diagrams/FlagRateMempool.astro";
 
 <BitcoinTimeline variant="post" />
 
@@ -32,6 +33,27 @@ farms are decentralized.
 Of course, under today's hashrate distribution, a few farms colluding could
 run a 51% attack — violating their users' will, trading long-term interest and legal exposure for
 short-term gain. That risk is hard to quantify.
+
+## Flag rate vs mempool congestion
+
+Not every transaction goes through the public mempool. Some reach a pool
+directly, out of band, and appear only when the block does. Call a block
+that carries one of these a flagged block, and the share of flagged blocks
+the flag rate.
+
+The question: does private inclusion spike when the public fee market does?
+Two mirrored bands below, one day per column since January 2023 — the public
+median fee rate above the axis, the private inclusion percentage below it.
+The faint vertical rules mark the days where both series sit in their own top
+decile. Drag or hover to read a single day; the strip at the bottom is that
+day's blocks, one tick each, accent for flagged.
+
+<FlagRateMempool />
+
+The two curves rise together, but not at the same moment. Private inclusion
+answers the spike a couple of days late — the public market prices congestion
+first, and the out-of-band route fills up after. **The numbers here are
+pseudo data**, placeholders for a real series.
 
 ## The energy cost of mining
 
