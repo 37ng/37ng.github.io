@@ -1,0 +1,4274 @@
+{
+  "note": "PSEUDO DATA — deterministic stand-in, replace with real Jan 2023 measurements.",
+  "month": "2023-01",
+  "firstHeight": 769795,
+  "lastHeight": 774235,
+  "totalBlocks": 4441,
+  "blocksPerDay": [
+    148, 155, 158, 138, 147, 141, 152, 128, 134, 179, 138, 161, 140, 118, 142,
+    132, 150, 140, 167, 136, 134, 144, 149, 151, 128, 130, 154, 148, 125, 141,
+    133
+  ],
+  "blocks": [
+    {
+      "h": 769808,
+      "t": "2023-01-01T01:58:38Z",
+      "pool": "ViaBTC",
+      "txs": 1,
+      "vsize": 996,
+      "floorB": 1.94,
+      "actualFeerate": 0.34,
+      "impliedSats": 1594
+    },
+    {
+      "h": 769812,
+      "t": "2023-01-01T02:30:57Z",
+      "pool": "Foundry USA",
+      "txs": 5,
+      "vsize": 400680,
+      "floorB": 2.15,
+      "actualFeerate": 0.16,
+      "impliedSats": 797353
+    },
+    {
+      "h": 769816,
+      "t": "2023-01-01T03:04:37Z",
+      "pool": "F2Pool",
+      "txs": 2,
+      "vsize": 871,
+      "floorB": 1.89,
+      "actualFeerate": 0.48,
+      "impliedSats": 1228
+    },
+    {
+      "h": 769817,
+      "t": "2023-01-01T03:22:50Z",
+      "pool": "Binance Pool",
+      "txs": 2,
+      "vsize": 721,
+      "floorB": 3.13,
+      "actualFeerate": 1.57,
+      "impliedSats": 1125
+    },
+    {
+      "h": 769827,
+      "t": "2023-01-01T05:18:11Z",
+      "pool": "Unknown",
+      "txs": 1,
+      "vsize": 615,
+      "floorB": 3.2,
+      "actualFeerate": 1.06,
+      "impliedSats": 1316
+    },
+    {
+      "h": 769848,
+      "t": "2023-01-01T09:27:12Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 168779,
+      "floorB": 2.66,
+      "actualFeerate": 1,
+      "impliedSats": 280173
+    },
+    {
+      "h": 769857,
+      "t": "2023-01-01T10:19:15Z",
+      "pool": "ViaBTC",
+      "txs": 1,
+      "vsize": 1238,
+      "floorB": 3.55,
+      "actualFeerate": 0.65,
+      "impliedSats": 3590
+    },
+    {
+      "h": 769858,
+      "t": "2023-01-01T10:28:59Z",
+      "pool": "Luxor",
+      "txs": 1,
+      "vsize": 1130,
+      "floorB": 3.51,
+      "actualFeerate": 1.75,
+      "impliedSats": 1989
+    },
+    {
+      "h": 769885,
+      "t": "2023-01-01T14:05:38Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 397,
+      "floorB": 1.93,
+      "actualFeerate": 1.06,
+      "impliedSats": 345
+    },
+    {
+      "h": 769905,
+      "t": "2023-01-01T18:26:40Z",
+      "pool": "ViaBTC",
+      "txs": 2,
+      "vsize": 227925,
+      "floorB": 3.43,
+      "actualFeerate": 1.5,
+      "impliedSats": 439895
+    },
+    {
+      "h": 769926,
+      "t": "2023-01-01T20:53:37Z",
+      "pool": "Foundry USA",
+      "txs": 2,
+      "vsize": 1795,
+      "floorB": 3.31,
+      "actualFeerate": 0.86,
+      "impliedSats": 4398
+    },
+    {
+      "h": 769931,
+      "t": "2023-01-01T22:12:43Z",
+      "pool": "Binance Pool",
+      "txs": 1,
+      "vsize": 1165,
+      "floorB": 3.76,
+      "actualFeerate": 0.27,
+      "impliedSats": 4066
+    },
+    {
+      "h": 769944,
+      "t": "2023-01-02T00:02:08Z",
+      "pool": "ViaBTC",
+      "txs": 1,
+      "vsize": 1266,
+      "floorB": 3.12,
+      "actualFeerate": 1.9,
+      "impliedSats": 1545
+    },
+    {
+      "h": 769946,
+      "t": "2023-01-02T00:11:29Z",
+      "pool": "Foundry USA",
+      "txs": 2,
+      "vsize": 1591,
+      "floorB": 3.24,
+      "actualFeerate": 1.09,
+      "impliedSats": 3421
+    },
+    {
+      "h": 769948,
+      "t": "2023-01-02T00:30:09Z",
+      "pool": "ViaBTC",
+      "txs": 1,
+      "vsize": 546,
+      "floorB": 3.11,
+      "actualFeerate": 0.1,
+      "impliedSats": 1643
+    },
+    {
+      "h": 769977,
+      "t": "2023-01-02T04:47:40Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 912,
+      "floorB": 2.44,
+      "actualFeerate": 1.38,
+      "impliedSats": 967
+    },
+    {
+      "h": 769991,
+      "t": "2023-01-02T06:50:47Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 1348,
+      "floorB": 3.48,
+      "actualFeerate": 1.08,
+      "impliedSats": 3235
+    },
+    {
+      "h": 769995,
+      "t": "2023-01-02T07:15:42Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 607,
+      "floorB": 2.82,
+      "actualFeerate": 1.38,
+      "impliedSats": 874
+    },
+    {
+      "h": 769999,
+      "t": "2023-01-02T07:28:49Z",
+      "pool": "ViaBTC",
+      "txs": 1,
+      "vsize": 222,
+      "floorB": 2.68,
+      "actualFeerate": 0.5,
+      "impliedSats": 484
+    },
+    {
+      "h": 770002,
+      "t": "2023-01-02T07:39:07Z",
+      "pool": "ViaBTC",
+      "txs": 1,
+      "vsize": 1231,
+      "floorB": 3.24,
+      "actualFeerate": 0.13,
+      "impliedSats": 3828
+    },
+    {
+      "h": 770025,
+      "t": "2023-01-02T10:57:33Z",
+      "pool": "Unknown",
+      "txs": 1,
+      "vsize": 1106,
+      "floorB": 3.53,
+      "actualFeerate": 1.56,
+      "impliedSats": 2179
+    },
+    {
+      "h": 770032,
+      "t": "2023-01-02T13:39:52Z",
+      "pool": "AntPool",
+      "txs": 2,
+      "vsize": 1445,
+      "floorB": 3.14,
+      "actualFeerate": 1.29,
+      "impliedSats": 2673
+    },
+    {
+      "h": 770035,
+      "t": "2023-01-02T14:31:02Z",
+      "pool": "Unknown",
+      "txs": 1,
+      "vsize": 1145,
+      "floorB": 4.24,
+      "actualFeerate": 2.4,
+      "impliedSats": 2107
+    },
+    {
+      "h": 770040,
+      "t": "2023-01-02T15:17:03Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 1050,
+      "floorB": 4.01,
+      "actualFeerate": 0.26,
+      "impliedSats": 3938
+    },
+    {
+      "h": 770065,
+      "t": "2023-01-02T19:52:00Z",
+      "pool": "Unknown",
+      "txs": 1,
+      "vsize": 897,
+      "floorB": 2.81,
+      "actualFeerate": 0.67,
+      "impliedSats": 1920
+    },
+    {
+      "h": 770075,
+      "t": "2023-01-02T21:12:16Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 1397,
+      "floorB": 3.72,
+      "actualFeerate": 0.28,
+      "impliedSats": 4806
+    },
+    {
+      "h": 770092,
+      "t": "2023-01-02T23:23:40Z",
+      "pool": "Unknown",
+      "txs": 1,
+      "vsize": 212,
+      "floorB": 3.76,
+      "actualFeerate": 0.79,
+      "impliedSats": 630
+    },
+    {
+      "h": 770102,
+      "t": "2023-01-03T00:40:44Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 579,
+      "floorB": 3.04,
+      "actualFeerate": 0.72,
+      "impliedSats": 1343
+    },
+    {
+      "h": 770103,
+      "t": "2023-01-03T00:41:43Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 499,
+      "floorB": 4.85,
+      "actualFeerate": 1.08,
+      "impliedSats": 1881
+    },
+    {
+      "h": 770105,
+      "t": "2023-01-03T01:20:12Z",
+      "pool": "Binance Pool",
+      "txs": 1,
+      "vsize": 130856,
+      "floorB": 2.74,
+      "actualFeerate": 1.23,
+      "impliedSats": 197593
+    },
+    {
+      "h": 770140,
+      "t": "2023-01-03T08:15:43Z",
+      "pool": "Binance Pool",
+      "txs": 1,
+      "vsize": 83712,
+      "floorB": 3.22,
+      "actualFeerate": 1.26,
+      "impliedSats": 164076
+    },
+    {
+      "h": 770153,
+      "t": "2023-01-03T10:17:02Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 647,
+      "floorB": 4.07,
+      "actualFeerate": 1.32,
+      "impliedSats": 1779
+    },
+    {
+      "h": 770156,
+      "t": "2023-01-03T10:58:45Z",
+      "pool": "AntPool",
+      "txs": 2,
+      "vsize": 74454,
+      "floorB": 3.4,
+      "actualFeerate": 1.47,
+      "impliedSats": 143696
+    },
+    {
+      "h": 770178,
+      "t": "2023-01-03T13:13:40Z",
+      "pool": "F2Pool",
+      "txs": 2,
+      "vsize": 949,
+      "floorB": 3.79,
+      "actualFeerate": 0.99,
+      "impliedSats": 2657
+    },
+    {
+      "h": 770181,
+      "t": "2023-01-03T13:26:12Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 1038,
+      "floorB": 5.14,
+      "actualFeerate": 2.34,
+      "impliedSats": 2906
+    },
+    {
+      "h": 770182,
+      "t": "2023-01-03T13:32:33Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 53910,
+      "floorB": 2.88,
+      "actualFeerate": 0.68,
+      "impliedSats": 118602
+    },
+    {
+      "h": 770183,
+      "t": "2023-01-03T13:38:04Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 20022,
+      "floorB": 4.24,
+      "actualFeerate": 2.86,
+      "impliedSats": 27630
+    },
+    {
+      "h": 770190,
+      "t": "2023-01-03T15:30:50Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 462,
+      "floorB": 5.25,
+      "actualFeerate": 1.7,
+      "impliedSats": 1640
+    },
+    {
+      "h": 770191,
+      "t": "2023-01-03T15:31:31Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 201,
+      "floorB": 5.39,
+      "actualFeerate": 2.2,
+      "impliedSats": 641
+    },
+    {
+      "h": 770209,
+      "t": "2023-01-03T17:40:23Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 228557,
+      "floorB": 2.71,
+      "actualFeerate": 0.81,
+      "impliedSats": 434258
+    },
+    {
+      "h": 770210,
+      "t": "2023-01-03T17:59:04Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 762,
+      "floorB": 3.71,
+      "actualFeerate": 0.93,
+      "impliedSats": 2118
+    },
+    {
+      "h": 770237,
+      "t": "2023-01-03T21:47:04Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 514,
+      "floorB": 3.81,
+      "actualFeerate": 2.46,
+      "impliedSats": 694
+    },
+    {
+      "h": 770241,
+      "t": "2023-01-03T21:56:02Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 967,
+      "floorB": 3.62,
+      "actualFeerate": 0.17,
+      "impliedSats": 3336
+    },
+    {
+      "h": 770245,
+      "t": "2023-01-03T22:34:26Z",
+      "pool": "AntPool",
+      "txs": 2,
+      "vsize": 193936,
+      "floorB": 3.14,
+      "actualFeerate": 1.35,
+      "impliedSats": 347145
+    },
+    {
+      "h": 770257,
+      "t": "2023-01-04T00:04:19Z",
+      "pool": "Unknown",
+      "txs": 1,
+      "vsize": 1294,
+      "floorB": 4.62,
+      "actualFeerate": 0.86,
+      "impliedSats": 4865
+    },
+    {
+      "h": 770266,
+      "t": "2023-01-04T02:00:23Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 22018,
+      "floorB": 5.31,
+      "actualFeerate": 0.13,
+      "impliedSats": 114053
+    },
+    {
+      "h": 770284,
+      "t": "2023-01-04T04:10:17Z",
+      "pool": "ViaBTC",
+      "txs": 2,
+      "vsize": 188076,
+      "floorB": 3.12,
+      "actualFeerate": 2.13,
+      "impliedSats": 186195
+    },
+    {
+      "h": 770294,
+      "t": "2023-01-04T04:58:25Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 580,
+      "floorB": 5.61,
+      "actualFeerate": 3.52,
+      "impliedSats": 1212
+    },
+    {
+      "h": 770315,
+      "t": "2023-01-04T09:36:29Z",
+      "pool": "Unknown",
+      "txs": 1,
+      "vsize": 306,
+      "floorB": 4.31,
+      "actualFeerate": 2.95,
+      "impliedSats": 416
+    },
+    {
+      "h": 770318,
+      "t": "2023-01-04T09:51:14Z",
+      "pool": "Binance Pool",
+      "txs": 2,
+      "vsize": 176543,
+      "floorB": 5.44,
+      "actualFeerate": 2.54,
+      "impliedSats": 511975
+    },
+    {
+      "h": 770332,
+      "t": "2023-01-04T13:25:38Z",
+      "pool": "Foundry USA",
+      "txs": 2,
+      "vsize": 1344,
+      "floorB": 2.8,
+      "actualFeerate": 0.91,
+      "impliedSats": 2540
+    },
+    {
+      "h": 770337,
+      "t": "2023-01-04T14:27:52Z",
+      "pool": "ViaBTC",
+      "txs": 2,
+      "vsize": 2017,
+      "floorB": 2.83,
+      "actualFeerate": 0.73,
+      "impliedSats": 4236
+    },
+    {
+      "h": 770347,
+      "t": "2023-01-04T17:15:28Z",
+      "pool": "Unknown",
+      "txs": 1,
+      "vsize": 95895,
+      "floorB": 3.8,
+      "actualFeerate": 1.36,
+      "impliedSats": 233984
+    },
+    {
+      "h": 770351,
+      "t": "2023-01-04T17:51:14Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 1166,
+      "floorB": 5.29,
+      "actualFeerate": 0.48,
+      "impliedSats": 5608
+    },
+    {
+      "h": 770371,
+      "t": "2023-01-04T20:50:29Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 1193,
+      "floorB": 3.48,
+      "actualFeerate": 0.14,
+      "impliedSats": 3985
+    },
+    {
+      "h": 770387,
+      "t": "2023-01-04T22:52:30Z",
+      "pool": "Foundry USA",
+      "txs": 4,
+      "vsize": 1821,
+      "floorB": 3.66,
+      "actualFeerate": 0.85,
+      "impliedSats": 5117
+    },
+    {
+      "h": 770394,
+      "t": "2023-01-05T00:13:42Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 1242,
+      "floorB": 2.95,
+      "actualFeerate": 1.87,
+      "impliedSats": 1341
+    },
+    {
+      "h": 770398,
+      "t": "2023-01-05T00:46:45Z",
+      "pool": "ViaBTC",
+      "txs": 1,
+      "vsize": 976,
+      "floorB": 4.37,
+      "actualFeerate": 2.71,
+      "impliedSats": 1620
+    },
+    {
+      "h": 770449,
+      "t": "2023-01-05T10:25:23Z",
+      "pool": "AntPool",
+      "txs": 2,
+      "vsize": 136218,
+      "floorB": 3.16,
+      "actualFeerate": 0.13,
+      "impliedSats": 412741
+    },
+    {
+      "h": 770450,
+      "t": "2023-01-05T10:25:34Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 605,
+      "floorB": 5.71,
+      "actualFeerate": 2.2,
+      "impliedSats": 2124
+    },
+    {
+      "h": 770460,
+      "t": "2023-01-05T11:44:47Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 213992,
+      "floorB": 4.4,
+      "actualFeerate": 0.76,
+      "impliedSats": 778931
+    },
+    {
+      "h": 770466,
+      "t": "2023-01-05T12:24:22Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 445,
+      "floorB": 3.71,
+      "actualFeerate": 2.61,
+      "impliedSats": 490
+    },
+    {
+      "h": 770468,
+      "t": "2023-01-05T13:11:14Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 657,
+      "floorB": 4.25,
+      "actualFeerate": 3,
+      "impliedSats": 821
+    },
+    {
+      "h": 770496,
+      "t": "2023-01-05T17:56:11Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 109187,
+      "floorB": 3.85,
+      "actualFeerate": 1.02,
+      "impliedSats": 308999
+    },
+    {
+      "h": 770508,
+      "t": "2023-01-05T19:18:04Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 116875,
+      "floorB": 4.02,
+      "actualFeerate": 2.52,
+      "impliedSats": 175312
+    },
+    {
+      "h": 770533,
+      "t": "2023-01-05T22:52:43Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 956,
+      "floorB": 4.08,
+      "actualFeerate": 0.99,
+      "impliedSats": 2954
+    },
+    {
+      "h": 770537,
+      "t": "2023-01-05T23:03:23Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 391,
+      "floorB": 4.6,
+      "actualFeerate": 1.14,
+      "impliedSats": 1353
+    },
+    {
+      "h": 770539,
+      "t": "2023-01-05T23:38:33Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 620,
+      "floorB": 3.27,
+      "actualFeerate": 0.25,
+      "impliedSats": 1872
+    },
+    {
+      "h": 770542,
+      "t": "2023-01-06T00:08:00Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 459,
+      "floorB": 5.46,
+      "actualFeerate": 2.38,
+      "impliedSats": 1414
+    },
+    {
+      "h": 770544,
+      "t": "2023-01-06T00:39:46Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 120871,
+      "floorB": 4.19,
+      "actualFeerate": 1.9,
+      "impliedSats": 276795
+    },
+    {
+      "h": 770549,
+      "t": "2023-01-06T01:33:09Z",
+      "pool": "Binance Pool",
+      "txs": 1,
+      "vsize": 112326,
+      "floorB": 5.08,
+      "actualFeerate": 3.57,
+      "impliedSats": 169612
+    },
+    {
+      "h": 770554,
+      "t": "2023-01-06T01:53:42Z",
+      "pool": "ViaBTC",
+      "txs": 2,
+      "vsize": 2033,
+      "floorB": 3.69,
+      "actualFeerate": 0.38,
+      "impliedSats": 6729
+    },
+    {
+      "h": 770561,
+      "t": "2023-01-06T03:05:29Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 792,
+      "floorB": 4.66,
+      "actualFeerate": 1.06,
+      "impliedSats": 2851
+    },
+    {
+      "h": 770562,
+      "t": "2023-01-06T03:19:33Z",
+      "pool": "Binance Pool",
+      "txs": 2,
+      "vsize": 1356,
+      "floorB": 2.79,
+      "actualFeerate": 1.39,
+      "impliedSats": 1898
+    },
+    {
+      "h": 770581,
+      "t": "2023-01-06T06:37:04Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 1059,
+      "floorB": 5.88,
+      "actualFeerate": 3.62,
+      "impliedSats": 2393
+    },
+    {
+      "h": 770602,
+      "t": "2023-01-06T10:03:07Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 515,
+      "floorB": 4.86,
+      "actualFeerate": 2.09,
+      "impliedSats": 1427
+    },
+    {
+      "h": 770606,
+      "t": "2023-01-06T10:31:31Z",
+      "pool": "Foundry USA",
+      "txs": 2,
+      "vsize": 1844,
+      "floorB": 4.9,
+      "actualFeerate": 1.59,
+      "impliedSats": 6104
+    },
+    {
+      "h": 770624,
+      "t": "2023-01-06T14:04:39Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 1199,
+      "floorB": 4.86,
+      "actualFeerate": 2.44,
+      "impliedSats": 2902
+    },
+    {
+      "h": 770632,
+      "t": "2023-01-06T15:52:25Z",
+      "pool": "Braiins Pool",
+      "txs": 1,
+      "vsize": 981,
+      "floorB": 2.81,
+      "actualFeerate": 1.9,
+      "impliedSats": 893
+    },
+    {
+      "h": 770638,
+      "t": "2023-01-06T16:44:06Z",
+      "pool": "Foundry USA",
+      "txs": 2,
+      "vsize": 74485,
+      "floorB": 4.22,
+      "actualFeerate": 2.39,
+      "impliedSats": 136308
+    },
+    {
+      "h": 770666,
+      "t": "2023-01-06T21:17:02Z",
+      "pool": "Foundry USA",
+      "txs": 2,
+      "vsize": 26636,
+      "floorB": 2.95,
+      "actualFeerate": 1.77,
+      "impliedSats": 31430
+    },
+    {
+      "h": 770682,
+      "t": "2023-01-07T00:02:36Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 206,
+      "floorB": 4.51,
+      "actualFeerate": 3.06,
+      "impliedSats": 299
+    },
+    {
+      "h": 770705,
+      "t": "2023-01-07T02:45:47Z",
+      "pool": "Unknown",
+      "txs": 1,
+      "vsize": 227520,
+      "floorB": 5.4,
+      "actualFeerate": 1.64,
+      "impliedSats": 855475
+    },
+    {
+      "h": 770720,
+      "t": "2023-01-07T04:48:17Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 236095,
+      "floorB": 5.45,
+      "actualFeerate": 3.85,
+      "impliedSats": 377752
+    },
+    {
+      "h": 770727,
+      "t": "2023-01-07T06:05:04Z",
+      "pool": "ViaBTC",
+      "txs": 4,
+      "vsize": 210362,
+      "floorB": 5.16,
+      "actualFeerate": 1.91,
+      "impliedSats": 683677
+    },
+    {
+      "h": 770740,
+      "t": "2023-01-07T08:47:57Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 139477,
+      "floorB": 5.1,
+      "actualFeerate": 3.35,
+      "impliedSats": 244085
+    },
+    {
+      "h": 770741,
+      "t": "2023-01-07T08:52:43Z",
+      "pool": "Unknown",
+      "txs": 1,
+      "vsize": 37114,
+      "floorB": 3.11,
+      "actualFeerate": 2.08,
+      "impliedSats": 38227
+    },
+    {
+      "h": 770756,
+      "t": "2023-01-07T10:31:50Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 124152,
+      "floorB": 4.88,
+      "actualFeerate": 3.2,
+      "impliedSats": 208575
+    },
+    {
+      "h": 770761,
+      "t": "2023-01-07T11:30:22Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 69082,
+      "floorB": 2.98,
+      "actualFeerate": 2.05,
+      "impliedSats": 64246
+    },
+    {
+      "h": 770772,
+      "t": "2023-01-07T12:51:08Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 533,
+      "floorB": 4.78,
+      "actualFeerate": 2.09,
+      "impliedSats": 1434
+    },
+    {
+      "h": 770775,
+      "t": "2023-01-07T14:04:13Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 194854,
+      "floorB": 2.92,
+      "actualFeerate": 1.73,
+      "impliedSats": 231876
+    },
+    {
+      "h": 770780,
+      "t": "2023-01-07T15:28:02Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 118189,
+      "floorB": 5.67,
+      "actualFeerate": 1.34,
+      "impliedSats": 511758
+    },
+    {
+      "h": 770786,
+      "t": "2023-01-07T16:55:53Z",
+      "pool": "Unknown",
+      "txs": 1,
+      "vsize": 221,
+      "floorB": 4.58,
+      "actualFeerate": 1.37,
+      "impliedSats": 709
+    },
+    {
+      "h": 770787,
+      "t": "2023-01-07T17:02:06Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 116036,
+      "floorB": 4.46,
+      "actualFeerate": 2.51,
+      "impliedSats": 226270
+    },
+    {
+      "h": 770791,
+      "t": "2023-01-07T17:30:56Z",
+      "pool": "Foundry USA",
+      "txs": 2,
+      "vsize": 295767,
+      "floorB": 4.91,
+      "actualFeerate": 0.83,
+      "impliedSats": 1206729
+    },
+    {
+      "h": 770799,
+      "t": "2023-01-07T18:52:32Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 937,
+      "floorB": 5.01,
+      "actualFeerate": 1.49,
+      "impliedSats": 3298
+    },
+    {
+      "h": 770809,
+      "t": "2023-01-07T20:07:55Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 196519,
+      "floorB": 5.17,
+      "actualFeerate": 0.62,
+      "impliedSats": 894161
+    },
+    {
+      "h": 770814,
+      "t": "2023-01-07T20:19:46Z",
+      "pool": "Luxor",
+      "txs": 2,
+      "vsize": 102384,
+      "floorB": 3.08,
+      "actualFeerate": 0.34,
+      "impliedSats": 280532
+    },
+    {
+      "h": 770817,
+      "t": "2023-01-07T20:43:26Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 476,
+      "floorB": 5.36,
+      "actualFeerate": 2.07,
+      "impliedSats": 1566
+    },
+    {
+      "h": 770821,
+      "t": "2023-01-07T21:29:48Z",
+      "pool": "ViaBTC",
+      "txs": 1,
+      "vsize": 854,
+      "floorB": 5.01,
+      "actualFeerate": 3.6,
+      "impliedSats": 1204
+    },
+    {
+      "h": 770823,
+      "t": "2023-01-07T22:03:49Z",
+      "pool": "ViaBTC",
+      "txs": 1,
+      "vsize": 613,
+      "floorB": 5.14,
+      "actualFeerate": 2.7,
+      "impliedSats": 1496
+    },
+    {
+      "h": 770856,
+      "t": "2023-01-08T05:09:05Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 595,
+      "floorB": 5.44,
+      "actualFeerate": 2.8,
+      "impliedSats": 1571
+    },
+    {
+      "h": 770860,
+      "t": "2023-01-08T06:06:07Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 157595,
+      "floorB": 3.76,
+      "actualFeerate": 0.3,
+      "impliedSats": 545279
+    },
+    {
+      "h": 770865,
+      "t": "2023-01-08T06:44:51Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 197607,
+      "floorB": 5.01,
+      "actualFeerate": 2.89,
+      "impliedSats": 418927
+    },
+    {
+      "h": 770893,
+      "t": "2023-01-08T12:20:54Z",
+      "pool": "Foundry USA",
+      "txs": 2,
+      "vsize": 1799,
+      "floorB": 5.52,
+      "actualFeerate": 1.34,
+      "impliedSats": 7520
+    },
+    {
+      "h": 770911,
+      "t": "2023-01-08T14:54:00Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 18844,
+      "floorB": 3.28,
+      "actualFeerate": 2.34,
+      "impliedSats": 17713
+    },
+    {
+      "h": 770913,
+      "t": "2023-01-08T15:15:39Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 818,
+      "floorB": 3.49,
+      "actualFeerate": 1.37,
+      "impliedSats": 1734
+    },
+    {
+      "h": 770916,
+      "t": "2023-01-08T15:38:36Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 203,
+      "floorB": 5.71,
+      "actualFeerate": 1.9,
+      "impliedSats": 773
+    },
+    {
+      "h": 770918,
+      "t": "2023-01-08T16:20:38Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 1154,
+      "floorB": 5.64,
+      "actualFeerate": 3.18,
+      "impliedSats": 2839
+    },
+    {
+      "h": 770921,
+      "t": "2023-01-08T16:36:41Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 187361,
+      "floorB": 2.73,
+      "actualFeerate": 1.74,
+      "impliedSats": 185487
+    },
+    {
+      "h": 770923,
+      "t": "2023-01-08T16:42:52Z",
+      "pool": "Foundry USA",
+      "txs": 2,
+      "vsize": 209602,
+      "floorB": 4.23,
+      "actualFeerate": 0.71,
+      "impliedSats": 737799
+    },
+    {
+      "h": 770928,
+      "t": "2023-01-08T17:46:39Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 32647,
+      "floorB": 3.32,
+      "actualFeerate": 2.24,
+      "impliedSats": 35259
+    },
+    {
+      "h": 770929,
+      "t": "2023-01-08T17:59:46Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 1352,
+      "floorB": 4.84,
+      "actualFeerate": 0.48,
+      "impliedSats": 5895
+    },
+    {
+      "h": 770930,
+      "t": "2023-01-08T18:13:05Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 94346,
+      "floorB": 3.1,
+      "actualFeerate": 2.01,
+      "impliedSats": 102837
+    },
+    {
+      "h": 770936,
+      "t": "2023-01-08T19:15:02Z",
+      "pool": "AntPool",
+      "txs": 2,
+      "vsize": 83455,
+      "floorB": 4.98,
+      "actualFeerate": 0.5,
+      "impliedSats": 373878
+    },
+    {
+      "h": 770953,
+      "t": "2023-01-08T22:03:53Z",
+      "pool": "AntPool",
+      "txs": 2,
+      "vsize": 282337,
+      "floorB": 3.51,
+      "actualFeerate": 1.99,
+      "impliedSats": 429152
+    },
+    {
+      "h": 770963,
+      "t": "2023-01-09T00:13:59Z",
+      "pool": "Binance Pool",
+      "txs": 1,
+      "vsize": 1051,
+      "floorB": 5.48,
+      "actualFeerate": 0.43,
+      "impliedSats": 5308
+    },
+    {
+      "h": 770970,
+      "t": "2023-01-09T01:31:08Z",
+      "pool": "ViaBTC",
+      "txs": 1,
+      "vsize": 195679,
+      "floorB": 5.31,
+      "actualFeerate": 2.81,
+      "impliedSats": 489197
+    },
+    {
+      "h": 770976,
+      "t": "2023-01-09T02:32:28Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 846,
+      "floorB": 3.82,
+      "actualFeerate": 0.3,
+      "impliedSats": 2978
+    },
+    {
+      "h": 770981,
+      "t": "2023-01-09T03:08:57Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 1254,
+      "floorB": 5.01,
+      "actualFeerate": 1.2,
+      "impliedSats": 4778
+    },
+    {
+      "h": 770984,
+      "t": "2023-01-09T03:31:27Z",
+      "pool": "Binance Pool",
+      "txs": 1,
+      "vsize": 384,
+      "floorB": 5.32,
+      "actualFeerate": 1.29,
+      "impliedSats": 1548
+    },
+    {
+      "h": 770985,
+      "t": "2023-01-09T03:46:35Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 720,
+      "floorB": 3.22,
+      "actualFeerate": 1.62,
+      "impliedSats": 1152
+    },
+    {
+      "h": 770989,
+      "t": "2023-01-09T04:18:10Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 383,
+      "floorB": 3.73,
+      "actualFeerate": 1,
+      "impliedSats": 1046
+    },
+    {
+      "h": 771001,
+      "t": "2023-01-09T06:49:45Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 48121,
+      "floorB": 3.16,
+      "actualFeerate": 1.14,
+      "impliedSats": 97204
+    },
+    {
+      "h": 771007,
+      "t": "2023-01-09T07:35:07Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 612,
+      "floorB": 6.06,
+      "actualFeerate": 1.28,
+      "impliedSats": 2925
+    },
+    {
+      "h": 771008,
+      "t": "2023-01-09T08:02:53Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 210934,
+      "floorB": 4.31,
+      "actualFeerate": 2.82,
+      "impliedSats": 314292
+    },
+    {
+      "h": 771034,
+      "t": "2023-01-09T12:23:58Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 1073,
+      "floorB": 5.74,
+      "actualFeerate": 2.12,
+      "impliedSats": 3884
+    },
+    {
+      "h": 771072,
+      "t": "2023-01-09T21:14:04Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 257,
+      "floorB": 3.51,
+      "actualFeerate": 1.87,
+      "impliedSats": 421
+    },
+    {
+      "h": 771074,
+      "t": "2023-01-09T21:33:10Z",
+      "pool": "F2Pool",
+      "txs": 2,
+      "vsize": 19317,
+      "floorB": 4.29,
+      "actualFeerate": 0.42,
+      "impliedSats": 74757
+    },
+    {
+      "h": 771079,
+      "t": "2023-01-09T21:46:53Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 198,
+      "floorB": 5.38,
+      "actualFeerate": 3.81,
+      "impliedSats": 311
+    },
+    {
+      "h": 771090,
+      "t": "2023-01-09T22:52:56Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 245,
+      "floorB": 5.66,
+      "actualFeerate": 3.39,
+      "impliedSats": 556
+    },
+    {
+      "h": 771091,
+      "t": "2023-01-09T23:25:04Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 15537,
+      "floorB": 5.11,
+      "actualFeerate": 1.01,
+      "impliedSats": 63702
+    },
+    {
+      "h": 771098,
+      "t": "2023-01-10T00:14:33Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 200,
+      "floorB": 3.63,
+      "actualFeerate": 1.63,
+      "impliedSats": 400
+    },
+    {
+      "h": 771099,
+      "t": "2023-01-10T00:21:29Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 734,
+      "floorB": 4.34,
+      "actualFeerate": 2.64,
+      "impliedSats": 1248
+    },
+    {
+      "h": 771101,
+      "t": "2023-01-10T00:27:12Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 355,
+      "floorB": 3.38,
+      "actualFeerate": 2.31,
+      "impliedSats": 380
+    },
+    {
+      "h": 771125,
+      "t": "2023-01-10T03:02:02Z",
+      "pool": "ViaBTC",
+      "txs": 1,
+      "vsize": 1243,
+      "floorB": 5.8,
+      "actualFeerate": 3.83,
+      "impliedSats": 2449
+    },
+    {
+      "h": 771139,
+      "t": "2023-01-10T05:17:17Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 1382,
+      "floorB": 6.63,
+      "actualFeerate": 0.94,
+      "impliedSats": 7864
+    },
+    {
+      "h": 771158,
+      "t": "2023-01-10T07:57:48Z",
+      "pool": "ViaBTC",
+      "txs": 1,
+      "vsize": 1282,
+      "floorB": 3.66,
+      "actualFeerate": 0.5,
+      "impliedSats": 4051
+    },
+    {
+      "h": 771161,
+      "t": "2023-01-10T08:20:37Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 1244,
+      "floorB": 3.51,
+      "actualFeerate": 1.87,
+      "impliedSats": 2040
+    },
+    {
+      "h": 771166,
+      "t": "2023-01-10T08:53:13Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 275,
+      "floorB": 6.71,
+      "actualFeerate": 0.83,
+      "impliedSats": 1617
+    },
+    {
+      "h": 771167,
+      "t": "2023-01-10T08:58:15Z",
+      "pool": "Braiins Pool",
+      "txs": 1,
+      "vsize": 125062,
+      "floorB": 6.12,
+      "actualFeerate": 2.21,
+      "impliedSats": 488992
+    },
+    {
+      "h": 771169,
+      "t": "2023-01-10T09:20:54Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 1081,
+      "floorB": 5.69,
+      "actualFeerate": 1.72,
+      "impliedSats": 4292
+    },
+    {
+      "h": 771175,
+      "t": "2023-01-10T09:52:12Z",
+      "pool": "ViaBTC",
+      "txs": 3,
+      "vsize": 140355,
+      "floorB": 4.37,
+      "actualFeerate": 0.36,
+      "impliedSats": 562824
+    },
+    {
+      "h": 771182,
+      "t": "2023-01-10T10:45:08Z",
+      "pool": "ViaBTC",
+      "txs": 1,
+      "vsize": 775,
+      "floorB": 5.73,
+      "actualFeerate": 1.3,
+      "impliedSats": 3433
+    },
+    {
+      "h": 771194,
+      "t": "2023-01-10T12:39:49Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 151169,
+      "floorB": 4.77,
+      "actualFeerate": 2.91,
+      "impliedSats": 281174
+    },
+    {
+      "h": 771201,
+      "t": "2023-01-10T13:58:51Z",
+      "pool": "F2Pool",
+      "txs": 2,
+      "vsize": 1295,
+      "floorB": 3.23,
+      "actualFeerate": 0.99,
+      "impliedSats": 2901
+    },
+    {
+      "h": 771206,
+      "t": "2023-01-10T14:44:08Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 157199,
+      "floorB": 6.49,
+      "actualFeerate": 3.05,
+      "impliedSats": 540765
+    },
+    {
+      "h": 771208,
+      "t": "2023-01-10T15:17:34Z",
+      "pool": "Foundry USA",
+      "txs": 2,
+      "vsize": 1421,
+      "floorB": 6.47,
+      "actualFeerate": 2.68,
+      "impliedSats": 5386
+    },
+    {
+      "h": 771225,
+      "t": "2023-01-10T17:32:12Z",
+      "pool": "Binance Pool",
+      "txs": 1,
+      "vsize": 1171,
+      "floorB": 4.23,
+      "actualFeerate": 2.09,
+      "impliedSats": 2506
+    },
+    {
+      "h": 771242,
+      "t": "2023-01-10T19:53:45Z",
+      "pool": "ViaBTC",
+      "txs": 2,
+      "vsize": 1139,
+      "floorB": 4.4,
+      "actualFeerate": 1.1,
+      "impliedSats": 3759
+    },
+    {
+      "h": 771245,
+      "t": "2023-01-10T20:15:44Z",
+      "pool": "ViaBTC",
+      "txs": 2,
+      "vsize": 2518,
+      "floorB": 4.69,
+      "actualFeerate": 0.8,
+      "impliedSats": 9795
+    },
+    {
+      "h": 771257,
+      "t": "2023-01-10T21:18:06Z",
+      "pool": "Unknown",
+      "txs": 1,
+      "vsize": 1372,
+      "floorB": 5.96,
+      "actualFeerate": 4.16,
+      "impliedSats": 2470
+    },
+    {
+      "h": 771275,
+      "t": "2023-01-11T00:07:05Z",
+      "pool": "ViaBTC",
+      "txs": 1,
+      "vsize": 664,
+      "floorB": 4.26,
+      "actualFeerate": 1.68,
+      "impliedSats": 1713
+    },
+    {
+      "h": 771306,
+      "t": "2023-01-11T04:40:26Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 207,
+      "floorB": 6.85,
+      "actualFeerate": 3.06,
+      "impliedSats": 785
+    },
+    {
+      "h": 771307,
+      "t": "2023-01-11T04:48:33Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 1201,
+      "floorB": 4.79,
+      "actualFeerate": 1.34,
+      "impliedSats": 4143
+    },
+    {
+      "h": 771319,
+      "t": "2023-01-11T06:53:41Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 710,
+      "floorB": 5.3,
+      "actualFeerate": 2.21,
+      "impliedSats": 2194
+    },
+    {
+      "h": 771322,
+      "t": "2023-01-11T07:10:43Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 524,
+      "floorB": 7.17,
+      "actualFeerate": 4.07,
+      "impliedSats": 1624
+    },
+    {
+      "h": 771330,
+      "t": "2023-01-11T08:44:38Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 70995,
+      "floorB": 5.53,
+      "actualFeerate": 3.6,
+      "impliedSats": 137020
+    },
+    {
+      "h": 771337,
+      "t": "2023-01-11T10:29:08Z",
+      "pool": "Binance Pool",
+      "txs": 1,
+      "vsize": 1173,
+      "floorB": 3.99,
+      "actualFeerate": 2.51,
+      "impliedSats": 1736
+    },
+    {
+      "h": 771354,
+      "t": "2023-01-11T12:42:33Z",
+      "pool": "ViaBTC",
+      "txs": 1,
+      "vsize": 853,
+      "floorB": 3.65,
+      "actualFeerate": 0.71,
+      "impliedSats": 2508
+    },
+    {
+      "h": 771361,
+      "t": "2023-01-11T14:27:35Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 211855,
+      "floorB": 4.68,
+      "actualFeerate": 1.55,
+      "impliedSats": 663106
+    },
+    {
+      "h": 771372,
+      "t": "2023-01-11T16:27:35Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 396,
+      "floorB": 4.03,
+      "actualFeerate": 2.55,
+      "impliedSats": 586
+    },
+    {
+      "h": 771378,
+      "t": "2023-01-11T17:07:53Z",
+      "pool": "Unknown",
+      "txs": 1,
+      "vsize": 280,
+      "floorB": 7.13,
+      "actualFeerate": 3.79,
+      "impliedSats": 935
+    },
+    {
+      "h": 771388,
+      "t": "2023-01-11T18:54:41Z",
+      "pool": "Luxor",
+      "txs": 1,
+      "vsize": 288,
+      "floorB": 4.75,
+      "actualFeerate": 1.65,
+      "impliedSats": 893
+    },
+    {
+      "h": 771393,
+      "t": "2023-01-11T19:38:03Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 673,
+      "floorB": 3.95,
+      "actualFeerate": 0.15,
+      "impliedSats": 2557
+    },
+    {
+      "h": 771425,
+      "t": "2023-01-12T02:25:17Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 222296,
+      "floorB": 7.9,
+      "actualFeerate": 3.52,
+      "impliedSats": 973656
+    },
+    {
+      "h": 771447,
+      "t": "2023-01-12T05:50:12Z",
+      "pool": "AntPool",
+      "txs": 2,
+      "vsize": 1105,
+      "floorB": 4.01,
+      "actualFeerate": 0.64,
+      "impliedSats": 3724
+    },
+    {
+      "h": 771450,
+      "t": "2023-01-12T06:05:58Z",
+      "pool": "ViaBTC",
+      "txs": 1,
+      "vsize": 216397,
+      "floorB": 7.66,
+      "actualFeerate": 2.21,
+      "impliedSats": 1179364
+    },
+    {
+      "h": 771455,
+      "t": "2023-01-12T06:48:18Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 1159,
+      "floorB": 3.97,
+      "actualFeerate": 1.48,
+      "impliedSats": 2886
+    },
+    {
+      "h": 771461,
+      "t": "2023-01-12T07:21:01Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 736,
+      "floorB": 6.59,
+      "actualFeerate": 1.27,
+      "impliedSats": 3916
+    },
+    {
+      "h": 771471,
+      "t": "2023-01-12T08:52:26Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 909,
+      "floorB": 7.42,
+      "actualFeerate": 1.13,
+      "impliedSats": 5718
+    },
+    {
+      "h": 771480,
+      "t": "2023-01-12T09:35:44Z",
+      "pool": "AntPool",
+      "txs": 2,
+      "vsize": 87240,
+      "floorB": 6.91,
+      "actualFeerate": 3.75,
+      "impliedSats": 275678
+    },
+    {
+      "h": 771485,
+      "t": "2023-01-12T10:40:26Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 443,
+      "floorB": 4.06,
+      "actualFeerate": 1.49,
+      "impliedSats": 1139
+    },
+    {
+      "h": 771489,
+      "t": "2023-01-12T11:38:46Z",
+      "pool": "F2Pool",
+      "txs": 2,
+      "vsize": 1683,
+      "floorB": 5.57,
+      "actualFeerate": 1.6,
+      "impliedSats": 6682
+    },
+    {
+      "h": 771501,
+      "t": "2023-01-12T12:41:40Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 882,
+      "floorB": 3.99,
+      "actualFeerate": 2.22,
+      "impliedSats": 1561
+    },
+    {
+      "h": 771514,
+      "t": "2023-01-12T14:37:39Z",
+      "pool": "ViaBTC",
+      "txs": 2,
+      "vsize": 133476,
+      "floorB": 4.6,
+      "actualFeerate": 0.28,
+      "impliedSats": 576616
+    },
+    {
+      "h": 771517,
+      "t": "2023-01-12T15:02:40Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 246,
+      "floorB": 4.19,
+      "actualFeerate": 0.71,
+      "impliedSats": 856
+    },
+    {
+      "h": 771538,
+      "t": "2023-01-12T18:07:33Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 1188,
+      "floorB": 7.98,
+      "actualFeerate": 1.75,
+      "impliedSats": 7401
+    },
+    {
+      "h": 771540,
+      "t": "2023-01-12T18:33:05Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 172086,
+      "floorB": 4.5,
+      "actualFeerate": 1.36,
+      "impliedSats": 540350
+    },
+    {
+      "h": 771549,
+      "t": "2023-01-12T19:57:30Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 1296,
+      "floorB": 8.28,
+      "actualFeerate": 0.66,
+      "impliedSats": 9876
+    },
+    {
+      "h": 771557,
+      "t": "2023-01-12T21:00:29Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 156557,
+      "floorB": 6.53,
+      "actualFeerate": 1.65,
+      "impliedSats": 763998
+    },
+    {
+      "h": 771560,
+      "t": "2023-01-12T21:37:34Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 983,
+      "floorB": 5.21,
+      "actualFeerate": 2.03,
+      "impliedSats": 3126
+    },
+    {
+      "h": 771569,
+      "t": "2023-01-12T23:38:17Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 1308,
+      "floorB": 8.81,
+      "actualFeerate": 1.92,
+      "impliedSats": 9012
+    },
+    {
+      "h": 771576,
+      "t": "2023-01-13T00:50:03Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 335,
+      "floorB": 5.92,
+      "actualFeerate": 2.49,
+      "impliedSats": 1149
+    },
+    {
+      "h": 771584,
+      "t": "2023-01-13T02:43:45Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 760,
+      "floorB": 6.31,
+      "actualFeerate": 2.3,
+      "impliedSats": 3048
+    },
+    {
+      "h": 771585,
+      "t": "2023-01-13T02:46:02Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 389,
+      "floorB": 8.06,
+      "actualFeerate": 5.32,
+      "impliedSats": 1066
+    },
+    {
+      "h": 771586,
+      "t": "2023-01-13T02:48:39Z",
+      "pool": "AntPool",
+      "txs": 2,
+      "vsize": 46712,
+      "floorB": 4.72,
+      "actualFeerate": 2.56,
+      "impliedSats": 100898
+    },
+    {
+      "h": 771603,
+      "t": "2023-01-13T06:23:24Z",
+      "pool": "Unknown",
+      "txs": 1,
+      "vsize": 79833,
+      "floorB": 8.7,
+      "actualFeerate": 5.54,
+      "impliedSats": 252272
+    },
+    {
+      "h": 771616,
+      "t": "2023-01-13T08:56:05Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 1192,
+      "floorB": 8.15,
+      "actualFeerate": 3.05,
+      "impliedSats": 6079
+    },
+    {
+      "h": 771644,
+      "t": "2023-01-13T14:16:35Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 15445,
+      "floorB": 8.97,
+      "actualFeerate": 1.92,
+      "impliedSats": 108887
+    },
+    {
+      "h": 771662,
+      "t": "2023-01-13T16:15:09Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 958,
+      "floorB": 6.56,
+      "actualFeerate": 3.59,
+      "impliedSats": 2845
+    },
+    {
+      "h": 771673,
+      "t": "2023-01-13T17:49:38Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 804,
+      "floorB": 7.89,
+      "actualFeerate": 3.11,
+      "impliedSats": 3843
+    },
+    {
+      "h": 771675,
+      "t": "2023-01-13T17:56:32Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 17966,
+      "floorB": 8.29,
+      "actualFeerate": 5.21,
+      "impliedSats": 55335
+    },
+    {
+      "h": 771678,
+      "t": "2023-01-13T18:30:15Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 1118,
+      "floorB": 5.29,
+      "actualFeerate": 2.8,
+      "impliedSats": 2784
+    },
+    {
+      "h": 771692,
+      "t": "2023-01-13T21:20:55Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 1226,
+      "floorB": 6.91,
+      "actualFeerate": 3.13,
+      "impliedSats": 4634
+    },
+    {
+      "h": 771700,
+      "t": "2023-01-13T22:02:09Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 213,
+      "floorB": 5.25,
+      "actualFeerate": 1.23,
+      "impliedSats": 856
+    },
+    {
+      "h": 771713,
+      "t": "2023-01-13T23:29:27Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 166857,
+      "floorB": 6.11,
+      "actualFeerate": 1.41,
+      "impliedSats": 784228
+    },
+    {
+      "h": 771729,
+      "t": "2023-01-14T02:58:55Z",
+      "pool": "ViaBTC",
+      "txs": 2,
+      "vsize": 149599,
+      "floorB": 6.71,
+      "actualFeerate": 1.15,
+      "impliedSats": 831770
+    },
+    {
+      "h": 771737,
+      "t": "2023-01-14T05:15:01Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 358,
+      "floorB": 6.94,
+      "actualFeerate": 4.36,
+      "impliedSats": 924
+    },
+    {
+      "h": 771741,
+      "t": "2023-01-14T05:41:57Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 955,
+      "floorB": 4.98,
+      "actualFeerate": 1.81,
+      "impliedSats": 3027
+    },
+    {
+      "h": 771751,
+      "t": "2023-01-14T07:37:51Z",
+      "pool": "AntPool",
+      "txs": 2,
+      "vsize": 55901,
+      "floorB": 5.9,
+      "actualFeerate": 1.57,
+      "impliedSats": 242051
+    },
+    {
+      "h": 771764,
+      "t": "2023-01-14T11:28:37Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 461,
+      "floorB": 4.43,
+      "actualFeerate": 0.89,
+      "impliedSats": 1632
+    },
+    {
+      "h": 771771,
+      "t": "2023-01-14T12:50:31Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 15905,
+      "floorB": 7.84,
+      "actualFeerate": 4.82,
+      "impliedSats": 48033
+    },
+    {
+      "h": 771778,
+      "t": "2023-01-14T13:41:22Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 591,
+      "floorB": 6.58,
+      "actualFeerate": 1.59,
+      "impliedSats": 2949
+    },
+    {
+      "h": 771787,
+      "t": "2023-01-14T14:44:11Z",
+      "pool": "Unknown",
+      "txs": 1,
+      "vsize": 121737,
+      "floorB": 6.16,
+      "actualFeerate": 3.59,
+      "impliedSats": 312864
+    },
+    {
+      "h": 771793,
+      "t": "2023-01-14T16:08:06Z",
+      "pool": "AntPool",
+      "txs": 2,
+      "vsize": 141095,
+      "floorB": 5.46,
+      "actualFeerate": 3.08,
+      "impliedSats": 335806
+    },
+    {
+      "h": 771800,
+      "t": "2023-01-14T17:45:12Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 134361,
+      "floorB": 6.37,
+      "actualFeerate": 1.61,
+      "impliedSats": 639558
+    },
+    {
+      "h": 771805,
+      "t": "2023-01-14T19:23:11Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 1243,
+      "floorB": 8.07,
+      "actualFeerate": 0.88,
+      "impliedSats": 8937
+    },
+    {
+      "h": 771809,
+      "t": "2023-01-14T20:03:59Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 503,
+      "floorB": 6.78,
+      "actualFeerate": 4.54,
+      "impliedSats": 1127
+    },
+    {
+      "h": 771812,
+      "t": "2023-01-14T20:44:02Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 1229,
+      "floorB": 7.56,
+      "actualFeerate": 1.4,
+      "impliedSats": 7571
+    },
+    {
+      "h": 771818,
+      "t": "2023-01-14T21:26:16Z",
+      "pool": "ViaBTC",
+      "txs": 1,
+      "vsize": 975,
+      "floorB": 7.44,
+      "actualFeerate": 1.17,
+      "impliedSats": 6113
+    },
+    {
+      "h": 771835,
+      "t": "2023-01-15T00:40:30Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 159175,
+      "floorB": 6.11,
+      "actualFeerate": 0.26,
+      "impliedSats": 931174
+    },
+    {
+      "h": 771841,
+      "t": "2023-01-15T01:13:44Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 160923,
+      "floorB": 7.92,
+      "actualFeerate": 5.09,
+      "impliedSats": 455412
+    },
+    {
+      "h": 771852,
+      "t": "2023-01-15T02:28:49Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 254,
+      "floorB": 8.57,
+      "actualFeerate": 0.42,
+      "impliedSats": 2070
+    },
+    {
+      "h": 771858,
+      "t": "2023-01-15T03:34:20Z",
+      "pool": "Unknown",
+      "txs": 1,
+      "vsize": 124864,
+      "floorB": 8.82,
+      "actualFeerate": 1.62,
+      "impliedSats": 899021
+    },
+    {
+      "h": 771884,
+      "t": "2023-01-15T08:02:46Z",
+      "pool": "Foundry USA",
+      "txs": 2,
+      "vsize": 38440,
+      "floorB": 6.46,
+      "actualFeerate": 3.15,
+      "impliedSats": 127236
+    },
+    {
+      "h": 771886,
+      "t": "2023-01-15T08:09:33Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 122991,
+      "floorB": 8.01,
+      "actualFeerate": 4.58,
+      "impliedSats": 421859
+    },
+    {
+      "h": 771893,
+      "t": "2023-01-15T09:17:26Z",
+      "pool": "Unknown",
+      "txs": 2,
+      "vsize": 165999,
+      "floorB": 4.84,
+      "actualFeerate": 1.03,
+      "impliedSats": 632456
+    },
+    {
+      "h": 771897,
+      "t": "2023-01-15T10:36:03Z",
+      "pool": "AntPool",
+      "txs": 2,
+      "vsize": 102333,
+      "floorB": 5.23,
+      "actualFeerate": 3.51,
+      "impliedSats": 176013
+    },
+    {
+      "h": 771898,
+      "t": "2023-01-15T10:36:10Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 373,
+      "floorB": 4.69,
+      "actualFeerate": 2.6,
+      "impliedSats": 780
+    },
+    {
+      "h": 771905,
+      "t": "2023-01-15T12:11:32Z",
+      "pool": "ViaBTC",
+      "txs": 1,
+      "vsize": 194334,
+      "floorB": 8.23,
+      "actualFeerate": 5.81,
+      "impliedSats": 470288
+    },
+    {
+      "h": 771910,
+      "t": "2023-01-15T12:34:37Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 290,
+      "floorB": 6.4,
+      "actualFeerate": 2.8,
+      "impliedSats": 1044
+    },
+    {
+      "h": 771918,
+      "t": "2023-01-15T14:34:43Z",
+      "pool": "ViaBTC",
+      "txs": 2,
+      "vsize": 1169,
+      "floorB": 4.03,
+      "actualFeerate": 2.52,
+      "impliedSats": 1765
+    },
+    {
+      "h": 771930,
+      "t": "2023-01-15T15:17:15Z",
+      "pool": "Binance Pool",
+      "txs": 1,
+      "vsize": 1258,
+      "floorB": 5.29,
+      "actualFeerate": 3.46,
+      "impliedSats": 2302
+    },
+    {
+      "h": 771938,
+      "t": "2023-01-15T16:27:41Z",
+      "pool": "ViaBTC",
+      "txs": 1,
+      "vsize": 237853,
+      "floorB": 5.49,
+      "actualFeerate": 2.29,
+      "impliedSats": 761130
+    },
+    {
+      "h": 771942,
+      "t": "2023-01-15T17:03:36Z",
+      "pool": "AntPool",
+      "txs": 2,
+      "vsize": 80194,
+      "floorB": 8.05,
+      "actualFeerate": 1.42,
+      "impliedSats": 531686
+    },
+    {
+      "h": 771946,
+      "t": "2023-01-15T18:24:57Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 500,
+      "floorB": 6.95,
+      "actualFeerate": 0.69,
+      "impliedSats": 3130
+    },
+    {
+      "h": 771948,
+      "t": "2023-01-15T18:48:43Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 1051,
+      "floorB": 6.1,
+      "actualFeerate": 2.2,
+      "impliedSats": 4099
+    },
+    {
+      "h": 771956,
+      "t": "2023-01-15T20:02:45Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 1326,
+      "floorB": 6.68,
+      "actualFeerate": 3.01,
+      "impliedSats": 4866
+    },
+    {
+      "h": 771959,
+      "t": "2023-01-15T20:46:06Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 805,
+      "floorB": 8.14,
+      "actualFeerate": 5.32,
+      "impliedSats": 2270
+    },
+    {
+      "h": 771960,
+      "t": "2023-01-15T21:04:49Z",
+      "pool": "F2Pool",
+      "txs": 2,
+      "vsize": 2102,
+      "floorB": 5.28,
+      "actualFeerate": 1.64,
+      "impliedSats": 7651
+    },
+    {
+      "h": 771961,
+      "t": "2023-01-15T21:36:28Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 689,
+      "floorB": 4.49,
+      "actualFeerate": 0.52,
+      "impliedSats": 2735
+    },
+    {
+      "h": 771986,
+      "t": "2023-01-16T02:43:09Z",
+      "pool": "F2Pool",
+      "txs": 2,
+      "vsize": 1337,
+      "floorB": 7.7,
+      "actualFeerate": 4.94,
+      "impliedSats": 3690
+    },
+    {
+      "h": 771992,
+      "t": "2023-01-16T03:10:51Z",
+      "pool": "Binance Pool",
+      "txs": 1,
+      "vsize": 465,
+      "floorB": 4.25,
+      "actualFeerate": 0.53,
+      "impliedSats": 1730
+    },
+    {
+      "h": 771993,
+      "t": "2023-01-16T03:50:31Z",
+      "pool": "Foundry USA",
+      "txs": 4,
+      "vsize": 123214,
+      "floorB": 5.41,
+      "actualFeerate": 1.68,
+      "impliedSats": 459588
+    },
+    {
+      "h": 772025,
+      "t": "2023-01-16T11:14:56Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 484,
+      "floorB": 4.21,
+      "actualFeerate": 1.5,
+      "impliedSats": 1312
+    },
+    {
+      "h": 772033,
+      "t": "2023-01-16T12:29:58Z",
+      "pool": "ViaBTC",
+      "txs": 1,
+      "vsize": 1248,
+      "floorB": 5.77,
+      "actualFeerate": 0.47,
+      "impliedSats": 6614
+    },
+    {
+      "h": 772034,
+      "t": "2023-01-16T12:34:49Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 907,
+      "floorB": 6.32,
+      "actualFeerate": 3.78,
+      "impliedSats": 2304
+    },
+    {
+      "h": 772035,
+      "t": "2023-01-16T12:37:57Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 1129,
+      "floorB": 3.91,
+      "actualFeerate": 0.77,
+      "impliedSats": 3545
+    },
+    {
+      "h": 772041,
+      "t": "2023-01-16T14:07:59Z",
+      "pool": "ViaBTC",
+      "txs": 2,
+      "vsize": 1452,
+      "floorB": 7.62,
+      "actualFeerate": 2.2,
+      "impliedSats": 7870
+    },
+    {
+      "h": 772054,
+      "t": "2023-01-16T15:54:22Z",
+      "pool": "AntPool",
+      "txs": 2,
+      "vsize": 1836,
+      "floorB": 7.26,
+      "actualFeerate": 2.64,
+      "impliedSats": 8482
+    },
+    {
+      "h": 772057,
+      "t": "2023-01-16T16:12:43Z",
+      "pool": "Foundry USA",
+      "txs": 2,
+      "vsize": 1602,
+      "floorB": 7.56,
+      "actualFeerate": 2.34,
+      "impliedSats": 8362
+    },
+    {
+      "h": 772058,
+      "t": "2023-01-16T16:18:18Z",
+      "pool": "ViaBTC",
+      "txs": 1,
+      "vsize": 1303,
+      "floorB": 5.3,
+      "actualFeerate": 1.15,
+      "impliedSats": 5407
+    },
+    {
+      "h": 772093,
+      "t": "2023-01-16T22:00:50Z",
+      "pool": "Foundry USA",
+      "txs": 2,
+      "vsize": 180827,
+      "floorB": 5.43,
+      "actualFeerate": 1.26,
+      "impliedSats": 754049
+    },
+    {
+      "h": 772102,
+      "t": "2023-01-16T23:26:24Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 807,
+      "floorB": 4.15,
+      "actualFeerate": 0.15,
+      "impliedSats": 3228
+    },
+    {
+      "h": 772107,
+      "t": "2023-01-17T00:17:49Z",
+      "pool": "F2Pool",
+      "txs": 2,
+      "vsize": 1286,
+      "floorB": 7.03,
+      "actualFeerate": 1.75,
+      "impliedSats": 6790
+    },
+    {
+      "h": 772108,
+      "t": "2023-01-17T00:21:11Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 101912,
+      "floorB": 3.51,
+      "actualFeerate": 0.92,
+      "impliedSats": 263952
+    },
+    {
+      "h": 772111,
+      "t": "2023-01-17T00:46:32Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 628,
+      "floorB": 4.78,
+      "actualFeerate": 2.23,
+      "impliedSats": 1601
+    },
+    {
+      "h": 772113,
+      "t": "2023-01-17T00:48:09Z",
+      "pool": "ViaBTC",
+      "txs": 4,
+      "vsize": 113683,
+      "floorB": 5.21,
+      "actualFeerate": 2.1,
+      "impliedSats": 353554
+    },
+    {
+      "h": 772141,
+      "t": "2023-01-17T05:28:03Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 725,
+      "floorB": 6.67,
+      "actualFeerate": 0.17,
+      "impliedSats": 4713
+    },
+    {
+      "h": 772145,
+      "t": "2023-01-17T05:45:19Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 1047,
+      "floorB": 5.14,
+      "actualFeerate": 3.14,
+      "impliedSats": 2094
+    },
+    {
+      "h": 772157,
+      "t": "2023-01-17T08:05:20Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 562,
+      "floorB": 5.15,
+      "actualFeerate": 2.83,
+      "impliedSats": 1304
+    },
+    {
+      "h": 772160,
+      "t": "2023-01-17T08:46:54Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 215897,
+      "floorB": 5.79,
+      "actualFeerate": 2.01,
+      "impliedSats": 816091
+    },
+    {
+      "h": 772165,
+      "t": "2023-01-17T09:47:19Z",
+      "pool": "Unknown",
+      "txs": 2,
+      "vsize": 186032,
+      "floorB": 4.27,
+      "actualFeerate": 2.77,
+      "impliedSats": 279048
+    },
+    {
+      "h": 772196,
+      "t": "2023-01-17T15:52:52Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 487,
+      "floorB": 5.1,
+      "actualFeerate": 0.66,
+      "impliedSats": 2162
+    },
+    {
+      "h": 772202,
+      "t": "2023-01-17T16:32:22Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 156488,
+      "floorB": 5.84,
+      "actualFeerate": 0.14,
+      "impliedSats": 891982
+    },
+    {
+      "h": 772206,
+      "t": "2023-01-17T16:59:47Z",
+      "pool": "Unknown",
+      "txs": 1,
+      "vsize": 161564,
+      "floorB": 5.18,
+      "actualFeerate": 1.41,
+      "impliedSats": 609096
+    },
+    {
+      "h": 772209,
+      "t": "2023-01-17T17:15:28Z",
+      "pool": "AntPool",
+      "txs": 2,
+      "vsize": 142109,
+      "floorB": 4.47,
+      "actualFeerate": 0.83,
+      "impliedSats": 517277
+    },
+    {
+      "h": 772221,
+      "t": "2023-01-17T20:12:13Z",
+      "pool": "AntPool",
+      "txs": 2,
+      "vsize": 2029,
+      "floorB": 3.11,
+      "actualFeerate": 0.56,
+      "impliedSats": 5174
+    },
+    {
+      "h": 772242,
+      "t": "2023-01-17T22:24:35Z",
+      "pool": "ViaBTC",
+      "txs": 1,
+      "vsize": 65828,
+      "floorB": 3.57,
+      "actualFeerate": 1.04,
+      "impliedSats": 166545
+    },
+    {
+      "h": 772259,
+      "t": "2023-01-18T00:18:56Z",
+      "pool": "Luxor",
+      "txs": 1,
+      "vsize": 1055,
+      "floorB": 4.32,
+      "actualFeerate": 1.15,
+      "impliedSats": 3344
+    },
+    {
+      "h": 772262,
+      "t": "2023-01-18T00:42:24Z",
+      "pool": "Binance Pool",
+      "txs": 1,
+      "vsize": 178724,
+      "floorB": 6.35,
+      "actualFeerate": 3.39,
+      "impliedSats": 529023
+    },
+    {
+      "h": 772278,
+      "t": "2023-01-18T04:20:02Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 272,
+      "floorB": 4.3,
+      "actualFeerate": 1.78,
+      "impliedSats": 685
+    },
+    {
+      "h": 772285,
+      "t": "2023-01-18T05:05:00Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 224,
+      "floorB": 4.38,
+      "actualFeerate": 0.4,
+      "impliedSats": 892
+    },
+    {
+      "h": 772286,
+      "t": "2023-01-18T05:06:48Z",
+      "pool": "F2Pool",
+      "txs": 2,
+      "vsize": 2161,
+      "floorB": 4.11,
+      "actualFeerate": 1.89,
+      "impliedSats": 4797
+    },
+    {
+      "h": 772297,
+      "t": "2023-01-18T06:54:38Z",
+      "pool": "ViaBTC",
+      "txs": 2,
+      "vsize": 2208,
+      "floorB": 3.28,
+      "actualFeerate": 1.25,
+      "impliedSats": 4482
+    },
+    {
+      "h": 772311,
+      "t": "2023-01-18T09:10:27Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 1263,
+      "floorB": 5.59,
+      "actualFeerate": 3.77,
+      "impliedSats": 2299
+    },
+    {
+      "h": 772322,
+      "t": "2023-01-18T10:56:14Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 592,
+      "floorB": 3.8,
+      "actualFeerate": 1.08,
+      "impliedSats": 1610
+    },
+    {
+      "h": 772325,
+      "t": "2023-01-18T11:40:44Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 415,
+      "floorB": 4.71,
+      "actualFeerate": 0.75,
+      "impliedSats": 1643
+    },
+    {
+      "h": 772338,
+      "t": "2023-01-18T13:37:30Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 826,
+      "floorB": 3,
+      "actualFeerate": 0.1,
+      "impliedSats": 2395
+    },
+    {
+      "h": 772363,
+      "t": "2023-01-18T18:03:46Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 1300,
+      "floorB": 5.32,
+      "actualFeerate": 2.72,
+      "impliedSats": 3380
+    },
+    {
+      "h": 772366,
+      "t": "2023-01-18T18:41:36Z",
+      "pool": "F2Pool",
+      "txs": 2,
+      "vsize": 844,
+      "floorB": 4.15,
+      "actualFeerate": 1.54,
+      "impliedSats": 2203
+    },
+    {
+      "h": 772375,
+      "t": "2023-01-18T20:07:34Z",
+      "pool": "Binance Pool",
+      "txs": 1,
+      "vsize": 119456,
+      "floorB": 3.63,
+      "actualFeerate": 1.92,
+      "impliedSats": 204270
+    },
+    {
+      "h": 772379,
+      "t": "2023-01-18T20:52:07Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 1378,
+      "floorB": 4.79,
+      "actualFeerate": 3.19,
+      "impliedSats": 2205
+    },
+    {
+      "h": 772386,
+      "t": "2023-01-18T22:44:17Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 240,
+      "floorB": 5.02,
+      "actualFeerate": 1.83,
+      "impliedSats": 766
+    },
+    {
+      "h": 772394,
+      "t": "2023-01-18T23:53:37Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 572,
+      "floorB": 4.79,
+      "actualFeerate": 1.93,
+      "impliedSats": 1636
+    },
+    {
+      "h": 772430,
+      "t": "2023-01-19T04:43:02Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 476,
+      "floorB": 3.77,
+      "actualFeerate": 0.46,
+      "impliedSats": 1576
+    },
+    {
+      "h": 772453,
+      "t": "2023-01-19T07:55:07Z",
+      "pool": "Luxor",
+      "txs": 1,
+      "vsize": 628,
+      "floorB": 5.02,
+      "actualFeerate": 3.51,
+      "impliedSats": 948
+    },
+    {
+      "h": 772463,
+      "t": "2023-01-19T09:35:52Z",
+      "pool": "ViaBTC",
+      "txs": 2,
+      "vsize": 232259,
+      "floorB": 4.8,
+      "actualFeerate": 1.7,
+      "impliedSats": 720003
+    },
+    {
+      "h": 772472,
+      "t": "2023-01-19T10:55:56Z",
+      "pool": "Unknown",
+      "txs": 1,
+      "vsize": 22965,
+      "floorB": 3.2,
+      "actualFeerate": 2.29,
+      "impliedSats": 20898
+    },
+    {
+      "h": 772474,
+      "t": "2023-01-19T11:20:28Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 1301,
+      "floorB": 3.18,
+      "actualFeerate": 1.33,
+      "impliedSats": 2407
+    },
+    {
+      "h": 772479,
+      "t": "2023-01-19T11:42:42Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 1051,
+      "floorB": 4.6,
+      "actualFeerate": 1.62,
+      "impliedSats": 3132
+    },
+    {
+      "h": 772486,
+      "t": "2023-01-19T12:23:40Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 36610,
+      "floorB": 3.5,
+      "actualFeerate": 2.39,
+      "impliedSats": 40637
+    },
+    {
+      "h": 772497,
+      "t": "2023-01-19T14:08:57Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 937,
+      "floorB": 4.7,
+      "actualFeerate": 1.77,
+      "impliedSats": 2745
+    },
+    {
+      "h": 772498,
+      "t": "2023-01-19T14:10:08Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 985,
+      "floorB": 5.26,
+      "actualFeerate": 3.05,
+      "impliedSats": 2177
+    },
+    {
+      "h": 772509,
+      "t": "2023-01-19T15:29:33Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 1158,
+      "floorB": 3.16,
+      "actualFeerate": 1.42,
+      "impliedSats": 2015
+    },
+    {
+      "h": 772528,
+      "t": "2023-01-19T18:42:32Z",
+      "pool": "ViaBTC",
+      "txs": 1,
+      "vsize": 1040,
+      "floorB": 2.99,
+      "actualFeerate": 1.15,
+      "impliedSats": 1914
+    },
+    {
+      "h": 772530,
+      "t": "2023-01-19T19:01:33Z",
+      "pool": "Foundry USA",
+      "txs": 2,
+      "vsize": 1675,
+      "floorB": 2.7,
+      "actualFeerate": 1.25,
+      "impliedSats": 2429
+    },
+    {
+      "h": 772539,
+      "t": "2023-01-19T20:40:21Z",
+      "pool": "AntPool",
+      "txs": 2,
+      "vsize": 170789,
+      "floorB": 3.85,
+      "actualFeerate": 0.91,
+      "impliedSats": 502120
+    },
+    {
+      "h": 772542,
+      "t": "2023-01-19T21:02:53Z",
+      "pool": "Binance Pool",
+      "txs": 2,
+      "vsize": 23679,
+      "floorB": 5.17,
+      "actualFeerate": 1.57,
+      "impliedSats": 85244
+    },
+    {
+      "h": 772545,
+      "t": "2023-01-19T21:30:00Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 160557,
+      "floorB": 4.76,
+      "actualFeerate": 2.84,
+      "impliedSats": 308269
+    },
+    {
+      "h": 772548,
+      "t": "2023-01-19T22:00:07Z",
+      "pool": "Unknown",
+      "txs": 1,
+      "vsize": 190,
+      "floorB": 3.31,
+      "actualFeerate": 1.34,
+      "impliedSats": 374
+    },
+    {
+      "h": 772555,
+      "t": "2023-01-19T22:56:56Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 28451,
+      "floorB": 3.77,
+      "actualFeerate": 1.99,
+      "impliedSats": 50643
+    },
+    {
+      "h": 772560,
+      "t": "2023-01-19T23:33:33Z",
+      "pool": "Foundry USA",
+      "txs": 4,
+      "vsize": 2897,
+      "floorB": 4.56,
+      "actualFeerate": 1.44,
+      "impliedSats": 9039
+    },
+    {
+      "h": 772563,
+      "t": "2023-01-20T00:05:56Z",
+      "pool": "ViaBTC",
+      "txs": 2,
+      "vsize": 106163,
+      "floorB": 4.42,
+      "actualFeerate": 0.7,
+      "impliedSats": 394926
+    },
+    {
+      "h": 772564,
+      "t": "2023-01-20T00:25:06Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 406,
+      "floorB": 3.52,
+      "actualFeerate": 0.32,
+      "impliedSats": 1299
+    },
+    {
+      "h": 772590,
+      "t": "2023-01-20T04:37:22Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 974,
+      "floorB": 4.24,
+      "actualFeerate": 1.58,
+      "impliedSats": 2591
+    },
+    {
+      "h": 772593,
+      "t": "2023-01-20T05:50:11Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 123347,
+      "floorB": 3.8,
+      "actualFeerate": 2.56,
+      "impliedSats": 152950
+    },
+    {
+      "h": 772595,
+      "t": "2023-01-20T06:20:06Z",
+      "pool": "Unknown",
+      "txs": 2,
+      "vsize": 399,
+      "floorB": 4.32,
+      "actualFeerate": 1.62,
+      "impliedSats": 1077
+    },
+    {
+      "h": 772597,
+      "t": "2023-01-20T06:49:54Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 110658,
+      "floorB": 4.41,
+      "actualFeerate": 3.09,
+      "impliedSats": 146069
+    },
+    {
+      "h": 772620,
+      "t": "2023-01-20T09:50:24Z",
+      "pool": "ViaBTC",
+      "txs": 1,
+      "vsize": 696,
+      "floorB": 2.84,
+      "actualFeerate": 1.3,
+      "impliedSats": 1072
+    },
+    {
+      "h": 772625,
+      "t": "2023-01-20T10:52:54Z",
+      "pool": "Unknown",
+      "txs": 1,
+      "vsize": 646,
+      "floorB": 3.32,
+      "actualFeerate": 2.29,
+      "impliedSats": 665
+    },
+    {
+      "h": 772626,
+      "t": "2023-01-20T10:54:35Z",
+      "pool": "AntPool",
+      "txs": 2,
+      "vsize": 1951,
+      "floorB": 2.82,
+      "actualFeerate": 0.98,
+      "impliedSats": 3590
+    },
+    {
+      "h": 772632,
+      "t": "2023-01-20T12:35:38Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 186,
+      "floorB": 4.49,
+      "actualFeerate": 0.21,
+      "impliedSats": 796
+    },
+    {
+      "h": 772640,
+      "t": "2023-01-20T13:54:53Z",
+      "pool": "Unknown",
+      "txs": 1,
+      "vsize": 122178,
+      "floorB": 4.92,
+      "actualFeerate": 1.08,
+      "impliedSats": 469164
+    },
+    {
+      "h": 772645,
+      "t": "2023-01-20T14:50:03Z",
+      "pool": "Luxor",
+      "txs": 1,
+      "vsize": 119278,
+      "floorB": 4.84,
+      "actualFeerate": 1.74,
+      "impliedSats": 369762
+    },
+    {
+      "h": 772666,
+      "t": "2023-01-20T18:12:07Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 324,
+      "floorB": 2.69,
+      "actualFeerate": 0.89,
+      "impliedSats": 583
+    },
+    {
+      "h": 772674,
+      "t": "2023-01-20T19:20:51Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 328,
+      "floorB": 3.73,
+      "actualFeerate": 1.54,
+      "impliedSats": 718
+    },
+    {
+      "h": 772676,
+      "t": "2023-01-20T19:26:27Z",
+      "pool": "Foundry USA",
+      "txs": 2,
+      "vsize": 200345,
+      "floorB": 2.32,
+      "actualFeerate": 0.33,
+      "impliedSats": 398687
+    },
+    {
+      "h": 772683,
+      "t": "2023-01-20T20:26:05Z",
+      "pool": "Luxor",
+      "txs": 2,
+      "vsize": 999,
+      "floorB": 2.92,
+      "actualFeerate": 0.88,
+      "impliedSats": 2038
+    },
+    {
+      "h": 772695,
+      "t": "2023-01-20T23:02:35Z",
+      "pool": "ViaBTC",
+      "txs": 1,
+      "vsize": 572,
+      "floorB": 4.39,
+      "actualFeerate": 2.17,
+      "impliedSats": 1270
+    },
+    {
+      "h": 772696,
+      "t": "2023-01-20T23:16:17Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 1186,
+      "floorB": 3.21,
+      "actualFeerate": 0.49,
+      "impliedSats": 3226
+    },
+    {
+      "h": 772701,
+      "t": "2023-01-21T00:33:03Z",
+      "pool": "F2Pool",
+      "txs": 2,
+      "vsize": 210345,
+      "floorB": 3.96,
+      "actualFeerate": 0.87,
+      "impliedSats": 649966
+    },
+    {
+      "h": 772703,
+      "t": "2023-01-21T00:50:29Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 867,
+      "floorB": 4.31,
+      "actualFeerate": 0.92,
+      "impliedSats": 2939
+    },
+    {
+      "h": 772707,
+      "t": "2023-01-21T01:40:15Z",
+      "pool": "Foundry USA",
+      "txs": 2,
+      "vsize": 115143,
+      "floorB": 4.74,
+      "actualFeerate": 3.29,
+      "impliedSats": 166957
+    },
+    {
+      "h": 772708,
+      "t": "2023-01-21T01:43:37Z",
+      "pool": "AntPool",
+      "txs": 2,
+      "vsize": 74004,
+      "floorB": 2.42,
+      "actualFeerate": 0.81,
+      "impliedSats": 119146
+    },
+    {
+      "h": 772718,
+      "t": "2023-01-21T03:41:53Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 873,
+      "floorB": 3.35,
+      "actualFeerate": 1.36,
+      "impliedSats": 1737
+    },
+    {
+      "h": 772739,
+      "t": "2023-01-21T07:11:22Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 631,
+      "floorB": 4.35,
+      "actualFeerate": 1.86,
+      "impliedSats": 1571
+    },
+    {
+      "h": 772754,
+      "t": "2023-01-21T10:14:57Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 340,
+      "floorB": 3.09,
+      "actualFeerate": 1.82,
+      "impliedSats": 432
+    },
+    {
+      "h": 772767,
+      "t": "2023-01-21T12:49:39Z",
+      "pool": "F2Pool",
+      "txs": 2,
+      "vsize": 307768,
+      "floorB": 3.1,
+      "actualFeerate": 1.43,
+      "impliedSats": 513973
+    },
+    {
+      "h": 772771,
+      "t": "2023-01-21T13:34:04Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 790,
+      "floorB": 4.37,
+      "actualFeerate": 2.5,
+      "impliedSats": 1477
+    },
+    {
+      "h": 772791,
+      "t": "2023-01-21T17:13:20Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 388,
+      "floorB": 4.28,
+      "actualFeerate": 1.37,
+      "impliedSats": 1129
+    },
+    {
+      "h": 772827,
+      "t": "2023-01-21T22:27:41Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 232,
+      "floorB": 4.36,
+      "actualFeerate": 2.12,
+      "impliedSats": 520
+    },
+    {
+      "h": 772834,
+      "t": "2023-01-22T00:02:57Z",
+      "pool": "Foundry USA",
+      "txs": 2,
+      "vsize": 904,
+      "floorB": 4.12,
+      "actualFeerate": 1.33,
+      "impliedSats": 2522
+    },
+    {
+      "h": 772866,
+      "t": "2023-01-22T05:10:12Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 166629,
+      "floorB": 2.65,
+      "actualFeerate": 1.52,
+      "impliedSats": 188291
+    },
+    {
+      "h": 772877,
+      "t": "2023-01-22T06:56:36Z",
+      "pool": "Unknown",
+      "txs": 1,
+      "vsize": 153563,
+      "floorB": 3.3,
+      "actualFeerate": 2.09,
+      "impliedSats": 185811
+    },
+    {
+      "h": 772905,
+      "t": "2023-01-22T10:28:41Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 1287,
+      "floorB": 3.71,
+      "actualFeerate": 2.22,
+      "impliedSats": 1918
+    },
+    {
+      "h": 772912,
+      "t": "2023-01-22T12:05:49Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 30665,
+      "floorB": 3.38,
+      "actualFeerate": 2.23,
+      "impliedSats": 35265
+    },
+    {
+      "h": 772921,
+      "t": "2023-01-22T13:47:14Z",
+      "pool": "ViaBTC",
+      "txs": 1,
+      "vsize": 300,
+      "floorB": 3.26,
+      "actualFeerate": 1.16,
+      "impliedSats": 630
+    },
+    {
+      "h": 772931,
+      "t": "2023-01-22T15:31:01Z",
+      "pool": "Luxor",
+      "txs": 2,
+      "vsize": 77810,
+      "floorB": 2.52,
+      "actualFeerate": 1.16,
+      "impliedSats": 105822
+    },
+    {
+      "h": 772941,
+      "t": "2023-01-22T17:29:37Z",
+      "pool": "Unknown",
+      "txs": 1,
+      "vsize": 1224,
+      "floorB": 2.53,
+      "actualFeerate": 0.91,
+      "impliedSats": 1983
+    },
+    {
+      "h": 772948,
+      "t": "2023-01-22T19:15:00Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 384,
+      "floorB": 2.6,
+      "actualFeerate": 0.92,
+      "impliedSats": 645
+    },
+    {
+      "h": 772964,
+      "t": "2023-01-22T22:32:40Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 1168,
+      "floorB": 4.03,
+      "actualFeerate": 2.55,
+      "impliedSats": 1729
+    },
+    {
+      "h": 772975,
+      "t": "2023-01-22T23:37:09Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 957,
+      "floorB": 3.17,
+      "actualFeerate": 0.74,
+      "impliedSats": 2326
+    },
+    {
+      "h": 772980,
+      "t": "2023-01-23T01:05:27Z",
+      "pool": "ViaBTC",
+      "txs": 2,
+      "vsize": 2094,
+      "floorB": 2.72,
+      "actualFeerate": 0.95,
+      "impliedSats": 3706
+    },
+    {
+      "h": 772985,
+      "t": "2023-01-23T01:25:10Z",
+      "pool": "ViaBTC",
+      "txs": 2,
+      "vsize": 30633,
+      "floorB": 2.49,
+      "actualFeerate": 0.64,
+      "impliedSats": 56671
+    },
+    {
+      "h": 772998,
+      "t": "2023-01-23T03:38:30Z",
+      "pool": "ViaBTC",
+      "txs": 1,
+      "vsize": 814,
+      "floorB": 3.94,
+      "actualFeerate": 2.67,
+      "impliedSats": 1034
+    },
+    {
+      "h": 773012,
+      "t": "2023-01-23T05:10:39Z",
+      "pool": "Binance Pool",
+      "txs": 2,
+      "vsize": 777,
+      "floorB": 4.74,
+      "actualFeerate": 1.03,
+      "impliedSats": 2883
+    },
+    {
+      "h": 773030,
+      "t": "2023-01-23T08:49:01Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 205,
+      "floorB": 3.79,
+      "actualFeerate": 0.6,
+      "impliedSats": 654
+    },
+    {
+      "h": 773031,
+      "t": "2023-01-23T08:59:16Z",
+      "pool": "ViaBTC",
+      "txs": 1,
+      "vsize": 189676,
+      "floorB": 3.98,
+      "actualFeerate": 1.08,
+      "impliedSats": 550060
+    },
+    {
+      "h": 773036,
+      "t": "2023-01-23T09:26:30Z",
+      "pool": "ViaBTC",
+      "txs": 5,
+      "vsize": 411677,
+      "floorB": 3.76,
+      "actualFeerate": 2.22,
+      "impliedSats": 633983
+    },
+    {
+      "h": 773046,
+      "t": "2023-01-23T10:41:33Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 534,
+      "floorB": 4.49,
+      "actualFeerate": 1.15,
+      "impliedSats": 1784
+    },
+    {
+      "h": 773056,
+      "t": "2023-01-23T12:39:08Z",
+      "pool": "Unknown",
+      "txs": 1,
+      "vsize": 231385,
+      "floorB": 2.8,
+      "actualFeerate": 1.04,
+      "impliedSats": 407238
+    },
+    {
+      "h": 773064,
+      "t": "2023-01-23T14:10:36Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 1124,
+      "floorB": 3.92,
+      "actualFeerate": 0.48,
+      "impliedSats": 3867
+    },
+    {
+      "h": 773069,
+      "t": "2023-01-23T14:58:17Z",
+      "pool": "ViaBTC",
+      "txs": 1,
+      "vsize": 136009,
+      "floorB": 4.28,
+      "actualFeerate": 1.06,
+      "impliedSats": 437949
+    },
+    {
+      "h": 773074,
+      "t": "2023-01-23T16:05:22Z",
+      "pool": "Unknown",
+      "txs": 2,
+      "vsize": 2396,
+      "floorB": 5.13,
+      "actualFeerate": 2.17,
+      "impliedSats": 7092
+    },
+    {
+      "h": 773091,
+      "t": "2023-01-23T18:53:51Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 212,
+      "floorB": 2.44,
+      "actualFeerate": 0.23,
+      "impliedSats": 469
+    },
+    {
+      "h": 773121,
+      "t": "2023-01-23T23:07:15Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 381,
+      "floorB": 4.4,
+      "actualFeerate": 1.05,
+      "impliedSats": 1276
+    },
+    {
+      "h": 773140,
+      "t": "2023-01-24T02:31:43Z",
+      "pool": "Braiins Pool",
+      "txs": 2,
+      "vsize": 693,
+      "floorB": 3.24,
+      "actualFeerate": 0.56,
+      "impliedSats": 1857
+    },
+    {
+      "h": 773143,
+      "t": "2023-01-24T02:54:53Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 552,
+      "floorB": 4.82,
+      "actualFeerate": 0.77,
+      "impliedSats": 2236
+    },
+    {
+      "h": 773159,
+      "t": "2023-01-24T05:47:32Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 65269,
+      "floorB": 2.84,
+      "actualFeerate": 1.6,
+      "impliedSats": 80934
+    },
+    {
+      "h": 773163,
+      "t": "2023-01-24T06:21:45Z",
+      "pool": "ViaBTC",
+      "txs": 1,
+      "vsize": 164908,
+      "floorB": 4.26,
+      "actualFeerate": 2.87,
+      "impliedSats": 229222
+    },
+    {
+      "h": 773173,
+      "t": "2023-01-24T07:43:31Z",
+      "pool": "ViaBTC",
+      "txs": 1,
+      "vsize": 1070,
+      "floorB": 2.46,
+      "actualFeerate": 0.8,
+      "impliedSats": 1776
+    },
+    {
+      "h": 773178,
+      "t": "2023-01-24T08:25:11Z",
+      "pool": "ViaBTC",
+      "txs": 1,
+      "vsize": 1102,
+      "floorB": 4.32,
+      "actualFeerate": 0.39,
+      "impliedSats": 4331
+    },
+    {
+      "h": 773203,
+      "t": "2023-01-24T11:41:28Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 596,
+      "floorB": 4.96,
+      "actualFeerate": 2.32,
+      "impliedSats": 1573
+    },
+    {
+      "h": 773211,
+      "t": "2023-01-24T13:52:35Z",
+      "pool": "ViaBTC",
+      "txs": 1,
+      "vsize": 371,
+      "floorB": 2.69,
+      "actualFeerate": 1.2,
+      "impliedSats": 553
+    },
+    {
+      "h": 773224,
+      "t": "2023-01-24T15:27:01Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 117196,
+      "floorB": 4.32,
+      "actualFeerate": 0.64,
+      "impliedSats": 431281
+    },
+    {
+      "h": 773238,
+      "t": "2023-01-24T17:47:08Z",
+      "pool": "Foundry USA",
+      "txs": 2,
+      "vsize": 963,
+      "floorB": 3.61,
+      "actualFeerate": 1.86,
+      "impliedSats": 1685
+    },
+    {
+      "h": 773241,
+      "t": "2023-01-24T18:08:34Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 1143,
+      "floorB": 4.11,
+      "actualFeerate": 0.1,
+      "impliedSats": 4583
+    },
+    {
+      "h": 773247,
+      "t": "2023-01-24T19:51:36Z",
+      "pool": "Foundry USA",
+      "txs": 2,
+      "vsize": 56303,
+      "floorB": 4.73,
+      "actualFeerate": 2.49,
+      "impliedSats": 126119
+    },
+    {
+      "h": 773269,
+      "t": "2023-01-24T22:22:42Z",
+      "pool": "Binance Pool",
+      "txs": 2,
+      "vsize": 13985,
+      "floorB": 4.61,
+      "actualFeerate": 0.75,
+      "impliedSats": 53982
+    },
+    {
+      "h": 773271,
+      "t": "2023-01-24T22:56:01Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 792,
+      "floorB": 4.57,
+      "actualFeerate": 0.15,
+      "impliedSats": 3501
+    },
+    {
+      "h": 773275,
+      "t": "2023-01-24T23:50:26Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 118238,
+      "floorB": 2.47,
+      "actualFeerate": 1.19,
+      "impliedSats": 151345
+    },
+    {
+      "h": 773294,
+      "t": "2023-01-25T04:02:11Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 516,
+      "floorB": 3.36,
+      "actualFeerate": 2.31,
+      "impliedSats": 542
+    },
+    {
+      "h": 773295,
+      "t": "2023-01-25T04:05:12Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 802,
+      "floorB": 3.49,
+      "actualFeerate": 2.35,
+      "impliedSats": 914
+    },
+    {
+      "h": 773300,
+      "t": "2023-01-25T05:10:47Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 1157,
+      "floorB": 3.45,
+      "actualFeerate": 0.49,
+      "impliedSats": 3425
+    },
+    {
+      "h": 773309,
+      "t": "2023-01-25T07:11:40Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 844,
+      "floorB": 3.74,
+      "actualFeerate": 0.47,
+      "impliedSats": 2760
+    },
+    {
+      "h": 773310,
+      "t": "2023-01-25T07:26:42Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 392,
+      "floorB": 4.44,
+      "actualFeerate": 1.17,
+      "impliedSats": 1282
+    },
+    {
+      "h": 773332,
+      "t": "2023-01-25T11:06:21Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 633,
+      "floorB": 2.95,
+      "actualFeerate": 1.76,
+      "impliedSats": 753
+    },
+    {
+      "h": 773348,
+      "t": "2023-01-25T13:24:22Z",
+      "pool": "AntPool",
+      "txs": 3,
+      "vsize": 193918,
+      "floorB": 2.62,
+      "actualFeerate": 1.55,
+      "impliedSats": 207492
+    },
+    {
+      "h": 773356,
+      "t": "2023-01-25T14:56:39Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 16850,
+      "floorB": 4.43,
+      "actualFeerate": 0.93,
+      "impliedSats": 58975
+    },
+    {
+      "h": 773370,
+      "t": "2023-01-25T17:07:19Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 188819,
+      "floorB": 3.05,
+      "actualFeerate": 1.2,
+      "impliedSats": 349315
+    },
+    {
+      "h": 773378,
+      "t": "2023-01-25T18:31:11Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 1144,
+      "floorB": 2.52,
+      "actualFeerate": 1.5,
+      "impliedSats": 1167
+    },
+    {
+      "h": 773394,
+      "t": "2023-01-25T21:44:14Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 177724,
+      "floorB": 2.92,
+      "actualFeerate": 0.62,
+      "impliedSats": 408765
+    },
+    {
+      "h": 773402,
+      "t": "2023-01-25T23:06:38Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 1279,
+      "floorB": 3.3,
+      "actualFeerate": 0.99,
+      "impliedSats": 2954
+    },
+    {
+      "h": 773412,
+      "t": "2023-01-26T01:43:09Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 1153,
+      "floorB": 2.28,
+      "actualFeerate": 0.95,
+      "impliedSats": 1533
+    },
+    {
+      "h": 773415,
+      "t": "2023-01-26T01:58:26Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 869,
+      "floorB": 4.19,
+      "actualFeerate": 1.34,
+      "impliedSats": 2477
+    },
+    {
+      "h": 773422,
+      "t": "2023-01-26T02:44:37Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 233,
+      "floorB": 2.49,
+      "actualFeerate": 0.37,
+      "impliedSats": 494
+    },
+    {
+      "h": 773445,
+      "t": "2023-01-26T07:13:23Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 68736,
+      "floorB": 2.05,
+      "actualFeerate": 1.38,
+      "impliedSats": 46053
+    },
+    {
+      "h": 773448,
+      "t": "2023-01-26T07:39:34Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 337,
+      "floorB": 4.07,
+      "actualFeerate": 2.33,
+      "impliedSats": 586
+    },
+    {
+      "h": 773450,
+      "t": "2023-01-26T07:45:35Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 668,
+      "floorB": 2.34,
+      "actualFeerate": 1.36,
+      "impliedSats": 655
+    },
+    {
+      "h": 773463,
+      "t": "2023-01-26T10:14:38Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 411,
+      "floorB": 1.87,
+      "actualFeerate": 0.81,
+      "impliedSats": 436
+    },
+    {
+      "h": 773465,
+      "t": "2023-01-26T10:28:17Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 263,
+      "floorB": 3.07,
+      "actualFeerate": 1.87,
+      "impliedSats": 316
+    },
+    {
+      "h": 773468,
+      "t": "2023-01-26T11:03:23Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 223682,
+      "floorB": 2.79,
+      "actualFeerate": 0.83,
+      "impliedSats": 438417
+    },
+    {
+      "h": 773484,
+      "t": "2023-01-26T14:47:24Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 633,
+      "floorB": 2.81,
+      "actualFeerate": 0.85,
+      "impliedSats": 1241
+    },
+    {
+      "h": 773486,
+      "t": "2023-01-26T15:34:02Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 124548,
+      "floorB": 2.56,
+      "actualFeerate": 1.67,
+      "impliedSats": 110848
+    },
+    {
+      "h": 773498,
+      "t": "2023-01-26T17:56:13Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 551,
+      "floorB": 2.2,
+      "actualFeerate": 0.55,
+      "impliedSats": 909
+    },
+    {
+      "h": 773514,
+      "t": "2023-01-26T20:42:14Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 1040,
+      "floorB": 1.92,
+      "actualFeerate": 1.19,
+      "impliedSats": 759
+    },
+    {
+      "h": 773515,
+      "t": "2023-01-26T20:52:20Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 1206,
+      "floorB": 2.02,
+      "actualFeerate": 1.09,
+      "impliedSats": 1122
+    },
+    {
+      "h": 773539,
+      "t": "2023-01-27T00:24:22Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 1136,
+      "floorB": 2.31,
+      "actualFeerate": 1.15,
+      "impliedSats": 1318
+    },
+    {
+      "h": 773542,
+      "t": "2023-01-27T00:29:31Z",
+      "pool": "ViaBTC",
+      "txs": 2,
+      "vsize": 17829,
+      "floorB": 1.91,
+      "actualFeerate": 0.12,
+      "impliedSats": 31914
+    },
+    {
+      "h": 773544,
+      "t": "2023-01-27T00:34:40Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 446,
+      "floorB": 1.93,
+      "actualFeerate": 1,
+      "impliedSats": 415
+    },
+    {
+      "h": 773549,
+      "t": "2023-01-27T01:10:04Z",
+      "pool": "ViaBTC",
+      "txs": 1,
+      "vsize": 100069,
+      "floorB": 2.13,
+      "actualFeerate": 0.67,
+      "impliedSats": 146101
+    },
+    {
+      "h": 773594,
+      "t": "2023-01-27T06:49:38Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 1168,
+      "floorB": 3.05,
+      "actualFeerate": 1.28,
+      "impliedSats": 2067
+    },
+    {
+      "h": 773610,
+      "t": "2023-01-27T09:04:16Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 338,
+      "floorB": 1.6,
+      "actualFeerate": 0.67,
+      "impliedSats": 314
+    },
+    {
+      "h": 773612,
+      "t": "2023-01-27T09:42:23Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 592,
+      "floorB": 1.6,
+      "actualFeerate": 0.66,
+      "impliedSats": 556
+    },
+    {
+      "h": 773627,
+      "t": "2023-01-27T12:17:07Z",
+      "pool": "ViaBTC",
+      "txs": 1,
+      "vsize": 535,
+      "floorB": 1.6,
+      "actualFeerate": 0.6,
+      "impliedSats": 535
+    },
+    {
+      "h": 773638,
+      "t": "2023-01-27T14:51:20Z",
+      "pool": "F2Pool",
+      "txs": 2,
+      "vsize": 2485,
+      "floorB": 2.78,
+      "actualFeerate": 1.72,
+      "impliedSats": 2634
+    },
+    {
+      "h": 773694,
+      "t": "2023-01-28T00:52:07Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 1085,
+      "floorB": 2.22,
+      "actualFeerate": 0.15,
+      "impliedSats": 2246
+    },
+    {
+      "h": 773728,
+      "t": "2023-01-28T06:00:01Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 1183,
+      "floorB": 1.6,
+      "actualFeerate": 0.34,
+      "impliedSats": 1491
+    },
+    {
+      "h": 773748,
+      "t": "2023-01-28T09:56:07Z",
+      "pool": "Binance Pool",
+      "txs": 1,
+      "vsize": 357,
+      "floorB": 1.6,
+      "actualFeerate": 0.46,
+      "impliedSats": 407
+    },
+    {
+      "h": 773757,
+      "t": "2023-01-28T11:11:56Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 686,
+      "floorB": 1.6,
+      "actualFeerate": 0.97,
+      "impliedSats": 432
+    },
+    {
+      "h": 773783,
+      "t": "2023-01-28T14:58:57Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 343,
+      "floorB": 1.6,
+      "actualFeerate": 0.65,
+      "impliedSats": 326
+    },
+    {
+      "h": 773785,
+      "t": "2023-01-28T15:02:56Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 1191,
+      "floorB": 1.6,
+      "actualFeerate": 0.44,
+      "impliedSats": 1382
+    },
+    {
+      "h": 773790,
+      "t": "2023-01-28T16:31:39Z",
+      "pool": "ViaBTC",
+      "txs": 1,
+      "vsize": 590,
+      "floorB": 1.77,
+      "actualFeerate": 0.37,
+      "impliedSats": 826
+    },
+    {
+      "h": 773813,
+      "t": "2023-01-28T20:21:52Z",
+      "pool": "ViaBTC",
+      "txs": 2,
+      "vsize": 162993,
+      "floorB": 1.6,
+      "actualFeerate": 0.25,
+      "impliedSats": 220041
+    },
+    {
+      "h": 773828,
+      "t": "2023-01-28T22:46:26Z",
+      "pool": "Foundry USA",
+      "txs": 2,
+      "vsize": 126591,
+      "floorB": 1.6,
+      "actualFeerate": 0.86,
+      "impliedSats": 93677
+    },
+    {
+      "h": 773831,
+      "t": "2023-01-28T23:10:03Z",
+      "pool": "Unknown",
+      "txs": 1,
+      "vsize": 723,
+      "floorB": 1.6,
+      "actualFeerate": 0.29,
+      "impliedSats": 947
+    },
+    {
+      "h": 773833,
+      "t": "2023-01-28T23:15:11Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 52349,
+      "floorB": 1.6,
+      "actualFeerate": 0.16,
+      "impliedSats": 75383
+    },
+    {
+      "h": 773850,
+      "t": "2023-01-29T03:24:50Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 1004,
+      "floorB": 1.6,
+      "actualFeerate": 0.17,
+      "impliedSats": 1436
+    },
+    {
+      "h": 773867,
+      "t": "2023-01-29T07:02:13Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 26364,
+      "floorB": 1.6,
+      "actualFeerate": 0.51,
+      "impliedSats": 28737
+    },
+    {
+      "h": 773925,
+      "t": "2023-01-29T16:11:49Z",
+      "pool": "Unknown",
+      "txs": 1,
+      "vsize": 873,
+      "floorB": 1.6,
+      "actualFeerate": 0.22,
+      "impliedSats": 1205
+    },
+    {
+      "h": 773933,
+      "t": "2023-01-29T17:51:33Z",
+      "pool": "Foundry USA",
+      "txs": 4,
+      "vsize": 141211,
+      "floorB": 1.6,
+      "actualFeerate": 0.96,
+      "impliedSats": 90375
+    },
+    {
+      "h": 773948,
+      "t": "2023-01-29T21:12:24Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 167919,
+      "floorB": 1.6,
+      "actualFeerate": 0.1,
+      "impliedSats": 251879
+    },
+    {
+      "h": 773971,
+      "t": "2023-01-30T01:02:35Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 52516,
+      "floorB": 1.6,
+      "actualFeerate": 0.1,
+      "impliedSats": 78774
+    },
+    {
+      "h": 773980,
+      "t": "2023-01-30T02:06:30Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 761,
+      "floorB": 1.6,
+      "actualFeerate": 0.75,
+      "impliedSats": 647
+    },
+    {
+      "h": 774006,
+      "t": "2023-01-30T07:36:02Z",
+      "pool": "F2Pool",
+      "txs": 1,
+      "vsize": 499,
+      "floorB": 1.6,
+      "actualFeerate": 1,
+      "impliedSats": 299
+    },
+    {
+      "h": 774011,
+      "t": "2023-01-30T07:46:02Z",
+      "pool": "Unknown",
+      "txs": 1,
+      "vsize": 666,
+      "floorB": 1.6,
+      "actualFeerate": 0.12,
+      "impliedSats": 986
+    },
+    {
+      "h": 774018,
+      "t": "2023-01-30T09:08:51Z",
+      "pool": "Binance Pool",
+      "txs": 2,
+      "vsize": 1447,
+      "floorB": 1.6,
+      "actualFeerate": 0.5,
+      "impliedSats": 1592
+    },
+    {
+      "h": 774022,
+      "t": "2023-01-30T09:33:20Z",
+      "pool": "AntPool",
+      "txs": 1,
+      "vsize": 234848,
+      "floorB": 1.6,
+      "actualFeerate": 0.17,
+      "impliedSats": 335833
+    },
+    {
+      "h": 774023,
+      "t": "2023-01-30T09:44:23Z",
+      "pool": "AntPool",
+      "txs": 2,
+      "vsize": 1155,
+      "floorB": 1.6,
+      "actualFeerate": 0.81,
+      "impliedSats": 912
+    },
+    {
+      "h": 774087,
+      "t": "2023-01-30T20:05:39Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 1340,
+      "floorB": 1.6,
+      "actualFeerate": 0.48,
+      "impliedSats": 1501
+    },
+    {
+      "h": 774108,
+      "t": "2023-01-31T00:50:21Z",
+      "pool": "Unknown",
+      "txs": 1,
+      "vsize": 674,
+      "floorB": 1.6,
+      "actualFeerate": 0.1,
+      "impliedSats": 1011
+    },
+    {
+      "h": 774188,
+      "t": "2023-01-31T15:33:21Z",
+      "pool": "Unknown",
+      "txs": 1,
+      "vsize": 388,
+      "floorB": 1.6,
+      "actualFeerate": 0.1,
+      "impliedSats": 582
+    },
+    {
+      "h": 774196,
+      "t": "2023-01-31T17:21:33Z",
+      "pool": "Foundry USA",
+      "txs": 1,
+      "vsize": 1113,
+      "floorB": 1.6,
+      "actualFeerate": 0.29,
+      "impliedSats": 1458
+    },
+    {
+      "h": 774217,
+      "t": "2023-01-31T20:49:55Z",
+      "pool": "F2Pool",
+      "txs": 2,
+      "vsize": 199418,
+      "floorB": 1.6,
+      "actualFeerate": 0.75,
+      "impliedSats": 169505
+    }
+  ]
+}

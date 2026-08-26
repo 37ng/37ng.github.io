@@ -25,6 +25,7 @@
     "verify": "npm run format:check && npm run check && npm run build && npm test",
     "art": "node scripts/generate-art.mjs",
     "bitcoin-epochs": "node scripts/generate-bitcoin-epochs.mjs",
+    "offchain-pseudo": "node scripts/generate-offchain-pseudo.mjs src/lib/offchain-revenue-jan2023.json",
     "test": "tsx --test src/**/*.test.ts"
   },
   "dependencies": {

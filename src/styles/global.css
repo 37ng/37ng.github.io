@@ -545,6 +545,19 @@ h6 {
   background-image: none;
 }
 
+/* Chart marks — carried as `currentColor` so one rule covers a whole figure's
+   worth of dots and stems. The post's own accent is picked for the blueprint
+   ground; on paper it washes out (a loud hue is chosen for identity, not for
+   contrast — see the two-axis note in CLAUDE.md), so the light theme swaps in
+   the darkened variant that already carries the §0N markers. Scoped the same
+   way the ramp swap is, since the accent means nothing outside a post. */
+.chart-mark {
+  color: var(--accent, var(--color-signal-500));
+}
+html[data-theme="light"]:has(#post) .chart-mark {
+  color: var(--accent-dark, var(--color-signal-600));
+}
+
 /* ---------------------------------------------------------------
    Interactive primitives
 ----------------------------------------------------------------- */
