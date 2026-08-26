@@ -5,17 +5,22 @@ import {
   barX,
   BLOCKS_PER_BAR,
   blockWorth,
+  feeOnlyShare,
   feeWorth,
   formatBigMacs,
   formatBtc,
+  formatBtcBulk,
   formatHeight,
+  formatShare,
   formatSubsidy,
   formatUsd,
   halvingIndices,
   normalize,
+  onchainShare,
   spineY,
   subsidyAt,
   subsidyWorth,
+  supplyAfter,
 } from "@/lib/bitcoin-timeline";
 
 /**
@@ -142,7 +147,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
         </span>
       </div>
 
-      <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3">
+      <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3">
         <Readout
           label="tx fees / block"
           value={formatBtc(bar.feePerBlockBtc)}
@@ -155,6 +160,25 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
           worth={subsidyWorth(bar)}
           title={title}
         />
+        {/* The same payment as a share of what it defends: a year of it over
+            every coin issued. Both sides are BTC, so the price cancels and
+            this column is protocol arithmetic — it does not move with the
+            two prices the columns beside it are priced in. */}
+        <div className="col-span-2 sm:col-span-1">
+          <dt className="font-mono text-[9px]" style={{ opacity: 0.7 }}>
+            onchain % / year
+          </dt>
+          <dd
+            className="mt-1 font-[family-name:var(--font-display)] text-xl font-semibold tabular-nums"
+            style={{ color: title }}
+          >
+            {formatShare(onchainShare(bar))}
+          </dd>
+          <dd className="font-mono text-[9px]" style={{ opacity: 0.7 }}>
+            of {formatBtcBulk(supplyAfter(bar))} · fees{" "}
+            {formatShare(feeOnlyShare(bar))}
+          </dd>
+        </div>
       </dl>
 
       {/* The chart takes the pointer as a single surface — the bars are
@@ -168,7 +192,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
         aria-valuemin={0}
         aria-valuemax={BARS.length - 1}
         aria-valuenow={selected}
-        aria-valuetext={`${bar.month}, block ${bar.startHeight}, ${subsidy} BTC subsidy`}
+        aria-valuetext={`${bar.month}, block ${bar.startHeight}, ${subsidy} BTC subsidy, ${formatShare(onchainShare(bar))} of all BTC paid to miners per year`}
         className="mt-4 cursor-crosshair touch-none select-none"
         onPointerMove={(event) => readFromEvent(event.clientX)}
         onPointerLeave={() => setHovered(null)}

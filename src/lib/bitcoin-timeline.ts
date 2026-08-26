@@ -234,3 +234,75 @@ export function normalize(
   if (max === min) return values.map(() => 1);
   return scaled.map((v) => floor + (1 - floor) * ((v - min) / (max - min)));
 }
+
+/** 6 blocks an hour, 24 hours, 365 days — the nominal year the annualized
+    figures below are stated over. */
+export const BLOCKS_PER_YEAR = 52_560;
+
+/**
+ * Coins issued by `height`, from the subsidy schedule alone.
+ *
+ * Every completed halving epoch paid 210,000 × its subsidy; the current one
+ * has paid for the blocks it has run so far. Nothing is stored, the same way
+ * `subsidyAt` stores nothing, and no lost or unspendable coin is subtracted
+ * — this is issued supply.
+ */
+export function supplyAt(height: number): number {
+  const halvings = Math.floor(height / BLOCKS_PER_HALVING);
+  let supply = 0;
+  for (let epoch = 0; epoch < Math.min(halvings, 33); epoch += 1) {
+    supply += BLOCKS_PER_HALVING * (INITIAL_SUBSIDY_BTC / 2 ** epoch);
+  }
+  return supply + (height % BLOCKS_PER_HALVING) * subsidyAt(height);
+}
+
+/** Issued supply at the end of the bar — the denominator the bar's own
+    blocks are already counted in, and never zero the way genesis is. */
+export function supplyAfter(bar: Bar): number {
+  return supplyAt(bar.startHeight + BLOCKS_PER_BAR);
+}
+
+/** What the chain would pay its miners over a year at this bar's rate. */
+export function annualRevenueBtc(bar: Bar): number {
+  return BLOCKS_PER_YEAR * (bar.feePerBlockBtc + subsidyAt(bar.startHeight));
+}
+
+/** Same, fees only — what is left once the subsidy rounds to nothing. */
+export function annualFeeRevenueBtc(bar: Bar): number {
+  return BLOCKS_PER_YEAR * bar.feePerBlockBtc;
+}
+
+/**
+ * A year of that payment as a share of every coin in existence, in percent.
+ *
+ * Priced in dollars this would be annual revenue over market cap — the same
+ * number, because the price is a factor of both and cancels. So this figure
+ * is protocol arithmetic, and neither price the bar carries can move it.
+ */
+export function onchainShare(bar: Bar): number {
+  return (annualRevenueBtc(bar) / supplyAfter(bar)) * 100;
+}
+
+/** The same share from fees alone. */
+export function feeOnlyShare(bar: Bar): number {
+  return (annualFeeRevenueBtc(bar) / supplyAfter(bar)) * 100;
+}
+
+/** Percentages that run from four digits in 2009 to thousandths today, so
+    the precision follows the value rather than a fixed width. */
+export function formatShare(percent: number): string {
+  if (percent >= 100) {
+    return `${percent.toLocaleString("en-US", { maximumFractionDigits: 0 })}%`;
+  }
+  if (percent >= 1) return `${percent.toFixed(2)}%`;
+  return `${trimZeros(percent.toPrecision(2))}%`;
+}
+
+/** BTC at supply scale — eight digits where `formatBtc` prints ₿0.00123, and
+    compact so a readout column stays one line wide. */
+export function formatBtcBulk(btc: number): string {
+  if (btc < 10_000) {
+    return `₿${btc.toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
+  }
+  return `₿${btc.toLocaleString("en-US", { notation: "compact", maximumFractionDigits: 2 })}`;
+}
