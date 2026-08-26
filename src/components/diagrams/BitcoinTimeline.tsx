@@ -43,7 +43,7 @@ function floorBigMacs(count: number): number {
 
 /** The onchain segment's opacity — full strength, since it is the real
     figure the axis and readouts are built on. */
-const BAR_TONE = 0.55;
+const BAR_TONE = 0.8;
 
 /** The offchain segment's opacity relative to onchain's, applied to both the
     resting grey and the accent when its bar is being read — so the same
@@ -134,9 +134,11 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   const stage = variant === "stage";
   // One palette for both homes. On the stage these resolve against whichever
   // backdrop is up; in a post --stage-* is unset and they fall back to the ink
-  // ramp, which the light theme has already re-pointed at paper.
+  // ramp, which the light theme has already re-pointed at paper. --stage-title
+  // is the base for the whole widget, not just headline values: the chart's
+  // bars, axis, and captions all read off it too — at --stage-body's dimmer
+  // grey they were too close to the dark stage art to read.
   const title = "var(--stage-title,var(--color-ink-50))";
-  const body = "var(--stage-body,var(--color-ink-300))";
   // --hero-accent is only set on the homepage stage; on a post it is unset,
   // so this falls through to --accent (the post's own frontmatter color, set
   // by PostLayout), and only to signal-500 if neither is present.
@@ -149,7 +151,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
           ? "pointer-events-auto w-full max-w-lg"
           : "not-prose my-10 w-full border border-ink-700 p-5"
       }
-      style={{ color: body }}
+      style={{ color: title }}
     >
       <div className="flex items-baseline justify-between font-mono text-[10px]">
         <span style={{ color: accent }}>miner revenue</span>
@@ -301,7 +303,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
         <div className="relative mt-1.5 h-8">
           <div
             className="absolute inset-x-0 top-0 h-px"
-            style={{ background: "currentColor", opacity: 0.35 }}
+            style={{ background: "currentColor", opacity: 0.5 }}
           />
           {/* The knot is the 1px line, and it has to land on the boundary
               exactly: this row and the bars above it are the same axis, and
@@ -320,13 +322,13 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
             >
               <div
                 className="w-px"
-                style={{ height: 5, background: "currentColor", opacity: 0.5 }}
+                style={{ height: 5, background: "currentColor", opacity: 0.7 }}
               />
               <span
                 className={`absolute top-[9px] font-mono text-[9px] whitespace-nowrap ${
                   order === 0 ? "left-0" : "left-0 -translate-x-1/2"
                 }`}
-                style={{ opacity: 0.6 }}
+                style={{ opacity: 0.8 }}
               >
                 {BARS[index].month.slice(0, 4)}
               </span>
@@ -349,13 +351,13 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
           in the source, since every other number on this page is real. */}
       <div
         className="mt-1 font-mono text-[9px] whitespace-nowrap"
-        style={{ opacity: 0.6 }}
+        style={{ opacity: 0.8 }}
       >
         pseudo data · {formatHeight(BLOCKS_PER_BAR)} blocks(~1 month) per bar
       </div>
       <div
         className="font-mono text-[9px] whitespace-nowrap"
-        style={{ opacity: 0.6 }}
+        style={{ opacity: 0.8 }}
       >
         onchain, offchain(fake) · per block · big macs · log
       </div>
@@ -377,7 +379,7 @@ function Readout({
 }) {
   return (
     <div>
-      <dt className="font-mono text-[9px]" style={{ opacity: 0.7 }}>
+      <dt className="font-mono text-[9px]" style={{ opacity: 0.85 }}>
         {label}
       </dt>
       <dd
@@ -388,7 +390,7 @@ function Readout({
       </dd>
       <dd
         className="font-mono text-[9px] whitespace-nowrap"
-        style={{ opacity: 0.7 }}
+        style={{ opacity: 0.85 }}
       >
         {sub}
       </dd>
