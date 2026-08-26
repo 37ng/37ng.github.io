@@ -7,7 +7,6 @@ import {
   blockWorth,
   feeOnlyShare,
   feeWorth,
-  formatBigMacs,
   formatBtc,
   formatBtcBulk,
   formatHeight,
@@ -259,16 +258,6 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
               style={{ fill: accent }}
             />
           </svg>
-
-          {/* Top left, where every bar is shortest: seventeen years ago the
-              whole payment was near nothing, so a note there never covers a
-              mark. */}
-          <div
-            className="pointer-events-none absolute top-0 left-0 font-mono text-[8px]"
-            style={{ opacity: 0.5 }}
-          >
-            fees + subsidy · per block · big macs · log
-          </div>
         </div>
 
         {/* The axis. Only the halvings are ticked: a tick per bar would be
@@ -330,6 +319,12 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
       >
         pseudo data · {formatHeight(BLOCKS_PER_BAR)} blocks(~1 month) per bar
       </p>
+      <p
+        className="font-mono text-[9px] whitespace-nowrap"
+        style={{ opacity: 0.6 }}
+      >
+        fees + subsidy · per block · big macs · log
+      </p>
     </div>
   );
 }
@@ -362,7 +357,7 @@ function Readout({
         className="font-mono text-[9px] whitespace-nowrap"
         style={{ opacity: 0.7 }}
       >
-        {formatUsd(worth.usd)} · {formatBigMacs(worth.bigMacs)} big macs
+        {formatUsd(worth.usd)}
       </dd>
     </div>
   );
