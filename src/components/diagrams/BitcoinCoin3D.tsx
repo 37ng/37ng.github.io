@@ -8,9 +8,12 @@ import {
   OrbitControls,
   useGLTF,
 } from "@react-three/drei";
+// Imported as a URL rather than served from public/ so the build fingerprints
+// it and fails loudly if the file ever moves.
+import modelUrl from "@/assets/bitcoin.glb?url";
 
 /**
- * A downloaded bitcoin coin model (public/bitcoin.glb — a Sketchfab export
+ * A downloaded bitcoin coin model (src/assets/bitcoin.glb — a Sketchfab export
  * with baked baseColor/metallicRoughness/normal maps already built in, so no
  * custom material work is needed) rendered with a small studio lighting rig
  * for a polished-metal look. Drag to orbit the camera via OrbitControls;
@@ -18,7 +21,7 @@ import {
  * axis (see `tumbleAxis`/`Coin`), rather than spinning flatly in place.
  */
 
-const MODEL_URL = "/bitcoin.glb";
+const MODEL_URL = modelUrl;
 // The coin is centered and scaled at runtime (see useCoinModel) so its
 // radius matches this value, regardless of the model's original units —
 // this keeps the camera/lighting/contact-shadow numbers below meaningful
