@@ -13,6 +13,10 @@
  * These are pure functions specifically so that behavior can be pinned down
  * without a browser: BitcoinTimeline.tsx only wires each result to a
  * `<Readout>`, a rect, or the axis.
+ *
+ * Every fee figure here is a period *total* over the bar, never an average
+ * per block — the rows carry it that way, and the subsidy is scaled to the
+ * same period so the two can be added.
  */
 import assert from "node:assert/strict";
 import { test } from "node:test";
@@ -20,12 +24,10 @@ import {
   BARS,
   barAt,
   barX,
+  barWorth,
   BLOCKS_PER_BAR,
   BLOCKS_PER_HALVING,
-  blockWorth,
-  btcWorth,
   feeWorth,
-  formatBigMacs,
   formatBtc,
   formatSubsidy,
   formatUsd,
@@ -33,15 +35,15 @@ import {
   normalize,
   subsidyAt,
   subsidyWorth,
+  usdWorth,
   type Bar,
 } from "@/lib/bitcoin-timeline";
 
 const BAR = (over: Partial<Bar> = {}): Bar => ({
   startHeight: 240_000,
   month: "2013-06",
-  feePerBlockBtc: 0.06,
+  feeBtc: 262.5,
   btcUsd: 100,
-  bigMacUsd: 4,
   ...over,
 });
 
@@ -109,20 +111,22 @@ test("halvingIndices: the marked bars are the months the halvings happened", () 
   );
 });
 
-test("btcWorth: prices an amount in the bar's own two prices, never a live one", () => {
-  assert.deepEqual(btcWorth(2, BAR()), { usd: 200, bigMacs: 50 });
+test("usdWorth: prices an amount at the bar's own price, never a live one", () => {
+  assert.equal(usdWorth(2, BAR()), 200);
 });
 
-test("feeWorth / subsidyWorth: the same conversion over the two amounts on the row", () => {
-  const bar = BAR({ feePerBlockBtc: 0.5, startHeight: 240_000 });
-  assert.deepEqual(feeWorth(bar), { usd: 50, bigMacs: 12.5 });
-  // 240,000 is inside the second epoch, so 25 BTC — not a stored figure.
-  assert.deepEqual(subsidyWorth(bar), { usd: 2500, bigMacs: 625 });
+test("feeWorth / subsidyWorth: the row's fee total, and the subsidy over the same bar", () => {
+  const bar = BAR({ feeBtc: 0.5, startHeight: 240_000 });
+  // The row is already a period total — no per-block division on the way in.
+  assert.equal(feeWorth(bar), 50);
+  // 240,000 is inside the second epoch, so 25 BTC a block over 4,375 blocks
+  // — not a stored figure.
+  assert.equal(subsidyWorth(bar), 25 * BLOCKS_PER_BAR * 100);
 });
 
 test("normalize: a log series of sub-1 values keeps its shape instead of collapsing", () => {
   // Every value here is far below 1, which a fixed clamp at 1 would flatten
-  // to a single row — the first decade of Big Mac counts is exactly this.
+  // to a single row.
   assert.deepEqual(
     normalize([0.000001, 0.0001, 0.01], { log: true, floor: 0 }),
     [0, 0.5, 1],
@@ -135,14 +139,9 @@ test("normalize: a zero in a log series sits at the floor, not at -Infinity", ()
   assert.equal(heights[0], 0);
 });
 
-test("blockWorth: the bar is the whole payment, subsidy plus fees", () => {
-  const bar = BAR({ feePerBlockBtc: 0.5, startHeight: 240_000 });
-  const total = blockWorth(bar);
-  assert.equal(total.usd, feeWorth(bar).usd + subsidyWorth(bar).usd);
-  assert.equal(
-    total.bigMacs,
-    feeWorth(bar).bigMacs + subsidyWorth(bar).bigMacs,
-  );
+test("barWorth: the bar is the whole payment, subsidy plus fees", () => {
+  const bar = BAR({ feeBtc: 0.5, startHeight: 240_000 });
+  assert.equal(barWorth(bar), feeWorth(bar) + subsidyWorth(bar));
 });
 
 test("formatBtc: three significant figures, so both ends of the range stay readable", () => {
@@ -151,6 +150,10 @@ test("formatBtc: three significant figures, so both ends of the range stay reada
   // Below COMPACT_BELOW, a bare exponent rather than a wall of leading
   // zeros — see compactExponent.
   assert.equal(formatBtc(0.0000029), "₿29e-8");
+  // A month of fees runs into the thousands, where toPrecision would switch
+  // to "3.38e+3" on its own — k/m instead, same as formatUsd.
+  assert.equal(formatBtc(3380), "₿3.38k");
+  assert.equal(formatBtc(1_240_000), "₿1.24m");
 });
 
 test("formatSubsidy: the protocol's exact fraction, not a rounded measurement", () => {
@@ -159,14 +162,11 @@ test("formatSubsidy: the protocol's exact fraction, not a rounded measurement", 
   assert.equal(formatSubsidy(3.125), "₿3.125");
 });
 
-test("formatUsd / formatBigMacs: precision follows the size of the amount", () => {
+test("formatUsd: precision follows the size of the amount", () => {
   // At $1,000 and up, k/m rather than comma grouping — see compactSuffix.
   assert.equal(formatUsd(15530), "$15.5k");
   assert.equal(formatUsd(2_400_000), "$2.4m");
   assert.equal(formatUsd(412.5), "$412.50");
   // Below COMPACT_BELOW, a bare exponent — see compactExponent.
   assert.equal(formatUsd(0.0000024), "$24e-7");
-  assert.equal(formatBigMacs(2947), "2,947");
-  assert.equal(formatBigMacs(12.34), "12.3");
-  assert.equal(formatBigMacs(0.00042), "0.00042");
 });

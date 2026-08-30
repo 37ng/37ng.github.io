@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /**
  * Updates src/lib/bitcoin-epochs.json — one row per *finished* halving epoch,
- * aggregated from public history, plus the two prices needed to say what that
- * epoch's own tx fee was worth at the time.
+ * aggregated from public history, plus the average BTC/USD needed to say what
+ * that epoch's own tx fees were worth at the time.
  *
  * A finished epoch's numbers are permanent: once a halving has happened, its
  * fee total, average difficulty, date range, and average prices never
@@ -10,44 +10,29 @@
  * its totals change every block, and this script only runs once per build, so
  * anything it wrote for the open epoch would already be stale by the time a
  * visitor loads the page. That epoch's live figures are instead fetched
- * straight from the visitor's own browser (see src/lib/bitcoin-live-epoch.ts);
- * this file only ever needs to grow when a halving actually finishes one.
+ * straight from the visitor's own browser; this file only ever needs to grow
+ * when a halving actually finishes one.
  *
- * The two prices are written out rather than the conversion they feed:
- * `avgBtcUsd` and `usBigMacUsd`, each averaged over that epoch's own ~4-year
- * span. Fee-per-block in Big Macs is one division away from those, so the
- * widget does it in memory rather than storing a number that can be derived
- * (see lib/bitcoin-timeline.ts).
+ * The price is written out rather than the conversion it feeds: `avgBtcUsd`,
+ * averaged over that epoch's own ~4-year span. The dollar figure is one
+ * multiplication away from it, so the widget does that in memory rather than
+ * storing a number that can be derived (see lib/bitcoin-timeline.ts).
  *
- * Both averages are period-matched on purpose, not priced at today's rate.
+ * The average is period-matched on purpose, not priced at today's rate.
  * Pricing a 2011 fee at 2026 dollars would only measure Bitcoin's
  * appreciation, not what the fee actually cost to pay at the time.
- *
- * The Big Mac figure is the *United States* price, not a world average. The
- * Economist's dataset has no world row — it is ~54 separate countries per
- * date, and their number jumps from 43 to 55 in July 2018, which moves an
- * unweighted world mean by ~8% with no burger changing price. A single
- * country avoids inventing a series with a composition break in the middle of
- * epoch 3. The widget labels the basis explicitly.
  *
  * Steady state costs exactly one network call — the current tip height, to
  * check whether a new halving has happened. If it hasn't, nothing is written.
  * If it has, this fetches the newly-finished epoch's boundary timestamps from
- * mempool.space and its fee/difficulty/price/Big-Mac totals from
- * blockchain.info's charts CSV export and The Economist's own published Big
- * Mac Index dataset, and appends one row.
+ * mempool.space and its fee/difficulty/price totals from blockchain.info's
+ * charts CSV export, and appends one row.
  *
  * All of this runs at build time — `npm run build` runs it automatically via
  * the `prebuild` script in package.json — and the widget reads the committed
  * JSON with no runtime fetch for any *finished* epoch. The open epoch has no
- * average of its own yet, so it prices itself off live figures fetched
- * straight from the visitor's browser instead — live BTC/USD, and the latest
- * US Big Mac price (src/lib/bitcoin-live-epoch.ts's `fetchLatestBigMacUsd`,
- * which reads this same CSV). That price is deliberately *not* written to
- * this JSON: "the latest one" is a moving target the index updates outside
- * this script's own release cadence, and a build-time snapshot of it goes
- * stale the moment a new edition lands — unlike a finished epoch's own
- * average, which is permanent history once the epoch is over.
+ * average of its own yet, so it prices itself off a live BTC/USD fetched
+ * straight from the visitor's browser instead.
  *
  * A failed fetch does not fail the build: the committed JSON is already a
  * valid, usable epoch list, so a network hiccup during CI just means this
@@ -62,9 +47,6 @@ import { fileURLToPath } from "node:url";
 const OUT = fileURLToPath(
   new URL("../src/lib/bitcoin-epochs.json", import.meta.url),
 );
-const BIG_MAC_SOURCE =
-  "https://raw.githubusercontent.com/TheEconomist/big-mac-data/master/output-data/big-mac-full-index.csv";
-
 // The protocol's own constants — a halving every 210,000 blocks, subsidy
 // halving each time from 50 BTC. Deriving epoch heights and subsidies from
 // these means the script keeps working past the next halving (block
@@ -111,25 +93,6 @@ async function fetchSeries(chart) {
   return parseCsv(csv);
 }
 
-/** The Economist's Big Mac Index, United States rows only, as {at, value}
-    to match the shape fetchSeries() returns — same range helpers apply to
-    both. */
-async function fetchBigMacSeries() {
-  const csv = await getText(BIG_MAC_SOURCE);
-  const [header, ...lines] = csv.trim().split("\n");
-  const columns = header.split(",");
-  const dateCol = columns.indexOf("date");
-  const nameCol = columns.indexOf("name");
-  const priceCol = columns.indexOf("dollar_price");
-  return lines
-    .map((line) => line.split(","))
-    .filter((cells) => cells[nameCol] === "United States")
-    .map((cells) => ({
-      at: Date.parse(cells[dateCol] + "T00:00:00Z") / 1000,
-      value: Number(cells[priceCol]),
-    }));
-}
-
 function meanInRange(series, start, end) {
   const rows = series.filter((row) => row.at >= start && row.at < end);
   if (rows.length === 0) return 0;
@@ -145,10 +108,8 @@ function sumInRange(series, start, end) {
 async function readExistingEpochs() {
   try {
     const parsed = JSON.parse(await readFile(OUT, "utf8"));
-    // Earlier versions of this file were a bare array, and later ones also
-    // carried a `latestBigMacUsd` field (now fetched live in the browser
-    // instead — see the module comment). Normalize both away so a stale
-    // checkout doesn't crash the read or resurrect the dropped field.
+    // Earlier versions of this file were a bare array. Normalize that away so
+    // a stale checkout doesn't crash the read.
     return Array.isArray(parsed) ? parsed : parsed.epochs;
   } catch {
     return [];
@@ -175,18 +136,19 @@ async function main() {
   const finishedCount = Math.floor(tipHeight / HALVING_INTERVAL);
 
   const onFile = await readExistingEpochs();
-  // A row written by an older version of this script is missing fields the
-  // widget now reads. Those come from full-history series this run downloads
+  // A row written by an older version of this script either misses a field
+  // the widget now reads or carries one it has since dropped. Existing rows
+  // are spread into the output verbatim, so a dropped field would otherwise
+  // survive forever; the series this run downloads cover all of history
   // anyway, so the cheapest correct answer is to recompute every epoch rather
   // than patch rows in place.
   const stale = onFile.some(
     (epoch) =>
       typeof epoch.avgBtcUsd !== "number" ||
-      typeof epoch.usBigMacUsd !== "number",
+      typeof epoch.usBigMacUsd === "number",
   );
   const existing = stale ? [] : onFile;
-  if (stale)
-    console.log("rebuilding: rows on file predate avgBtcUsd/usBigMacUsd");
+  if (stale) console.log("rebuilding: rows on file predate the current schema");
 
   if (existing.length >= finishedCount) {
     console.log(
@@ -206,11 +168,10 @@ async function main() {
   );
   const boundaryTimes = await Promise.all(boundaryHeights.map(blockTimestamp));
 
-  const [fees, difficulty, marketPrice, bigMac] = await Promise.all([
+  const [fees, difficulty, marketPrice] = await Promise.all([
     fetchSeries("transaction-fees"),
     fetchSeries("difficulty"),
     fetchSeries("market-price"),
-    fetchBigMacSeries(),
   ]);
 
   const newEpochs = [];
@@ -224,7 +185,6 @@ async function main() {
     const endHeight = (i + 1) * HALVING_INTERVAL;
     const totalFeesBtc = sumInRange(fees, startAt, endAt);
     const avgBtcUsd = meanInRange(marketPrice, startAt, endAt);
-    const avgBigMacUsd = meanInRange(bigMac, startAt, endAt);
 
     newEpochs.push({
       id: `e${i}`,
@@ -237,7 +197,6 @@ async function main() {
       totalFeesBtc,
       avgDifficulty: meanInRange(difficulty, startAt, endAt),
       avgBtcUsd,
-      usBigMacUsd: avgBigMacUsd,
     });
   }
 

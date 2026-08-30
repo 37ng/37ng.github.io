@@ -14,22 +14,24 @@
  * rather than between two.
  *
  * Each row carries only what cannot be derived: the bar's start height, the
- * month the chain reached it (a label, not the axis), the average fee per
- * block over those blocks, and the two prices needed to say what that fee
- * was *worth* at the time — its own BTC/USD and its own US Big Mac price.
- * The subsidy is not stored, because it is arithmetic on the height already
- * in the row (`subsidyAt` below); neither are the dollar and Big Mac
- * figures, which are one division away from the two prices (`btcWorth`).
+ * month the chain reached it (a label, not the axis), the **total** tx fees
+ * paid over those blocks, and the BTC/USD price needed to say what that
+ * total was worth at the time. The figure is a period total, not an average
+ * per block — a month of fees is what the chain earned, and dividing it by
+ * the blocks that happened to be mined only hides that behind a rate. The
+ * subsidy is not stored, because it is arithmetic on the height already in
+ * the row (`subsidyAt` below); neither is the dollar figure, which is one
+ * multiplication away from the price (`usdWorth`).
  *
  * `bitcoin-bars.json` is currently **pseudo data**: the heights are exact
  * and the month labels follow the real halving boundaries, but the fees and
- * both prices are invented, so the widget could be built before the real
+ * the price are invented, so the widget could be built before the real
  * per-bar numbers exist. It is a stand-in, the widget says so on its face,
  * and real data replaces that one file and nothing else.
  *
- * The prices are period-matched, not today's: pricing a 2012 fee at 2026
+ * The price is period-matched, not today's: pricing a 2012 fee at 2026
  * rates would measure Bitcoin's appreciation, not the fee. That is why every
- * bar carries its own pair rather than one live price being applied to all
+ * bar carries its own price rather than one live price being applied to all
  * of history — which also means nothing here is fetched at runtime, and no
  * figure on the chart can be unavailable.
  */
@@ -41,12 +43,11 @@ export interface Bar {
   /** `YYYY-MM` — when the chain reached `startHeight`. A label for the
       reader, not the axis: the axis is height. */
   month: string;
-  /** Average tx fees paid to the miner of one block, over the bar. */
-  feePerBlockBtc: number;
+  /** Total tx fees paid to miners over the whole bar — not a per-block
+      average. */
+  feeBtc: number;
   /** This bar's own average BTC/USD. */
   btcUsd: number;
-  /** This bar's own US Big Mac price. */
-  bigMacUsd: number;
 }
 
 /** Every bar from genesis to the last one whose blocks are all mined. */
@@ -120,42 +121,39 @@ export function spineY(height: number): number {
 }
 
 /**
- * What a BTC amount was worth in the bar that earned it — in dollars, and in
- * Big Macs.
+ * What a BTC amount was worth in the bar that earned it, in dollars.
  *
- * Big Macs is the figure the whole widget is built around: a fee in BTC says
- * nothing across seventeen years, and a fee in dollars mostly measures the
- * dollar. What the fee would buy is the one thing comparable end to end.
- * Both are derived from the bar's own two prices; neither is stored.
+ * The bar's own price, never a live one — see the module comment. Not
+ * stored: it is one multiplication away from the price already on the row.
  */
-export function btcWorth(
-  btc: number,
-  bar: Bar,
-): { usd: number; bigMacs: number } {
-  const usd = btc * bar.btcUsd;
-  return { usd, bigMacs: usd / bar.bigMacUsd };
+export function usdWorth(btc: number, bar: Bar): number {
+  return btc * bar.btcUsd;
 }
 
-/** One block's fees, priced in the bar that earned them. */
-export function feeWorth(bar: Bar) {
-  return btcWorth(bar.feePerBlockBtc, bar);
+/** The bar's whole month of fees, priced in the bar that earned them. */
+export function feeWorth(bar: Bar): number {
+  return usdWorth(bar.feeBtc, bar);
+}
+
+/** The subsidy paid over the bar — `BLOCKS_PER_BAR` blocks at this height's
+    subsidy. Derived from the halving schedule, never stored. */
+export function subsidyBtcOverBar(bar: Bar): number {
+  return BLOCKS_PER_BAR * subsidyAt(bar.startHeight);
 }
 
 /**
- * What one block paid its miner in total — subsidy plus fees.
+ * What the chain paid its miners over the bar in total — subsidy plus fees.
  *
- * This is the figure the chart's bar height is, with the subsidy as the
- * boundary inside it: the two are not competing series, they are the two
- * halves of one payment.
+ * The two are not competing series; they are the two halves of one payment.
  */
-export function blockWorth(bar: Bar) {
-  return btcWorth(bar.feePerBlockBtc + subsidyAt(bar.startHeight), bar);
+export function barWorth(bar: Bar): number {
+  return usdWorth(bar.feeBtc + subsidyBtcOverBar(bar), bar);
 }
 
-/** One block's subsidy, priced the same way — the comparison the fee figure
+/** The bar's subsidy, priced the same way — the comparison the fee figure
     only means something against. */
-export function subsidyWorth(bar: Bar) {
-  return btcWorth(subsidyAt(bar.startHeight), bar);
+export function subsidyWorth(bar: Bar): number {
+  return usdWorth(subsidyBtcOverBar(bar), bar);
 }
 
 /** Below this, decimal notation runs at least three digits deeper than the
@@ -168,13 +166,18 @@ export function subsidyWorth(bar: Bar) {
 const COMPACT_BELOW = 0.01;
 
 /** ₿ prefix, matching how a $ prefix reads on a dollar figure. Three
-    significant figures rather than a fixed number of decimals: fee per block
-    runs from a few thousandths of a satoshi to several BTC, and any fixed
+    significant figures rather than a fixed number of decimals: a bar's fees
+    run from hundredths of a BTC to several thousand, and any fixed
     width prints one end of that as ₿0.000. Below COMPACT_BELOW, switches to
     a bare exponent (145e-7) rather than counting zeros — see
     compactExponent. */
 export function formatBtc(btc: number): string {
   if (btc > 0 && btc < COMPACT_BELOW) return `₿${compactExponent(btc, 3)}`;
+  // At a thousand and up, k/m — the same treatment formatUsd gives a large
+  // dollar figure. Without it toPrecision hands back "3.38e+3", which reads
+  // as an exponent only because the number got big, right beside a "$15.3m"
+  // that did not.
+  if (btc >= 1000) return `₿${compactSuffix(btc, 3)}`;
   return `₿${trimZeros(btc.toPrecision(3))}`;
 }
 
@@ -239,16 +242,6 @@ export function formatUsd(usd: number): string {
   return `$${trimZeros(usd.toPrecision(2))}`;
 }
 
-/** Big Macs, same spread and the same treatment — down to a millionth of a
-    burger in 2009, up to thousands of them at the 2017 peak. */
-export function formatBigMacs(count: number): string {
-  if (count >= 100) {
-    return count.toLocaleString("en-US", { maximumFractionDigits: 0 });
-  }
-  if (count >= 1) return count.toFixed(1);
-  return trimZeros(count.toPrecision(2));
-}
-
 /** Block heights, comma-grouped, no decimals. */
 export function formatHeight(height: number): string {
   return Math.round(height).toLocaleString("en-US");
@@ -262,9 +255,9 @@ export function formatHeight(height: number): string {
  *
  * `log` is for series that span many orders of magnitude, where a linear
  * scale would flatten every early bar to the floor. Its zero-guard is the
- * smallest *positive* value in the series rather than a fixed 1: these
- * series are Big Mac counts, where every early bar is far below 1 and
- * clamping there would collapse the whole first decade into one flat row.
+ * smallest *positive* value in the series rather than a fixed 1: a series
+ * can sit entirely below 1, and clamping there would collapse it into one
+ * flat row.
  */
 export function normalize(
   values: number[],
@@ -284,6 +277,10 @@ export function normalize(
 /** 6 blocks an hour, 24 hours, 365 days — the nominal year the annualized
     figures below are stated over. */
 export const BLOCKS_PER_YEAR = 52_560;
+
+/** How many bars a year is. The rows are period *totals*, so annualizing one
+    is a multiplication by this rather than by a block count. */
+export const BARS_PER_YEAR = BLOCKS_PER_YEAR / BLOCKS_PER_BAR;
 
 /**
  * Coins issued by `height`, from the subsidy schedule alone.
@@ -310,12 +307,12 @@ export function supplyAfter(bar: Bar): number {
 
 /** What the chain would pay its miners over a year at this bar's rate. */
 export function annualRevenueBtc(bar: Bar): number {
-  return BLOCKS_PER_YEAR * (bar.feePerBlockBtc + subsidyAt(bar.startHeight));
+  return BARS_PER_YEAR * (bar.feeBtc + subsidyBtcOverBar(bar));
 }
 
 /** Same, fees only — what is left once the subsidy rounds to nothing. */
 export function annualFeeRevenueBtc(bar: Bar): number {
-  return BLOCKS_PER_YEAR * bar.feePerBlockBtc;
+  return BARS_PER_YEAR * bar.feeBtc;
 }
 
 /**
