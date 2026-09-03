@@ -16,136 +16,51 @@ import { OffchainRevenue } from "@/components/diagrams/OffchainRevenue";
 
 <BitcoinTimeline variant="post" />
 
-A few things about Bitcoin: the centralization of mining farms, the
-energy cost of mining, the relationship between miners
-and the network, miner cost and price, and its core value. Some basic Bitcoin
-knowledge is assumed 👉 the whitepaper: https://bitcoin.org/bitcoin.pdf
+Bitcoin's subsidy havles every 210000 blocks(~4 years). By the time of 33 halving(~year 2140), it will shrink to 0. Then transaction fee will be the only compensation for maintaining the network.
 
-## Centralization of mining farms
+How does transaction fee look like?
 
-In theory, centralized farms with enormous hashpower do threaten Bitcoin's
-security. In the pursuit of maximum efficiency, centralization is
-inevitable.
+## Onchain revenue
 
-But at the level of individual will, these farms achieve a kind of
-"decentralization": the farm leases machines out to miners, the miner takes
-the yield, the farm takes a cut. A farm is assembled out of a large number
-of miners each chasing profit. Count individual will as the unit, and these
-farms are decentralized.
+First, look at onchain revenue over the years.
 
-Of course, under today's hashrate distribution, a few farms colluding could
-run a 51% attack — violating their users' will, trading long-term interest and legal exposure for
-short-term gain. That risk is hard to quantify.
+(show subsidy + txFee bar chart, diff color)
+
+if we omit subsidy:
+
+(show txFee bar chart)
+
+## offchain revenue
+
+Meanwhile, let's look at offchain revenue. mempool.space provides services publish acceleration data, records accelerated txs via its router. 
+
+I paid $120 to accelerate a tx 8ab712793f52be691bfd70a971d30634168e3b71d0473bccab5f6486062c79be
+$120 was worth of ~155000 sats and the fee delta is 30000 sats. The actual fee boost is 0 since the tx has paid above the block's rate.
+[We find a formula to convert api data to actual payment]
+
+We crawl all data and group them by month x pools.
+
+(bar chart, each pool uses a diff color)
+
+Template vs Actual blocks are another source, but it's not certain that the differences is due to what factor.
+
+## assumed offchain revenue
+
+There are more offchain revenues, private business deals, un published data, so we try to find the pattern that could be offchain txs by observing mempool.space API.
+
+[same charts, but with addition of assumed offchain revenue]
 
 ## Flag rate vs mempool congestion
 
-Not every transaction goes through the public mempool. Some reach a pool
-directly, out of band, and appear only when the block does. Call a block
-that carries one of these a flagged block, and the share of flagged blocks
-the flag rate.
-
-The question: does private inclusion spike when the public fee market does?
-Two mirrored bands below, one day per column since January 2023 — the public
-median fee rate above the axis, the private inclusion percentage below it.
-The faint vertical rules mark the days where both series sit in their own top
-decile. Drag or hover to read a single day; the strip at the bottom is that
-day's blocks, one tick each, accent for flagged.
-
 <FlagRateMempool />
-
-The two curves rise together, but not at the same moment. Private inclusion
-answers the spike a couple of days late — the public market prices congestion
-first, and the out-of-band route fills up after. **The numbers here are
-pseudo data**, placeholders for a real series.
-
-A softer version of the same risk is easier to see: which pools mine the
-blocks that carry flagged transactions, and how that share moves.
 
 <FlaggedBlocks />
 
-One thing is easier to count: which pool mined a block, and whether that block
-carried a flagged transaction. Each cell below is one pool in one month —
-flagged blocks divided by blocks won, so a small pool and a large one are read
-on the same scale.
-
 <PoolFlagHeatmap />
 
-The numbers here are placeholder data, not measurements.
+The numbers here are placeholder data.
 
 ## What a pool earns off the book
 
-A block has a floor: the lowest feerate it accepted, call it `floor_B`. Every
-transaction in that block should pay at least that much, because a transaction
-paying less was, by the pool's own revealed preference, not worth the space.
-When one shows up under the floor anyway, the pool put it there for a reason
-that the chain does not record.
-
-The size of that reason is measurable. For each flagged transaction,
-`(floor_B − actual feerate) × vsize` is the fee the pool declined to collect
-publicly — so it is a lower bound on what it was paid privately. A bound, not
-an estimate: the private payment can be larger, never smaller.
-
-Run that over one month of blocks and the shape of the practice appears. Most
-blocks are clean. A minority carry a transaction that skipped the auction, and
-a few of those carry a consolidation big enough that the implied payment runs
-into six figures of sats.
-
 <OffchainRevenue client:visible />
 
-Two things worth reading off it. The revenue is concentrated — a handful of
-blocks account for most of the month's total, so this is not a steady toll on
-every block but an occasional large one. And the flagged share moves with the
-mempool: when the floor rises, skipping the auction is worth more, and more
-people pay to skip it.
-
-## The energy cost of mining
-
-Electricity = hashpower = the security foundation of the protocol. Spend a
-resource, earn trust. The resource could be electricity or anything else.
-Consensus that costs nothing to join is consensus that costs nothing to
-attack.
-
-## Miner cost and price
-
-A claim I've heard: "electricity sets miner cost, so electricity sets the
-price at the bottom of the cycle." The reasoning goes — price falls far
-enough, mining turns unprofitable, miners shut down, the network stops, so
-price can't fall below the cost line.
-
-Hidden in there is a premise: that miners can't shut down, that
-Bitcoin can't fail. Plenty of blockchain networks have shut down.
-Bitcoin hasn't, because of its core value — not because it keeps miners
-perpetually profitable.
-
-Price is set by supply and demand. A miner powering off doesn't touch
-either, so price doesn't move because of it.
-
-Mining is its own ecosystem. When revenue can't cover cost, high-cost miners
-shut down, difficulty falls, low-cost miners profit again, and competition
-settles into a new equilibrium.
-
-Bitcoin is a crop here. A crop naturally meets a human need for food, so it
-has value, and that feeds back into the price the market sets. Farming isn't
-guaranteed profitable. It just offers an opportunity to whoever is willing
-to think and explore.
-
-## Miners and the Bitcoin network
-
-Symbiotic: miners joining is what makes the network's decentralization real,
-and miners leaving puts security at risk.
-
-Causal: the decentralized protocol design is the cause, and has value in
-itself; the market's pricing of the coin is the effect, creating a profit
-opportunity that draws miners in.
-
-I lean causal.
-
-Humans are born profit-seeking. They look for returns as a matter of course. Deliver doordash orders, taking a big tech job, launching an SF AI startup — these are only different input-and-output propositions, chosen under different expectations of return, according to the innate and acquired resources at hand. A company disappears when its employees leave, but the mature business model comes first, and only then do the employees gather around it. Miners are the same. They gather because the protocol is viable. They put in resources, and they take out returns.
-
-## Core value
-
-Storing and moving value is a need that arises naturally in human society.
-Money was born. Centralized money runs on government credit, and carries the
-risks that come with it — overissuance, devaluation, a single point of
-control. So a demand for decentralized money appeared. Bitcoin met it, and
-its value follows from that.
