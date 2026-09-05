@@ -1,1546 +1,1326 @@
 {
-  "note": "PSEUDO DATA — a deterministic stand-in, not a measurement. One row per 4,375 blocks (210,000 / 48, so every halving lands on a bar edge). The heights are exact and the month label is the date the chain reached that height; the fees and both prices are invented. Replace this file with real per-bar measurements.",
+  "note": "PSEUDO DATA \u2014 a deterministic stand-in, not a measurement. One row per 4,375 blocks (210,000 / 48, so every halving lands on a bar edge) \u2014 a nominal month. The heights are exact and the month label is the date the chain reached that height; the fees and the price are invented. `feeBtc` is the total tx fees paid over the whole bar, not an average per block. Replace this file with real per-bar measurements.",
   "blocksPerBar": 4375,
   "bars": [
     {
       "startHeight": 0,
       "month": "2009-01",
-      "feePerBlockBtc": 0.00000878,
-      "btcUsd": 0.0009474,
-      "bigMacUsd": 3.55
+      "feeBtc": 0.0384,
+      "btcUsd": 0.0009474
     },
     {
       "startHeight": 4375,
       "month": "2009-02",
-      "feePerBlockBtc": 0.00000618,
-      "btcUsd": 0.001189,
-      "bigMacUsd": 3.57
+      "feeBtc": 0.027,
+      "btcUsd": 0.001189
     },
     {
       "startHeight": 8750,
       "month": "2009-03",
-      "feePerBlockBtc": 0.00000783,
-      "btcUsd": 0.001481,
-      "bigMacUsd": 3.59
+      "feeBtc": 0.0343,
+      "btcUsd": 0.001481
     },
     {
       "startHeight": 13125,
       "month": "2009-04",
-      "feePerBlockBtc": 0.00000581,
-      "btcUsd": 0.002019,
-      "bigMacUsd": 3.6
+      "feeBtc": 0.0254,
+      "btcUsd": 0.002019
     },
     {
       "startHeight": 17500,
       "month": "2009-05",
-      "feePerBlockBtc": 0.00000459,
-      "btcUsd": 0.00238,
-      "bigMacUsd": 3.62
+      "feeBtc": 0.0201,
+      "btcUsd": 0.00238
     },
     {
       "startHeight": 21875,
       "month": "2009-05",
-      "feePerBlockBtc": 0.00000694,
-      "btcUsd": 0.003294,
-      "bigMacUsd": 3.64
+      "feeBtc": 0.0304,
+      "btcUsd": 0.003294
     },
     {
       "startHeight": 26250,
       "month": "2009-06",
-      "feePerBlockBtc": 0.00000718,
-      "btcUsd": 0.004378,
-      "bigMacUsd": 3.66
+      "feeBtc": 0.0314,
+      "btcUsd": 0.004378
     },
     {
       "startHeight": 30625,
       "month": "2009-07",
-      "feePerBlockBtc": 0.00000764,
-      "btcUsd": 0.005711,
-      "bigMacUsd": 3.68
+      "feeBtc": 0.0334,
+      "btcUsd": 0.005711
     },
     {
       "startHeight": 35000,
       "month": "2009-08",
-      "feePerBlockBtc": 0.0000121,
-      "btcUsd": 0.006585,
-      "bigMacUsd": 3.69
+      "feeBtc": 0.0529,
+      "btcUsd": 0.006585
     },
     {
       "startHeight": 39375,
       "month": "2009-09",
-      "feePerBlockBtc": 0.00000733,
-      "btcUsd": 0.008258,
-      "bigMacUsd": 3.71
+      "feeBtc": 0.0321,
+      "btcUsd": 0.008258
     },
     {
       "startHeight": 43750,
       "month": "2009-10",
-      "feePerBlockBtc": 0.0000279,
-      "btcUsd": 0.01029,
-      "bigMacUsd": 3.73
+      "feeBtc": 0.122,
+      "btcUsd": 0.01029
     },
     {
       "startHeight": 48125,
       "month": "2009-11",
-      "feePerBlockBtc": 0.0000213,
-      "btcUsd": 0.01341,
-      "bigMacUsd": 3.75
+      "feeBtc": 0.0932,
+      "btcUsd": 0.01341
     },
     {
       "startHeight": 52500,
       "month": "2009-12",
-      "feePerBlockBtc": 0.0000644,
-      "btcUsd": 0.01809,
-      "bigMacUsd": 3.76
+      "feeBtc": 0.282,
+      "btcUsd": 0.01809
     },
     {
       "startHeight": 56875,
       "month": "2010-01",
-      "feePerBlockBtc": 0.0000419,
-      "btcUsd": 0.02448,
-      "bigMacUsd": 3.78
+      "feeBtc": 0.183,
+      "btcUsd": 0.02448
     },
     {
       "startHeight": 61250,
       "month": "2010-02",
-      "feePerBlockBtc": 0.0000887,
-      "btcUsd": 0.0297,
-      "bigMacUsd": 3.8
+      "feeBtc": 0.388,
+      "btcUsd": 0.0297
     },
     {
       "startHeight": 65625,
       "month": "2010-03",
-      "feePerBlockBtc": 0.000105,
-      "btcUsd": 0.04097,
-      "bigMacUsd": 3.82
+      "feeBtc": 0.459,
+      "btcUsd": 0.04097
     },
     {
       "startHeight": 70000,
       "month": "2010-04",
-      "feePerBlockBtc": 0.000158,
-      "btcUsd": 0.05541,
-      "bigMacUsd": 3.84
+      "feeBtc": 0.691,
+      "btcUsd": 0.05541
     },
     {
       "startHeight": 74375,
       "month": "2010-05",
-      "feePerBlockBtc": 0.0000885,
-      "btcUsd": 0.06315,
-      "bigMacUsd": 3.85
+      "feeBtc": 0.387,
+      "btcUsd": 0.06315
     },
     {
       "startHeight": 78750,
       "month": "2010-06",
-      "feePerBlockBtc": 0.000273,
-      "btcUsd": 0.091,
-      "bigMacUsd": 3.87
+      "feeBtc": 1.19,
+      "btcUsd": 0.091
     },
     {
       "startHeight": 83125,
       "month": "2010-07",
-      "feePerBlockBtc": 0.000524,
-      "btcUsd": 0.1054,
-      "bigMacUsd": 3.89
+      "feeBtc": 2.29,
+      "btcUsd": 0.1054
     },
     {
       "startHeight": 87500,
       "month": "2010-08",
-      "feePerBlockBtc": 0.000554,
-      "btcUsd": 0.1403,
-      "bigMacUsd": 3.91
+      "feeBtc": 2.42,
+      "btcUsd": 0.1403
     },
     {
       "startHeight": 91875,
       "month": "2010-09",
-      "feePerBlockBtc": 0.00154,
-      "btcUsd": 0.1514,
-      "bigMacUsd": 3.93
+      "feeBtc": 6.74,
+      "btcUsd": 0.1514
     },
     {
       "startHeight": 96250,
       "month": "2010-10",
-      "feePerBlockBtc": 0.00151,
-      "btcUsd": 0.1913,
-      "bigMacUsd": 3.94
+      "feeBtc": 6.61,
+      "btcUsd": 0.1913
     },
     {
       "startHeight": 100625,
       "month": "2010-11",
-      "feePerBlockBtc": 0.00197,
-      "btcUsd": 0.2341,
-      "bigMacUsd": 3.96
+      "feeBtc": 8.62,
+      "btcUsd": 0.2341
     },
     {
       "startHeight": 105000,
       "month": "2010-12",
-      "feePerBlockBtc": 0.00292,
-      "btcUsd": 0.5425,
-      "bigMacUsd": 3.98
+      "feeBtc": 12.8,
+      "btcUsd": 0.5425
     },
     {
       "startHeight": 109375,
       "month": "2011-01",
-      "feePerBlockBtc": 0.00378,
-      "btcUsd": 0.8996,
-      "bigMacUsd": 4
+      "feeBtc": 16.5,
+      "btcUsd": 0.8996
     },
     {
       "startHeight": 113750,
       "month": "2011-02",
-      "feePerBlockBtc": 0.00837,
-      "btcUsd": 1.787,
-      "bigMacUsd": 4.02
+      "feeBtc": 36.6,
+      "btcUsd": 1.787
     },
     {
       "startHeight": 118125,
       "month": "2011-03",
-      "feePerBlockBtc": 0.0185,
-      "btcUsd": 3.378,
-      "bigMacUsd": 4.03
+      "feeBtc": 80.9,
+      "btcUsd": 3.378
     },
     {
       "startHeight": 122500,
       "month": "2011-04",
-      "feePerBlockBtc": 0.0125,
-      "btcUsd": 6.505,
-      "bigMacUsd": 4.05
+      "feeBtc": 54.7,
+      "btcUsd": 6.505
     },
     {
       "startHeight": 126875,
       "month": "2011-05",
-      "feePerBlockBtc": 0.0132,
-      "btcUsd": 13.9,
-      "bigMacUsd": 4.07
+      "feeBtc": 57.8,
+      "btcUsd": 13.9
     },
     {
       "startHeight": 131250,
       "month": "2011-06",
-      "feePerBlockBtc": 0.0164,
-      "btcUsd": 13.21,
-      "bigMacUsd": 4.09
+      "feeBtc": 71.8,
+      "btcUsd": 13.21
     },
     {
       "startHeight": 135625,
       "month": "2011-07",
-      "feePerBlockBtc": 0.0373,
-      "btcUsd": 10.07,
-      "bigMacUsd": 4.1
+      "feeBtc": 163,
+      "btcUsd": 10.07
     },
     {
       "startHeight": 140000,
       "month": "2011-08",
-      "feePerBlockBtc": 0.0199,
-      "btcUsd": 7.902,
-      "bigMacUsd": 4.12
+      "feeBtc": 87.1,
+      "btcUsd": 7.902
     },
     {
       "startHeight": 144375,
       "month": "2011-09",
-      "feePerBlockBtc": 0.0193,
-      "btcUsd": 6.132,
-      "bigMacUsd": 4.14
+      "feeBtc": 84.4,
+      "btcUsd": 6.132
     },
     {
       "startHeight": 148750,
       "month": "2011-10",
-      "feePerBlockBtc": 0.0144,
-      "btcUsd": 4.903,
-      "bigMacUsd": 4.16
+      "feeBtc": 63,
+      "btcUsd": 4.903
     },
     {
       "startHeight": 153125,
       "month": "2011-11",
-      "feePerBlockBtc": 0.0269,
-      "btcUsd": 3.905,
-      "bigMacUsd": 4.18
+      "feeBtc": 118,
+      "btcUsd": 3.905
     },
     {
       "startHeight": 157500,
       "month": "2011-12",
-      "feePerBlockBtc": 0.0296,
-      "btcUsd": 4.066,
-      "bigMacUsd": 4.19
+      "feeBtc": 130,
+      "btcUsd": 4.066
     },
     {
       "startHeight": 161875,
       "month": "2012-01",
-      "feePerBlockBtc": 0.0293,
-      "btcUsd": 4.646,
-      "bigMacUsd": 4.21
+      "feeBtc": 128,
+      "btcUsd": 4.646
     },
     {
       "startHeight": 166250,
       "month": "2012-02",
-      "feePerBlockBtc": 0.0237,
-      "btcUsd": 4.393,
-      "bigMacUsd": 4.23
+      "feeBtc": 104,
+      "btcUsd": 4.393
     },
     {
       "startHeight": 170625,
       "month": "2012-03",
-      "feePerBlockBtc": 0.018,
-      "btcUsd": 5.554,
-      "bigMacUsd": 4.24
+      "feeBtc": 78.8,
+      "btcUsd": 5.554
     },
     {
       "startHeight": 175000,
       "month": "2012-04",
-      "feePerBlockBtc": 0.024,
-      "btcUsd": 5.949,
-      "bigMacUsd": 4.26
+      "feeBtc": 105,
+      "btcUsd": 5.949
     },
     {
       "startHeight": 179375,
       "month": "2012-05",
-      "feePerBlockBtc": 0.034,
-      "btcUsd": 5.983,
-      "bigMacUsd": 4.27
+      "feeBtc": 149,
+      "btcUsd": 5.983
     },
     {
       "startHeight": 183750,
       "month": "2012-06",
-      "feePerBlockBtc": 0.0343,
-      "btcUsd": 7.042,
-      "bigMacUsd": 4.29
+      "feeBtc": 150,
+      "btcUsd": 7.042
     },
     {
       "startHeight": 188125,
       "month": "2012-07",
-      "feePerBlockBtc": 0.0563,
-      "btcUsd": 8.379,
-      "bigMacUsd": 4.31
+      "feeBtc": 246,
+      "btcUsd": 8.379
     },
     {
       "startHeight": 192500,
       "month": "2012-08",
-      "feePerBlockBtc": 0.0248,
-      "btcUsd": 9.002,
-      "bigMacUsd": 4.32
+      "feeBtc": 108,
+      "btcUsd": 9.002
     },
     {
       "startHeight": 196875,
       "month": "2012-08",
-      "feePerBlockBtc": 0.0184,
-      "btcUsd": 9.444,
-      "bigMacUsd": 4.34
+      "feeBtc": 80.5,
+      "btcUsd": 9.444
     },
     {
       "startHeight": 201250,
       "month": "2012-09",
-      "feePerBlockBtc": 0.0255,
-      "btcUsd": 11.79,
-      "bigMacUsd": 4.35
+      "feeBtc": 112,
+      "btcUsd": 11.79
     },
     {
       "startHeight": 205625,
       "month": "2012-10",
-      "feePerBlockBtc": 0.026,
-      "btcUsd": 12.6,
-      "bigMacUsd": 4.37
+      "feeBtc": 114,
+      "btcUsd": 12.6
     },
     {
       "startHeight": 210000,
       "month": "2012-11",
-      "feePerBlockBtc": 0.063,
-      "btcUsd": 14.69,
-      "bigMacUsd": 4.39
+      "feeBtc": 276,
+      "btcUsd": 14.69
     },
     {
       "startHeight": 214375,
       "month": "2012-12",
-      "feePerBlockBtc": 0.0611,
-      "btcUsd": 25.93,
-      "bigMacUsd": 4.4
+      "feeBtc": 267,
+      "btcUsd": 25.93
     },
     {
       "startHeight": 218750,
       "month": "2013-01",
-      "feePerBlockBtc": 0.0595,
-      "btcUsd": 43.09,
-      "bigMacUsd": 4.42
+      "feeBtc": 260,
+      "btcUsd": 43.09
     },
     {
       "startHeight": 223125,
       "month": "2013-02",
-      "feePerBlockBtc": 0.0675,
-      "btcUsd": 65.96,
-      "bigMacUsd": 4.43
+      "feeBtc": 295,
+      "btcUsd": 65.96
     },
     {
       "startHeight": 227500,
       "month": "2013-03",
-      "feePerBlockBtc": 0.0543,
-      "btcUsd": 103.9,
-      "bigMacUsd": 4.45
+      "feeBtc": 238,
+      "btcUsd": 103.9
     },
     {
       "startHeight": 231875,
       "month": "2013-04",
-      "feePerBlockBtc": 0.0778,
-      "btcUsd": 104.4,
-      "bigMacUsd": 4.46
+      "feeBtc": 340,
+      "btcUsd": 104.4
     },
     {
       "startHeight": 236250,
       "month": "2013-05",
-      "feePerBlockBtc": 0.0333,
-      "btcUsd": 99.91,
-      "bigMacUsd": 4.47
+      "feeBtc": 146,
+      "btcUsd": 99.91
     },
     {
       "startHeight": 240625,
       "month": "2013-06",
-      "feePerBlockBtc": 0.0795,
-      "btcUsd": 89.4,
-      "bigMacUsd": 4.49
+      "feeBtc": 348,
+      "btcUsd": 89.4
     },
     {
       "startHeight": 245000,
       "month": "2013-07",
-      "feePerBlockBtc": 0.0315,
-      "btcUsd": 119.5,
-      "bigMacUsd": 4.5
+      "feeBtc": 138,
+      "btcUsd": 119.5
     },
     {
       "startHeight": 249375,
       "month": "2013-08",
-      "feePerBlockBtc": 0.11,
-      "btcUsd": 187.2,
-      "bigMacUsd": 4.52
+      "feeBtc": 481,
+      "btcUsd": 187.2
     },
     {
       "startHeight": 253750,
       "month": "2013-08",
-      "feePerBlockBtc": 0.0689,
-      "btcUsd": 236.5,
-      "bigMacUsd": 4.53
+      "feeBtc": 301,
+      "btcUsd": 236.5
     },
     {
       "startHeight": 258125,
       "month": "2013-09",
-      "feePerBlockBtc": 0.055,
-      "btcUsd": 392.9,
-      "bigMacUsd": 4.55
+      "feeBtc": 241,
+      "btcUsd": 392.9
     },
     {
       "startHeight": 262500,
       "month": "2013-10",
-      "feePerBlockBtc": 0.0658,
-      "btcUsd": 527,
-      "bigMacUsd": 4.56
+      "feeBtc": 288,
+      "btcUsd": 527
     },
     {
       "startHeight": 266875,
       "month": "2013-11",
-      "feePerBlockBtc": 0.091,
-      "btcUsd": 816.7,
-      "bigMacUsd": 4.58
+      "feeBtc": 398,
+      "btcUsd": 816.7
     },
     {
       "startHeight": 271250,
       "month": "2013-12",
-      "feePerBlockBtc": 0.0497,
-      "btcUsd": 695.9,
-      "bigMacUsd": 4.59
+      "feeBtc": 217,
+      "btcUsd": 695.9
     },
     {
       "startHeight": 275625,
       "month": "2014-01",
-      "feePerBlockBtc": 0.0684,
-      "btcUsd": 651.2,
-      "bigMacUsd": 4.61
+      "feeBtc": 299,
+      "btcUsd": 651.2
     },
     {
       "startHeight": 280000,
       "month": "2014-02",
-      "feePerBlockBtc": 0.124,
-      "btcUsd": 611,
-      "bigMacUsd": 4.62
+      "feeBtc": 542,
+      "btcUsd": 611
     },
     {
       "startHeight": 284375,
       "month": "2014-03",
-      "feePerBlockBtc": 0.054,
-      "btcUsd": 587.1,
-      "bigMacUsd": 4.64
+      "feeBtc": 236,
+      "btcUsd": 587.1
     },
     {
       "startHeight": 288750,
       "month": "2014-04",
-      "feePerBlockBtc": 0.0939,
-      "btcUsd": 499,
-      "bigMacUsd": 4.65
+      "feeBtc": 411,
+      "btcUsd": 499
     },
     {
       "startHeight": 293125,
       "month": "2014-05",
-      "feePerBlockBtc": 0.101,
-      "btcUsd": 526.9,
-      "bigMacUsd": 4.67
+      "feeBtc": 442,
+      "btcUsd": 526.9
     },
     {
       "startHeight": 297500,
       "month": "2014-05",
-      "feePerBlockBtc": 0.0595,
-      "btcUsd": 465.7,
-      "bigMacUsd": 4.68
+      "feeBtc": 260,
+      "btcUsd": 465.7
     },
     {
       "startHeight": 301875,
       "month": "2014-06",
-      "feePerBlockBtc": 0.0481,
-      "btcUsd": 453.4,
-      "bigMacUsd": 4.7
+      "feeBtc": 210,
+      "btcUsd": 453.4
     },
     {
       "startHeight": 306250,
       "month": "2014-07",
-      "feePerBlockBtc": 0.0397,
-      "btcUsd": 420.4,
-      "bigMacUsd": 4.71
+      "feeBtc": 174,
+      "btcUsd": 420.4
     },
     {
       "startHeight": 310625,
       "month": "2014-08",
-      "feePerBlockBtc": 0.0627,
-      "btcUsd": 338.3,
-      "bigMacUsd": 4.73
+      "feeBtc": 274,
+      "btcUsd": 338.3
     },
     {
       "startHeight": 315000,
       "month": "2014-09",
-      "feePerBlockBtc": 0.0711,
-      "btcUsd": 364.4,
-      "bigMacUsd": 4.74
+      "feeBtc": 311,
+      "btcUsd": 364.4
     },
     {
       "startHeight": 319375,
       "month": "2014-10",
-      "feePerBlockBtc": 0.0599,
-      "btcUsd": 313.2,
-      "bigMacUsd": 4.76
+      "feeBtc": 262,
+      "btcUsd": 313.2
     },
     {
       "startHeight": 323750,
       "month": "2014-11",
-      "feePerBlockBtc": 0.0939,
-      "btcUsd": 284.5,
-      "bigMacUsd": 4.77
+      "feeBtc": 411,
+      "btcUsd": 284.5
     },
     {
       "startHeight": 328125,
       "month": "2014-12",
-      "feePerBlockBtc": 0.0565,
-      "btcUsd": 271.9,
-      "bigMacUsd": 4.79
+      "feeBtc": 247,
+      "btcUsd": 271.9
     },
     {
       "startHeight": 332500,
       "month": "2015-01",
-      "feePerBlockBtc": 0.063,
-      "btcUsd": 283.7,
-      "bigMacUsd": 4.8
+      "feeBtc": 276,
+      "btcUsd": 283.7
     },
     {
       "startHeight": 336875,
       "month": "2015-02",
-      "feePerBlockBtc": 0.087,
-      "btcUsd": 256.7,
-      "bigMacUsd": 4.81
+      "feeBtc": 381,
+      "btcUsd": 256.7
     },
     {
       "startHeight": 341250,
       "month": "2015-03",
-      "feePerBlockBtc": 0.139,
-      "btcUsd": 319,
-      "bigMacUsd": 4.82
+      "feeBtc": 608,
+      "btcUsd": 319
     },
     {
       "startHeight": 345625,
       "month": "2015-03",
-      "feePerBlockBtc": 0.0733,
-      "btcUsd": 282.2,
-      "bigMacUsd": 4.84
+      "feeBtc": 321,
+      "btcUsd": 282.2
     },
     {
       "startHeight": 350000,
       "month": "2015-04",
-      "feePerBlockBtc": 0.106,
-      "btcUsd": 298.2,
-      "bigMacUsd": 4.85
+      "feeBtc": 464,
+      "btcUsd": 298.2
     },
     {
       "startHeight": 354375,
       "month": "2015-05",
-      "feePerBlockBtc": 0.139,
-      "btcUsd": 328.8,
-      "bigMacUsd": 4.86
+      "feeBtc": 608,
+      "btcUsd": 328.8
     },
     {
       "startHeight": 358750,
       "month": "2015-06",
-      "feePerBlockBtc": 0.0951,
-      "btcUsd": 334.8,
-      "bigMacUsd": 4.87
+      "feeBtc": 416,
+      "btcUsd": 334.8
     },
     {
       "startHeight": 363125,
       "month": "2015-07",
-      "feePerBlockBtc": 0.116,
-      "btcUsd": 375.2,
-      "bigMacUsd": 4.88
+      "feeBtc": 508,
+      "btcUsd": 375.2
     },
     {
       "startHeight": 367500,
       "month": "2015-08",
-      "feePerBlockBtc": 0.177,
-      "btcUsd": 386.9,
-      "bigMacUsd": 4.9
+      "feeBtc": 774,
+      "btcUsd": 386.9
     },
     {
       "startHeight": 371875,
       "month": "2015-09",
-      "feePerBlockBtc": 0.109,
-      "btcUsd": 384,
-      "bigMacUsd": 4.91
+      "feeBtc": 477,
+      "btcUsd": 384
     },
     {
       "startHeight": 376250,
       "month": "2015-10",
-      "feePerBlockBtc": 0.108,
-      "btcUsd": 432.1,
-      "bigMacUsd": 4.92
+      "feeBtc": 472,
+      "btcUsd": 432.1
     },
     {
       "startHeight": 380625,
       "month": "2015-11",
-      "feePerBlockBtc": 0.143,
-      "btcUsd": 441,
-      "bigMacUsd": 4.93
+      "feeBtc": 626,
+      "btcUsd": 441
     },
     {
       "startHeight": 385000,
       "month": "2015-12",
-      "feePerBlockBtc": 0.103,
-      "btcUsd": 422.2,
-      "bigMacUsd": 4.95
+      "feeBtc": 451,
+      "btcUsd": 422.2
     },
     {
       "startHeight": 389375,
       "month": "2015-12",
-      "feePerBlockBtc": 0.203,
-      "btcUsd": 454.1,
-      "bigMacUsd": 4.96
+      "feeBtc": 888,
+      "btcUsd": 454.1
     },
     {
       "startHeight": 393750,
       "month": "2016-01",
-      "feePerBlockBtc": 0.169,
-      "btcUsd": 501.2,
-      "bigMacUsd": 4.97
+      "feeBtc": 739,
+      "btcUsd": 501.2
     },
     {
       "startHeight": 398125,
       "month": "2016-02",
-      "feePerBlockBtc": 0.169,
-      "btcUsd": 557.8,
-      "bigMacUsd": 4.98
+      "feeBtc": 739,
+      "btcUsd": 557.8
     },
     {
       "startHeight": 402500,
       "month": "2016-03",
-      "feePerBlockBtc": 0.209,
-      "btcUsd": 517.4,
-      "bigMacUsd": 5
+      "feeBtc": 914,
+      "btcUsd": 517.4
     },
     {
       "startHeight": 406875,
       "month": "2016-04",
-      "feePerBlockBtc": 0.168,
-      "btcUsd": 555.8,
-      "bigMacUsd": 5.01
+      "feeBtc": 735,
+      "btcUsd": 555.8
     },
     {
       "startHeight": 411250,
       "month": "2016-05",
-      "feePerBlockBtc": 0.158,
-      "btcUsd": 636.6,
-      "bigMacUsd": 5.02
+      "feeBtc": 691,
+      "btcUsd": 636.6
     },
     {
       "startHeight": 415625,
       "month": "2016-06",
-      "feePerBlockBtc": 0.272,
-      "btcUsd": 575.8,
-      "bigMacUsd": 5.03
+      "feeBtc": 1190,
+      "btcUsd": 575.8
     },
     {
       "startHeight": 420000,
       "month": "2016-07",
-      "feePerBlockBtc": 0.164,
-      "btcUsd": 722.2,
-      "bigMacUsd": 5.04
+      "feeBtc": 718,
+      "btcUsd": 722.2
     },
     {
       "startHeight": 424375,
       "month": "2016-08",
-      "feePerBlockBtc": 0.305,
-      "btcUsd": 762.1,
-      "bigMacUsd": 5.06
+      "feeBtc": 1330,
+      "btcUsd": 762.1
     },
     {
       "startHeight": 428750,
       "month": "2016-09",
-      "feePerBlockBtc": 0.203,
-      "btcUsd": 799,
-      "bigMacUsd": 5.07
+      "feeBtc": 888,
+      "btcUsd": 799
     },
     {
       "startHeight": 433125,
       "month": "2016-10",
-      "feePerBlockBtc": 0.144,
-      "btcUsd": 872.1,
-      "bigMacUsd": 5.08
+      "feeBtc": 630,
+      "btcUsd": 872.1
     },
     {
       "startHeight": 437500,
       "month": "2016-11",
-      "feePerBlockBtc": 0.289,
-      "btcUsd": 810.4,
-      "bigMacUsd": 5.1
+      "feeBtc": 1260,
+      "btcUsd": 810.4
     },
     {
       "startHeight": 441875,
       "month": "2016-12",
-      "feePerBlockBtc": 0.416,
-      "btcUsd": 833.5,
-      "bigMacUsd": 5.11
+      "feeBtc": 1820,
+      "btcUsd": 833.5
     },
     {
       "startHeight": 446250,
       "month": "2016-12",
-      "feePerBlockBtc": 0.427,
-      "btcUsd": 971.7,
-      "bigMacUsd": 5.12
+      "feeBtc": 1870,
+      "btcUsd": 971.7
     },
     {
       "startHeight": 450625,
       "month": "2017-01",
-      "feePerBlockBtc": 0.558,
-      "btcUsd": 1399,
-      "bigMacUsd": 5.14
+      "feeBtc": 2440,
+      "btcUsd": 1399
     },
     {
       "startHeight": 455000,
       "month": "2017-02",
-      "feePerBlockBtc": 0.713,
-      "btcUsd": 1627,
-      "bigMacUsd": 5.15
+      "feeBtc": 3120,
+      "btcUsd": 1627
     },
     {
       "startHeight": 459375,
       "month": "2017-03",
-      "feePerBlockBtc": 0.558,
-      "btcUsd": 2384,
-      "bigMacUsd": 5.16
+      "feeBtc": 2440,
+      "btcUsd": 2384
     },
     {
       "startHeight": 463750,
       "month": "2017-04",
-      "feePerBlockBtc": 1.02,
-      "btcUsd": 2736,
-      "bigMacUsd": 5.18
+      "feeBtc": 4460,
+      "btcUsd": 2736
     },
     {
       "startHeight": 468125,
       "month": "2017-05",
-      "feePerBlockBtc": 1.92,
-      "btcUsd": 3685,
-      "bigMacUsd": 5.19
+      "feeBtc": 8400,
+      "btcUsd": 3685
     },
     {
       "startHeight": 472500,
       "month": "2017-06",
-      "feePerBlockBtc": 0.773,
-      "btcUsd": 4527,
-      "bigMacUsd": 5.2
+      "feeBtc": 3380,
+      "btcUsd": 4527
     },
     {
       "startHeight": 476875,
       "month": "2017-07",
-      "feePerBlockBtc": 3.46,
-      "btcUsd": 5481,
-      "bigMacUsd": 5.21
+      "feeBtc": 15100,
+      "btcUsd": 5481
     },
     {
       "startHeight": 481250,
       "month": "2017-08",
-      "feePerBlockBtc": 1.43,
-      "btcUsd": 8059,
-      "bigMacUsd": 5.23
+      "feeBtc": 6260,
+      "btcUsd": 8059
     },
     {
       "startHeight": 485625,
       "month": "2017-09",
-      "feePerBlockBtc": 2.22,
-      "btcUsd": 8640,
-      "bigMacUsd": 5.24
+      "feeBtc": 9710,
+      "btcUsd": 8640
     },
     {
       "startHeight": 490000,
       "month": "2017-10",
-      "feePerBlockBtc": 1.39,
-      "btcUsd": 11660,
-      "bigMacUsd": 5.25
+      "feeBtc": 6080,
+      "btcUsd": 11660
     },
     {
       "startHeight": 494375,
       "month": "2017-11",
-      "feePerBlockBtc": 1.49,
-      "btcUsd": 14920,
-      "bigMacUsd": 5.27
+      "feeBtc": 6520,
+      "btcUsd": 14920
     },
     {
       "startHeight": 498750,
       "month": "2017-12",
-      "feePerBlockBtc": 1.53,
-      "btcUsd": 13190,
-      "bigMacUsd": 5.28
+      "feeBtc": 6690,
+      "btcUsd": 13190
     },
     {
       "startHeight": 503125,
       "month": "2018-01",
-      "feePerBlockBtc": 1.08,
-      "btcUsd": 11110,
-      "bigMacUsd": 5.29
+      "feeBtc": 4720,
+      "btcUsd": 11110
     },
     {
       "startHeight": 507500,
       "month": "2018-02",
-      "feePerBlockBtc": 0.917,
-      "btcUsd": 10640,
-      "bigMacUsd": 5.3
+      "feeBtc": 4010,
+      "btcUsd": 10640
     },
     {
       "startHeight": 511875,
       "month": "2018-03",
-      "feePerBlockBtc": 1.09,
-      "btcUsd": 9975,
-      "bigMacUsd": 5.31
+      "feeBtc": 4770,
+      "btcUsd": 9975
     },
     {
       "startHeight": 516250,
       "month": "2018-04",
-      "feePerBlockBtc": 0.243,
-      "btcUsd": 7904,
-      "bigMacUsd": 5.32
+      "feeBtc": 1060,
+      "btcUsd": 7904
     },
     {
       "startHeight": 520625,
       "month": "2018-05",
-      "feePerBlockBtc": 0.315,
-      "btcUsd": 7027,
-      "bigMacUsd": 5.33
+      "feeBtc": 1380,
+      "btcUsd": 7027
     },
     {
       "startHeight": 525000,
       "month": "2018-06",
-      "feePerBlockBtc": 0.214,
-      "btcUsd": 6494,
-      "bigMacUsd": 5.34
+      "feeBtc": 936,
+      "btcUsd": 6494
     },
     {
       "startHeight": 529375,
       "month": "2018-07",
-      "feePerBlockBtc": 0.169,
-      "btcUsd": 5833,
-      "bigMacUsd": 5.35
+      "feeBtc": 739,
+      "btcUsd": 5833
     },
     {
       "startHeight": 533750,
       "month": "2018-08",
-      "feePerBlockBtc": 0.398,
-      "btcUsd": 5944,
-      "bigMacUsd": 5.36
+      "feeBtc": 1740,
+      "btcUsd": 5944
     },
     {
       "startHeight": 538125,
       "month": "2018-09",
-      "feePerBlockBtc": 0.33,
-      "btcUsd": 5400,
-      "bigMacUsd": 5.37
+      "feeBtc": 1440,
+      "btcUsd": 5400
     },
     {
       "startHeight": 542500,
       "month": "2018-10",
-      "feePerBlockBtc": 0.187,
-      "btcUsd": 4493,
-      "bigMacUsd": 5.38
+      "feeBtc": 818,
+      "btcUsd": 4493
     },
     {
       "startHeight": 546875,
       "month": "2018-11",
-      "feePerBlockBtc": 0.232,
-      "btcUsd": 4118,
-      "bigMacUsd": 5.39
+      "feeBtc": 1020,
+      "btcUsd": 4118
     },
     {
       "startHeight": 551250,
       "month": "2018-12",
-      "feePerBlockBtc": 0.22,
-      "btcUsd": 3982,
-      "bigMacUsd": 5.4
+      "feeBtc": 962,
+      "btcUsd": 3982
     },
     {
       "startHeight": 555625,
       "month": "2018-12",
-      "feePerBlockBtc": 0.29,
-      "btcUsd": 5058,
-      "bigMacUsd": 5.41
+      "feeBtc": 1270,
+      "btcUsd": 5058
     },
     {
       "startHeight": 560000,
       "month": "2019-01",
-      "feePerBlockBtc": 0.264,
-      "btcUsd": 5450,
-      "bigMacUsd": 5.42
+      "feeBtc": 1160,
+      "btcUsd": 5450
     },
     {
       "startHeight": 564375,
       "month": "2019-02",
-      "feePerBlockBtc": 0.165,
-      "btcUsd": 5748,
-      "bigMacUsd": 5.43
+      "feeBtc": 722,
+      "btcUsd": 5748
     },
     {
       "startHeight": 568750,
       "month": "2019-03",
-      "feePerBlockBtc": 0.144,
-      "btcUsd": 7813,
-      "bigMacUsd": 5.44
+      "feeBtc": 630,
+      "btcUsd": 7813
     },
     {
       "startHeight": 573125,
       "month": "2019-04",
-      "feePerBlockBtc": 0.241,
-      "btcUsd": 8973,
-      "bigMacUsd": 5.45
+      "feeBtc": 1050,
+      "btcUsd": 8973
     },
     {
       "startHeight": 577500,
       "month": "2019-05",
-      "feePerBlockBtc": 0.324,
-      "btcUsd": 8751,
-      "bigMacUsd": 5.46
+      "feeBtc": 1420,
+      "btcUsd": 8751
     },
     {
       "startHeight": 581875,
       "month": "2019-06",
-      "feePerBlockBtc": 0.185,
-      "btcUsd": 9855,
-      "bigMacUsd": 5.47
+      "feeBtc": 809,
+      "btcUsd": 9855
     },
     {
       "startHeight": 586250,
       "month": "2019-07",
-      "feePerBlockBtc": 0.345,
-      "btcUsd": 8375,
-      "bigMacUsd": 5.48
+      "feeBtc": 1510,
+      "btcUsd": 8375
     },
     {
       "startHeight": 590625,
       "month": "2019-08",
-      "feePerBlockBtc": 0.22,
-      "btcUsd": 9300,
-      "bigMacUsd": 5.49
+      "feeBtc": 962,
+      "btcUsd": 9300
     },
     {
       "startHeight": 595000,
       "month": "2019-09",
-      "feePerBlockBtc": 0.187,
-      "btcUsd": 9064,
-      "bigMacUsd": 5.5
+      "feeBtc": 818,
+      "btcUsd": 9064
     },
     {
       "startHeight": 599375,
       "month": "2019-10",
-      "feePerBlockBtc": 0.208,
-      "btcUsd": 9056,
-      "bigMacUsd": 5.51
+      "feeBtc": 910,
+      "btcUsd": 9056
     },
     {
       "startHeight": 603750,
       "month": "2019-11",
-      "feePerBlockBtc": 0.42,
-      "btcUsd": 8415,
-      "bigMacUsd": 5.52
+      "feeBtc": 1840,
+      "btcUsd": 8415
     },
     {
       "startHeight": 608125,
       "month": "2019-12",
-      "feePerBlockBtc": 0.517,
-      "btcUsd": 8467,
-      "bigMacUsd": 5.53
+      "feeBtc": 2260,
+      "btcUsd": 8467
     },
     {
       "startHeight": 612500,
       "month": "2020-01",
-      "feePerBlockBtc": 0.608,
-      "btcUsd": 9980,
-      "bigMacUsd": 5.54
+      "feeBtc": 2660,
+      "btcUsd": 9980
     },
     {
       "startHeight": 616875,
       "month": "2020-02",
-      "feePerBlockBtc": 0.362,
-      "btcUsd": 9039,
-      "bigMacUsd": 5.55
+      "feeBtc": 1580,
+      "btcUsd": 9039
     },
     {
       "startHeight": 621250,
       "month": "2020-03",
-      "feePerBlockBtc": 0.421,
-      "btcUsd": 9541,
-      "bigMacUsd": 5.56
+      "feeBtc": 1840,
+      "btcUsd": 9541
     },
     {
       "startHeight": 625625,
       "month": "2020-04",
-      "feePerBlockBtc": 0.562,
-      "btcUsd": 8780,
-      "bigMacUsd": 5.57
+      "feeBtc": 2460,
+      "btcUsd": 8780
     },
     {
       "startHeight": 630000,
       "month": "2020-05",
-      "feePerBlockBtc": 0.332,
-      "btcUsd": 11570,
-      "bigMacUsd": 5.58
+      "feeBtc": 1450,
+      "btcUsd": 11570
     },
     {
       "startHeight": 634375,
       "month": "2020-06",
-      "feePerBlockBtc": 0.348,
-      "btcUsd": 13730,
-      "bigMacUsd": 5.59
+      "feeBtc": 1520,
+      "btcUsd": 13730
     },
     {
       "startHeight": 638750,
       "month": "2020-07",
-      "feePerBlockBtc": 0.489,
-      "btcUsd": 14920,
-      "bigMacUsd": 5.6
+      "feeBtc": 2140,
+      "btcUsd": 14920
     },
     {
       "startHeight": 643125,
       "month": "2020-08",
-      "feePerBlockBtc": 0.376,
-      "btcUsd": 18910,
-      "bigMacUsd": 5.61
+      "feeBtc": 1640,
+      "btcUsd": 18910
     },
     {
       "startHeight": 647500,
       "month": "2020-09",
-      "feePerBlockBtc": 0.331,
-      "btcUsd": 20830,
-      "bigMacUsd": 5.63
+      "feeBtc": 1450,
+      "btcUsd": 20830
     },
     {
       "startHeight": 651875,
       "month": "2020-10",
-      "feePerBlockBtc": 0.538,
-      "btcUsd": 26240,
-      "bigMacUsd": 5.64
+      "feeBtc": 2350,
+      "btcUsd": 26240
     },
     {
       "startHeight": 656250,
       "month": "2020-11",
-      "feePerBlockBtc": 0.338,
-      "btcUsd": 26820,
-      "bigMacUsd": 5.65
+      "feeBtc": 1480,
+      "btcUsd": 26820
     },
     {
       "startHeight": 660625,
       "month": "2020-12",
-      "feePerBlockBtc": 0.696,
-      "btcUsd": 32560,
-      "bigMacUsd": 5.66
+      "feeBtc": 3040,
+      "btcUsd": 32560
     },
     {
       "startHeight": 665000,
       "month": "2021-01",
-      "feePerBlockBtc": 0.466,
-      "btcUsd": 37380,
-      "bigMacUsd": 5.66
+      "feeBtc": 2040,
+      "btcUsd": 37380
     },
     {
       "startHeight": 669375,
       "month": "2021-02",
-      "feePerBlockBtc": 0.501,
-      "btcUsd": 46980,
-      "bigMacUsd": 5.66
+      "feeBtc": 2190,
+      "btcUsd": 46980
     },
     {
       "startHeight": 673750,
       "month": "2021-03",
-      "feePerBlockBtc": 1.04,
-      "btcUsd": 53060,
-      "bigMacUsd": 5.66
+      "feeBtc": 4550,
+      "btcUsd": 53060
     },
     {
       "startHeight": 678125,
       "month": "2021-04",
-      "feePerBlockBtc": 1.56,
-      "btcUsd": 53340,
-      "bigMacUsd": 5.66
+      "feeBtc": 6820,
+      "btcUsd": 53340
     },
     {
       "startHeight": 682500,
       "month": "2021-05",
-      "feePerBlockBtc": 1.34,
-      "btcUsd": 39860,
-      "bigMacUsd": 5.66
+      "feeBtc": 5860,
+      "btcUsd": 39860
     },
     {
       "startHeight": 686875,
       "month": "2021-06",
-      "feePerBlockBtc": 0.503,
-      "btcUsd": 38720,
-      "bigMacUsd": 5.66
+      "feeBtc": 2200,
+      "btcUsd": 38720
     },
     {
       "startHeight": 691250,
       "month": "2021-07",
-      "feePerBlockBtc": 0.595,
-      "btcUsd": 38750,
-      "bigMacUsd": 5.67
+      "feeBtc": 2600,
+      "btcUsd": 38750
     },
     {
       "startHeight": 695625,
       "month": "2021-08",
-      "feePerBlockBtc": 0.554,
-      "btcUsd": 45640,
-      "bigMacUsd": 5.67
+      "feeBtc": 2420,
+      "btcUsd": 45640
     },
     {
       "startHeight": 700000,
       "month": "2021-09",
-      "feePerBlockBtc": 0.609,
-      "btcUsd": 46280,
-      "bigMacUsd": 5.67
+      "feeBtc": 2660,
+      "btcUsd": 46280
     },
     {
       "startHeight": 704375,
       "month": "2021-10",
-      "feePerBlockBtc": 0.506,
-      "btcUsd": 59660,
-      "bigMacUsd": 5.67
+      "feeBtc": 2210,
+      "btcUsd": 59660
     },
     {
       "startHeight": 708750,
       "month": "2021-11",
-      "feePerBlockBtc": 0.374,
-      "btcUsd": 62810,
-      "bigMacUsd": 5.67
+      "feeBtc": 1640,
+      "btcUsd": 62810
     },
     {
       "startHeight": 713125,
       "month": "2021-12",
-      "feePerBlockBtc": 0.335,
-      "btcUsd": 50360,
-      "bigMacUsd": 5.67
+      "feeBtc": 1470,
+      "btcUsd": 50360
     },
     {
       "startHeight": 717500,
       "month": "2022-01",
-      "feePerBlockBtc": 0.226,
-      "btcUsd": 51510,
-      "bigMacUsd": 5.67
+      "feeBtc": 989,
+      "btcUsd": 51510
     },
     {
       "startHeight": 721875,
       "month": "2022-01",
-      "feePerBlockBtc": 0.202,
-      "btcUsd": 46090,
-      "bigMacUsd": 5.67
+      "feeBtc": 884,
+      "btcUsd": 46090
     },
     {
       "startHeight": 726250,
       "month": "2022-03",
-      "feePerBlockBtc": 0.153,
-      "btcUsd": 34740,
-      "bigMacUsd": 5.67
+      "feeBtc": 669,
+      "btcUsd": 34740
     },
     {
       "startHeight": 730625,
       "month": "2022-04",
-      "feePerBlockBtc": 0.208,
-      "btcUsd": 32840,
-      "bigMacUsd": 5.67
+      "feeBtc": 910,
+      "btcUsd": 32840
     },
     {
       "startHeight": 735000,
       "month": "2022-05",
-      "feePerBlockBtc": 0.09,
-      "btcUsd": 31360,
-      "bigMacUsd": 5.67
+      "feeBtc": 394,
+      "btcUsd": 31360
     },
     {
       "startHeight": 739375,
       "month": "2022-05",
-      "feePerBlockBtc": 0.256,
-      "btcUsd": 27070,
-      "bigMacUsd": 5.67
+      "feeBtc": 1120,
+      "btcUsd": 27070
     },
     {
       "startHeight": 743750,
       "month": "2022-06",
-      "feePerBlockBtc": 0.218,
-      "btcUsd": 26220,
-      "bigMacUsd": 5.68
+      "feeBtc": 954,
+      "btcUsd": 26220
     },
     {
       "startHeight": 748125,
       "month": "2022-07",
-      "feePerBlockBtc": 0.138,
-      "btcUsd": 24340,
-      "bigMacUsd": 5.68
+      "feeBtc": 604,
+      "btcUsd": 24340
     },
     {
       "startHeight": 752500,
       "month": "2022-08",
-      "feePerBlockBtc": 0.135,
-      "btcUsd": 22290,
-      "bigMacUsd": 5.68
+      "feeBtc": 591,
+      "btcUsd": 22290
     },
     {
       "startHeight": 756875,
       "month": "2022-09",
-      "feePerBlockBtc": 0.188,
-      "btcUsd": 20030,
-      "bigMacUsd": 5.68
+      "feeBtc": 822,
+      "btcUsd": 20030
     },
     {
       "startHeight": 761250,
       "month": "2022-10",
-      "feePerBlockBtc": 0.244,
-      "btcUsd": 15920,
-      "bigMacUsd": 5.68
+      "feeBtc": 1070,
+      "btcUsd": 15920
     },
     {
       "startHeight": 765625,
       "month": "2022-11",
-      "feePerBlockBtc": 0.219,
-      "btcUsd": 18580,
-      "bigMacUsd": 5.68
+      "feeBtc": 958,
+      "btcUsd": 18580
     },
     {
       "startHeight": 770000,
       "month": "2022-12",
-      "feePerBlockBtc": 0.492,
-      "btcUsd": 18610,
-      "bigMacUsd": 5.68
+      "feeBtc": 2150,
+      "btcUsd": 18610
     },
     {
       "startHeight": 774375,
       "month": "2023-01",
-      "feePerBlockBtc": 0.443,
-      "btcUsd": 19410,
-      "bigMacUsd": 5.68
+      "feeBtc": 1940,
+      "btcUsd": 19410
     },
     {
       "startHeight": 778750,
       "month": "2023-02",
-      "feePerBlockBtc": 0.579,
-      "btcUsd": 20560,
-      "bigMacUsd": 5.68
+      "feeBtc": 2530,
+      "btcUsd": 20560
     },
     {
       "startHeight": 783125,
       "month": "2023-03",
-      "feePerBlockBtc": 0.507,
-      "btcUsd": 25000,
-      "bigMacUsd": 5.68
+      "feeBtc": 2220,
+      "btcUsd": 25000
     },
     {
       "startHeight": 787500,
       "month": "2023-04",
-      "feePerBlockBtc": 0.619,
-      "btcUsd": 24320,
-      "bigMacUsd": 5.68
+      "feeBtc": 2710,
+      "btcUsd": 24320
     },
     {
       "startHeight": 791875,
       "month": "2023-05",
-      "feePerBlockBtc": 0.756,
-      "btcUsd": 28410,
-      "bigMacUsd": 5.68
+      "feeBtc": 3310,
+      "btcUsd": 28410
     },
     {
       "startHeight": 796250,
       "month": "2023-06",
-      "feePerBlockBtc": 1.8,
-      "btcUsd": 28720,
-      "bigMacUsd": 5.69
+      "feeBtc": 7880,
+      "btcUsd": 28720
     },
     {
       "startHeight": 800625,
       "month": "2023-07",
-      "feePerBlockBtc": 0.392,
-      "btcUsd": 35610,
-      "bigMacUsd": 5.69
+      "feeBtc": 1720,
+      "btcUsd": 35610
     },
     {
       "startHeight": 805000,
       "month": "2023-08",
-      "feePerBlockBtc": 0.521,
-      "btcUsd": 34760,
-      "bigMacUsd": 5.69
+      "feeBtc": 2280,
+      "btcUsd": 34760
     },
     {
       "startHeight": 809375,
       "month": "2023-09",
-      "feePerBlockBtc": 0.584,
-      "btcUsd": 44930,
-      "bigMacUsd": 5.69
+      "feeBtc": 2560,
+      "btcUsd": 44930
     },
     {
       "startHeight": 813750,
       "month": "2023-10",
-      "feePerBlockBtc": 0.678,
-      "btcUsd": 43690,
-      "bigMacUsd": 5.69
+      "feeBtc": 2970,
+      "btcUsd": 43690
     },
     {
       "startHeight": 818125,
       "month": "2023-11",
-      "feePerBlockBtc": 0.723,
-      "btcUsd": 54190,
-      "bigMacUsd": 5.69
+      "feeBtc": 3160,
+      "btcUsd": 54190
     },
     {
       "startHeight": 822500,
       "month": "2023-12",
-      "feePerBlockBtc": 0.391,
-      "btcUsd": 59310,
-      "bigMacUsd": 5.69
+      "feeBtc": 1710,
+      "btcUsd": 59310
     },
     {
       "startHeight": 826875,
       "month": "2024-01",
-      "feePerBlockBtc": 0.761,
-      "btcUsd": 57260,
-      "bigMacUsd": 5.7
+      "feeBtc": 3330,
+      "btcUsd": 57260
     },
     {
       "startHeight": 831250,
       "month": "2024-02",
-      "feePerBlockBtc": 0.407,
-      "btcUsd": 60030,
-      "bigMacUsd": 5.71
+      "feeBtc": 1780,
+      "btcUsd": 60030
     },
     {
       "startHeight": 835625,
       "month": "2024-03",
-      "feePerBlockBtc": 0.542,
-      "btcUsd": 74430,
-      "bigMacUsd": 5.73
+      "feeBtc": 2370,
+      "btcUsd": 74430
     },
     {
       "startHeight": 840000,
       "month": "2024-04",
-      "feePerBlockBtc": 0.842,
-      "btcUsd": 67240,
-      "bigMacUsd": 5.74
+      "feeBtc": 3680,
+      "btcUsd": 67240
     },
     {
       "startHeight": 844375,
       "month": "2024-05",
-      "feePerBlockBtc": 0.626,
-      "btcUsd": 72640,
-      "bigMacUsd": 5.75
+      "feeBtc": 2740,
+      "btcUsd": 72640
     },
     {
       "startHeight": 848750,
       "month": "2024-06",
-      "feePerBlockBtc": 0.6,
-      "btcUsd": 73260,
-      "bigMacUsd": 5.76
+      "feeBtc": 2620,
+      "btcUsd": 73260
     },
     {
       "startHeight": 853125,
       "month": "2024-07",
-      "feePerBlockBtc": 0.236,
-      "btcUsd": 72120,
-      "bigMacUsd": 5.77
+      "feeBtc": 1030,
+      "btcUsd": 72120
     },
     {
       "startHeight": 857500,
       "month": "2024-08",
-      "feePerBlockBtc": 0.261,
-      "btcUsd": 85710,
-      "bigMacUsd": 5.78
+      "feeBtc": 1140,
+      "btcUsd": 85710
     },
     {
       "startHeight": 861875,
       "month": "2024-09",
-      "feePerBlockBtc": 0.313,
-      "btcUsd": 76530,
-      "bigMacUsd": 5.8
+      "feeBtc": 1370,
+      "btcUsd": 76530
     },
     {
       "startHeight": 866250,
       "month": "2024-10",
-      "feePerBlockBtc": 0.148,
-      "btcUsd": 88340,
-      "bigMacUsd": 5.81
+      "feeBtc": 648,
+      "btcUsd": 88340
     },
     {
       "startHeight": 870625,
       "month": "2024-11",
-      "feePerBlockBtc": 0.0911,
-      "btcUsd": 86370,
-      "bigMacUsd": 5.82
+      "feeBtc": 399,
+      "btcUsd": 86370
     },
     {
       "startHeight": 875000,
       "month": "2024-12",
-      "feePerBlockBtc": 0.0897,
-      "btcUsd": 89680,
-      "bigMacUsd": 5.83
+      "feeBtc": 392,
+      "btcUsd": 89680
     },
     {
       "startHeight": 879375,
       "month": "2025-01",
-      "feePerBlockBtc": 0.0766,
-      "btcUsd": 90210,
-      "bigMacUsd": 5.84
+      "feeBtc": 335,
+      "btcUsd": 90210
     },
     {
       "startHeight": 883750,
       "month": "2025-02",
-      "feePerBlockBtc": 0.0833,
-      "btcUsd": 93930,
-      "bigMacUsd": 5.85
+      "feeBtc": 364,
+      "btcUsd": 93930
     },
     {
       "startHeight": 888125,
       "month": "2025-03",
-      "feePerBlockBtc": 0.0763,
-      "btcUsd": 95210,
-      "bigMacUsd": 5.87
+      "feeBtc": 334,
+      "btcUsd": 95210
     },
     {
       "startHeight": 892500,
       "month": "2025-04",
-      "feePerBlockBtc": 0.104,
-      "btcUsd": 93970,
-      "bigMacUsd": 5.88
+      "feeBtc": 455,
+      "btcUsd": 93970
     },
     {
       "startHeight": 896875,
       "month": "2025-05",
-      "feePerBlockBtc": 0.0482,
-      "btcUsd": 97760,
-      "bigMacUsd": 5.89
+      "feeBtc": 211,
+      "btcUsd": 97760
     },
     {
       "startHeight": 901250,
       "month": "2025-06",
-      "feePerBlockBtc": 0.0717,
-      "btcUsd": 107900,
-      "bigMacUsd": 5.9
+      "feeBtc": 314,
+      "btcUsd": 107900
     },
     {
       "startHeight": 905625,
       "month": "2025-07",
-      "feePerBlockBtc": 0.0553,
-      "btcUsd": 109800,
-      "bigMacUsd": 5.91
+      "feeBtc": 242,
+      "btcUsd": 109800
     },
     {
       "startHeight": 910000,
       "month": "2025-08",
-      "feePerBlockBtc": 0.0552,
-      "btcUsd": 106900,
-      "bigMacUsd": 5.92
+      "feeBtc": 242,
+      "btcUsd": 106900
     },
     {
       "startHeight": 914375,
       "month": "2025-09",
-      "feePerBlockBtc": 0.0592,
-      "btcUsd": 117700,
-      "bigMacUsd": 5.93
+      "feeBtc": 259,
+      "btcUsd": 117700
     },
     {
       "startHeight": 918750,
       "month": "2025-10",
-      "feePerBlockBtc": 0.0817,
-      "btcUsd": 123400,
-      "bigMacUsd": 5.95
+      "feeBtc": 357,
+      "btcUsd": 123400
     },
     {
       "startHeight": 923125,
       "month": "2025-11",
-      "feePerBlockBtc": 0.1,
-      "btcUsd": 121100,
-      "bigMacUsd": 5.96
+      "feeBtc": 438,
+      "btcUsd": 121100
     },
     {
       "startHeight": 927500,
       "month": "2025-12",
-      "feePerBlockBtc": 0.0483,
-      "btcUsd": 112700,
-      "bigMacUsd": 5.97
+      "feeBtc": 211,
+      "btcUsd": 112700
     },
     {
       "startHeight": 931875,
       "month": "2026-01",
-      "feePerBlockBtc": 0.0896,
-      "btcUsd": 131600,
-      "bigMacUsd": 5.98
+      "feeBtc": 392,
+      "btcUsd": 131600
     },
     {
       "startHeight": 936250,
       "month": "2026-02",
-      "feePerBlockBtc": 0.0762,
-      "btcUsd": 138200,
-      "bigMacUsd": 5.99
+      "feeBtc": 333,
+      "btcUsd": 138200
     },
     {
       "startHeight": 940625,
       "month": "2026-03",
-      "feePerBlockBtc": 0.146,
-      "btcUsd": 136200,
-      "bigMacUsd": 6
+      "feeBtc": 639,
+      "btcUsd": 136200
     },
     {
       "startHeight": 945000,
       "month": "2026-04",
-      "feePerBlockBtc": 0.0529,
-      "btcUsd": 131400,
-      "bigMacUsd": 6.02
+      "feeBtc": 231,
+      "btcUsd": 131400
     },
     {
       "startHeight": 949375,
       "month": "2026-05",
-      "feePerBlockBtc": 0.0791,
-      "btcUsd": 148700,
-      "bigMacUsd": 6.03
+      "feeBtc": 346,
+      "btcUsd": 148700
     },
     {
       "startHeight": 953750,
       "month": "2026-06",
-      "feePerBlockBtc": 0.169,
-      "btcUsd": 147900,
-      "bigMacUsd": 6.04
+      "feeBtc": 739,
+      "btcUsd": 147900
     },
     {
       "startHeight": 958125,
       "month": "2026-07",
-      "feePerBlockBtc": 0.113,
-      "btcUsd": 137000,
-      "bigMacUsd": 6.05
+      "feeBtc": 494,
+      "btcUsd": 137000
     }
   ]
 }

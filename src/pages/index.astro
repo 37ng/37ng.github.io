@@ -33,16 +33,17 @@ async function cardSrc(image: ImageMetadata | undefined) {
 // stage caption numbers itself off the same positions and the two indexes have
 // to agree.
 const posts = await getSortedPosts();
+const featured = posts.filter((post) => post.data.feat);
 const unordered = await Promise.all(
-  posts.map(async (post) => ({
+  featured.map(async (post) => ({
     id: post.id,
     title: post.data.title,
     description: post.data.description,
     date: post.data.date,
     color: post.data.color,
     stageTone: post.data.stageTone,
-    heroImage: await cardSrc(post.data.heroImage),
-    stageImage: post.data.heroImage?.src,
+    heroImage: await cardSrc(post.data.stageImage),
+    stageImage: post.data.stageImage?.src,
   })),
 );
 const summaries = sortCurated(unordered);
@@ -57,7 +58,11 @@ const LANDING_STAGE = "bitcoin";
 // back from a post. These rules key off <html data-stage>, which the bootstrap
 // script below sets before the body is even parsed. Generated from the post
 // list rather than hand-written, so adding a post needs no edit here.
-const cssSafe = (value: string) => value.replace(/[^\w\s#(),.%-]/g, "");
+// Unicode-aware on purpose: \w is ASCII-only, so a post id written in any
+// non-Latin script would be stripped to nothing and its stage rules would
+// silently target html[data-stage=""].
+const cssSafe = (value: string) =>
+  value.replace(/[^\p{L}\p{N}\s#(),.%_-]/gu, "");
 const jsLiteral = (value: unknown) =>
   JSON.stringify(value).replace(/</g, "\\u003c");
 const stageRules = summaries

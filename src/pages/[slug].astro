@@ -1,6 +1,6 @@
 ---
 import { getCollection, render } from "astro:content";
-import PostLayout from "../../layouts/PostLayout.astro";
+import PostLayout from "../layouts/PostLayout.astro";
 
 export async function getStaticPaths() {
   const posts = await getCollection("posts");
@@ -18,10 +18,12 @@ const { Content } = await render(post);
   id={post.id}
   title={post.data.title}
   description={post.data.description}
+  feat={post.data.feat}
   date={post.data.date}
+  updated={post.data.updated}
   github={post.data.github}
   color={post.data.color}
-  hasStageArt={Boolean(post.data.heroImage)}
+  hasStageArt={Boolean(post.data.stageImage)}
 >
   <Content />
 </PostLayout>

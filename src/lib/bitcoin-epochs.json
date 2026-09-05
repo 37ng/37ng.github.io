@@ -10,8 +10,7 @@
       "endDate": "2012-11-28",
       "totalFeesBtc": 8944.410314009996,
       "avgDifficulty": 690502.041487497,
-      "avgBtcUsd": 3.422505263157889,
-      "usBigMacUsd": 3.6333333333333333
+      "avgBtcUsd": 3.422505263157889
     },
     {
       "id": "e1",
@@ -23,8 +22,7 @@
       "endDate": "2016-07-09",
       "totalFeesBtc": 38435.859018670024,
       "avgDifficulty": 44266904101.040794,
-      "avgBtcUsd": 341.4107960576188,
-      "usBigMacUsd": 4.26375
+      "avgBtcUsd": 341.4107960576188
     },
     {
       "id": "e2",
@@ -36,8 +34,7 @@
       "endDate": "2020-05-11",
       "totalFeesBtc": 163382.73239560996,
       "avgDifficulty": 5314991189716.108,
-      "avgBtcUsd": 5757.2663409415145,
-      "usBigMacUsd": 4.638571428571429
+      "avgBtcUsd": 5757.2663409415145
     },
     {
       "id": "e3",
@@ -49,8 +46,7 @@
       "endDate": "2024-04-20",
       "totalFeesBtc": 80742.60006412998,
       "avgDifficulty": 34898583734796.895,
-      "avgBtcUsd": 32838.04040277773,
-      "usBigMacUsd": 5.182499999999999
+      "avgBtcUsd": 32838.04040277773
     }
   ]
 }
