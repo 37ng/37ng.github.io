@@ -25,19 +25,29 @@ export interface StageSummary {
  */
 export type Backdrop =
   | { kind: "art"; src: string; tone: StageTone }
-  | { kind: "paper"; tone: "light" };
+  | { kind: "paper"; tone: "light" }
+  | { kind: "plain"; tone: StageTone };
 
 /**
- * The fallback backdrop: PaperSheet, which is manila. Its tone is a fact
+ * The prologue's backdrop: PrologueSheet, which is manila. Its tone is a fact
  * about that component, declared here because this is where the fact is used.
  * If it ever stops being pale, change it here and every reader follows.
  */
 const PAPER = { kind: "paper", tone: "light" } as const satisfies Backdrop;
 
+/** The one post that owns the sheet. Every other art-less post gets plain. */
+const PAPER_POST = "prologue";
+
 export function backdropFor(stage: StageSummary): Backdrop {
-  return stage.stageImage
-    ? { kind: "art", src: stage.stageImage, tone: stage.stageTone ?? "dark" }
-    : PAPER;
+  if (stage.stageImage)
+    return {
+      kind: "art",
+      src: stage.stageImage,
+      tone: stage.stageTone ?? "dark",
+    };
+  return stage.id === PAPER_POST
+    ? PAPER
+    : { kind: "plain", tone: stage.stageTone ?? "dark" };
 }
 
 const EVENT = "stage:change";

@@ -12,10 +12,10 @@ const posts = defineCollection({
       updated: z.string().optional(),
       feat: z.boolean().default(false), // whether this is showed in main stage
       tags: z.array(z.string()).default([]),
-      github: z.url().optional(),
-      color: z.string().optional(),
-      heroImage: image().optional(),
+      stageImage: image().optional(),
       stageTone: z.enum(["dark", "light"]).default("dark"),
+      color: z.string().optional(),
+      github: z.url().optional(),
     }),
 });
 

@@ -1,7 +1,7 @@
 ---
 import { BitcoinCoin3D } from "./diagrams/BitcoinCoin3D";
 import BitcoinTimeline from "./diagrams/BitcoinTimeline.astro";
-import { PaperSheet } from "./stages/PaperSheet";
+import { PrologueSheet } from "./stages/PrologueSheet";
 import { backdropFor, type StageSummary } from "@/lib/stage";
 import { cardNo } from "@/lib/fan";
 
@@ -60,8 +60,15 @@ const hasBitcoin = stages.some((stage) => stage.id === "bitcoin");
                 decoding="async"
                 class="absolute inset-0 h-full w-full object-cover"
               />
+            ) : backdrop.kind === "paper" ? (
+              <PrologueSheet filterId="paper-pencil" />
             ) : (
-              <PaperSheet filterId="paper-pencil" />
+              <div
+                class:list={[
+                  "absolute inset-0",
+                  backdrop.tone === "light" ? "bg-paper-200" : "bg-ink-950",
+                ]}
+              />
             )}
           </div>
         );
