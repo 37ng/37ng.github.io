@@ -12,7 +12,7 @@ import {
   subscribeStage,
 } from "@/lib/stage";
 import { cardNo, sortCurated } from "@/lib/fan";
-import { PaperSheet } from "@/components/stages/PaperSheet";
+import { PrologueSheet } from "@/components/stages/PrologueSheet";
 
 export interface PostSummary {
   id: string;
@@ -295,11 +295,15 @@ export function PostsFan({ posts }: PostsFanProps) {
                       filter: "saturate(0.86) contrast(1.02)",
                     }}
                   />
-                ) : (
-                  <PaperSheet
+                ) : post.id === "prologue" ? (
+                  <PrologueSheet
                     filterId={`paper-pencil-${post.id}`}
                     grid="card"
                   />
+                ) : (
+                  <p className="absolute inset-0 overflow-hidden font-[family-name:var(--font-display)] text-[11px] leading-[1.35] text-paper-ink">
+                    {post.description}
+                  </p>
                 )}
               </div>
               <div className="absolute right-3.5 bottom-3 left-3.5 font-mono text-[9px] text-paper-muted">
