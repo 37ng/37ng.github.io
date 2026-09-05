@@ -30,7 +30,7 @@ const posts = defineCollection({
          and it can't recede behind the fan the same way either.
 
          Only consulted when the post actually has heroImage. Without one the
-         backdrop is PaperSheet, and index.astro derives light from that — the
+         backdrop is PrologueSheet or a plain surface, and index.astro derives light from that — the
          default here would otherwise put white type on cream, which fails
          invisibly instead of visibly. */
       stageTone: z.enum(["dark", "light"]).default("dark"),

@@ -1,4 +1,4 @@
-interface PaperSheetProps {
+interface PrologueSheetProps {
   /** SVG filter ids are document-global, so each sheet on the page needs
       its own or they collide. */
   filterId: string;
@@ -8,15 +8,19 @@ interface PaperSheetProps {
 }
 
 /**
- * A sheet of manila drawing paper: the fallback backdrop for a stage whose
- * post has no art, and the same look on that post's card in the fan. Its tone
- * is declared as `PAPER` in src/lib/stage.ts, which is what tells the caption
- * to use dark ink — if this ever stops being pale, change it there too.
+ * A sheet of manila drawing paper: the prologue's backdrop, and the same look
+ * on the prologue's card in the fan. It belongs to that one post — no other
+ * post falls back to it. Its tone is declared as `PAPER` in src/lib/stage.ts,
+ * which is what tells the caption to use dark ink — if this ever stops being
+ * pale, change it there too.
  *
  * React rather than Astro so both homes draw one copy of the signature. The
  * stage renders it with no client directive, so it stays static HTML.
  */
-export function PaperSheet({ filterId, grid = "stage" }: PaperSheetProps) {
+export function PrologueSheet({
+  filterId,
+  grid = "stage",
+}: PrologueSheetProps) {
   return (
     <div className="paper-sheet absolute inset-0">
       <div
