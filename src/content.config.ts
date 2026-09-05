@@ -11,7 +11,7 @@ const posts = defineCollection({
       date: z.string(),
       /* Last substantive edit, if the post was revised after its date. Only
          set this when content actually changed — not for typo fixes. */
-      lastEdit: z.string().optional(),
+      updated: z.string().optional(),
       tags: z.array(z.string()).default([]),
       /* The committed webp in src/assets — stage-width already, written by
          `npm run art` from a master that never enters the repo (see

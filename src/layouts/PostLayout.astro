@@ -7,7 +7,7 @@ interface Props {
   title: string;
   description?: string;
   date: string;
-  lastEdit?: string;
+  updated?: string;
   github?: string;
   color?: string;
   /** Whether this post has its own hero art — a paper-sheet post (e.g. the
@@ -16,7 +16,7 @@ interface Props {
   hasStageArt?: boolean;
 }
 
-const { id, title, description, date, lastEdit, github, color, hasStageArt } =
+const { id, title, description, date, updated, github, color, hasStageArt } =
   Astro.props;
 // Fraunces, like the title above it and the prose below it — this line sits
 // between the two, and it was the only thing on the page still reading in the
@@ -66,8 +66,8 @@ const headingClass =
       <div class="mt-3 flex items-center justify-between">
         <time class="font-mono text-sm text-ink-400">
           {date}
-          {lastEdit && (
-            <span class="text-ink-500"> &middot; updated {lastEdit}</span>
+          {updated && (
+            <span class="text-ink-500"> &middot; updated {updated}</span>
           )}
         </time>
         <ThemeToggle client:load />
