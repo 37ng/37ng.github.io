@@ -9,6 +9,8 @@ import {
   annualFeeRevenueBtc,
   annualRevenueBtc,
   BARS,
+  BARS_PER_YEAR,
+  BLOCKS_PER_BAR,
   BLOCKS_PER_HALVING,
   BLOCKS_PER_YEAR,
   feeOnlyShare,
@@ -19,6 +21,10 @@ import {
   supplyAfter,
   supplyAt,
 } from "@/lib/bitcoin-timeline";
+
+test("a year is the bar count the period totals are annualized by", () => {
+  assert.equal(BARS_PER_YEAR, BLOCKS_PER_YEAR / BLOCKS_PER_BAR);
+});
 
 test("supply follows the halving schedule exactly", () => {
   assert.equal(supplyAt(0), 0);
@@ -40,7 +46,7 @@ test("supply converges just under 21 million", () => {
 test("the share is a year of revenue over the supply behind it", () => {
   const bar = BARS[BARS.length - 1];
   const revenue =
-    BLOCKS_PER_YEAR * (bar.feePerBlockBtc + subsidyAt(bar.startHeight));
+    BARS_PER_YEAR * (bar.feeBtc + BLOCKS_PER_BAR * subsidyAt(bar.startHeight));
   assert.ok(Math.abs(annualRevenueBtc(bar) - revenue) < 1e-6);
   assert.equal(onchainShare(bar), (revenue / supplyAfter(bar)) * 100);
 });
@@ -56,10 +62,7 @@ test("the price cancels: the share is the same at any BTC/USD", () => {
 test("fees are a share of the same denominator, never larger than the total", () => {
   for (const bar of BARS) {
     assert.ok(feeOnlyShare(bar) <= onchainShare(bar));
-    assert.equal(
-      annualFeeRevenueBtc(bar),
-      BLOCKS_PER_YEAR * bar.feePerBlockBtc,
-    );
+    assert.equal(annualFeeRevenueBtc(bar), BARS_PER_YEAR * bar.feeBtc);
   }
 });
 
@@ -76,8 +79,8 @@ test("the share falls across a halving that adds no fees", () => {
       i > 0 &&
       subsidyAt(bar.startHeight) !== subsidyAt(BARS[i - 1].startHeight),
   );
-  const before = { ...BARS[halving - 1], feePerBlockBtc: 0 };
-  const after = { ...BARS[halving], feePerBlockBtc: 0 };
+  const before = { ...BARS[halving - 1], feeBtc: 0 };
+  const after = { ...BARS[halving], feeBtc: 0 };
   assert.ok(onchainShare(after) < onchainShare(before));
 });
 

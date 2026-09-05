@@ -4,7 +4,6 @@ import {
   barAt,
   barX,
   BLOCKS_PER_BAR,
-  btcWorth,
   feeOnlyShare,
   feeWorth,
   formatBtc,
@@ -14,6 +13,7 @@ import {
   halvingIndices,
   normalize,
   spineY,
+  usdWorth,
 } from "@/lib/bitcoin-timeline";
 
 /**
@@ -26,19 +26,19 @@ import {
 const FAKE_OUT_OF_BAND_RATIO = 0.35;
 
 /**
- * The bottom of the scale, in Big Macs.
+ * The bottom of the scale, in dollars.
  *
- * A 2009 fee is worth about a billionth of a burger. Left in, that one end
- * stretches the log scale across thirteen orders of magnitude and every bar
- * from 2012 on ends up pinned near the top — a solid slab that says nothing.
- * Anything under a hundredth of a burger is the same fact ("that block paid
- * nobody anything"), so the scale starts there and spends its whole height
- * on the seven orders where the numbers differ.
+ * A 2009 month of fees is worth a few hundred-thousandths of a cent. Left
+ * in, that one end stretches the log scale across thirteen orders of
+ * magnitude and every bar from 2012 on ends up pinned near the top — a solid
+ * slab that says nothing. Any month under a dollar is the same fact ("the
+ * chain's own use paid nobody anything"), so the scale starts there and
+ * spends its whole height on the eight orders where the numbers differ.
  */
-const MIN_BIG_MACS = 0.01;
+const MIN_USD = 1;
 
-function floorBigMacs(count: number): number {
-  return Math.max(count, MIN_BIG_MACS);
+function floorUsd(usd: number): number {
+  return Math.max(usd, MIN_USD);
 }
 
 /** The onchain segment's opacity — full strength, since it is the real
@@ -66,11 +66,15 @@ interface BitcoinTimelineProps {
  * mining pay) than the one this widget asks (what did the chain's own
  * activity pay). Fees only, so the bar is one payment in one tone.
  *
- * The bar is drawn and read in **Big Macs**, not BTC. A fee in BTC says
- * nothing across seventeen years, and the fee is a number whose unit changed
- * value ten-thousandfold along the axis it is plotted against. Priced in
- * what it bought at the time, the same figures say the thing the raw numbers
- * hide.
+ * Every figure is a **period total** — what the chain earned over the whole
+ * bar, roughly a month — not an average per block. A per-block rate divides
+ * the answer by however many blocks happened to be mined, which is the one
+ * part of the question nobody asked.
+ *
+ * The bar is drawn in **dollars of the day**, not BTC. A fee in BTC says
+ * nothing across seventeen years, since the unit itself changed value
+ * ten-thousandfold along the axis it is plotted against. Every row carries
+ * its own price, so a 2012 month is priced at 2012 rates.
  *
  * The axis is block height, not the calendar: 4,375 blocks is 210,000 / 48,
  * so a halving is always a bar edge — kept as the axis's only ticks even
@@ -99,8 +103,8 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
 
   // Fake, and tied to the real payment only so it tracks the bar under the
   // cursor — see FAKE_OUT_OF_BAND_RATIO.
-  const outOfBandBtc = bar.feePerBlockBtc * FAKE_OUT_OF_BAND_RATIO;
-  const outOfBandWorth = btcWorth(outOfBandBtc, bar);
+  const outOfBandBtc = bar.feeBtc * FAKE_OUT_OF_BAND_RATIO;
+  const outOfBandUsd = usdWorth(outOfBandBtc, bar);
   const outOfBandShare = feeOnlyShare(bar) * FAKE_OUT_OF_BAND_RATIO;
 
   // The bar heights, computed once: 220 rects is enough geometry that
@@ -115,16 +119,14 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
   // stack on the chart, and only that one, ever reaches the top.
   const barHeights = useMemo(() => {
     const totals = BARS.map((entry) =>
-      floorBigMacs(feeWorth(entry).bigMacs * (1 + FAKE_OUT_OF_BAND_RATIO)),
+      floorUsd(feeWorth(entry) * (1 + FAKE_OUT_OF_BAND_RATIO)),
     );
     const totalHeights = normalize(totals, { log: true, floor: 0.03 });
     // The split within each bar's total: fixed by FAKE_OUT_OF_BAND_RATIO,
     // the same fraction of the total for every bar.
     const onchainShare = 1 / (1 + FAKE_OUT_OF_BAND_RATIO);
     const onchain = totalHeights.map((height) => height * onchainShare);
-    const offchain = totalHeights.map(
-      (height) => height * (1 - onchainShare),
-    );
+    const offchain = totalHeights.map((height) => height * (1 - onchainShare));
     return { onchain, offchain };
   }, []);
 
@@ -179,7 +181,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
             of the year's issuance is the sub line. */}
         <Readout
           label="onchain"
-          value={`${formatBtc(bar.feePerBlockBtc)} / ${formatUsd(feeWorth(bar).usd)}`}
+          value={`${formatBtc(bar.feeBtc)} / ${formatUsd(feeWorth(bar))}`}
           sub={`annualized ${formatShare(feeOnlyShare(bar))}`}
           title={title}
         />
@@ -191,7 +193,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
             describes read as the same grey. */}
         <Readout
           label="offchain"
-          value={`${formatBtc(outOfBandBtc)} / ${formatUsd(outOfBandWorth.usd)}`}
+          value={`${formatBtc(outOfBandBtc)} / ${formatUsd(outOfBandUsd)}`}
           sub={`annualized ${formatShare(outOfBandShare)}`}
           title={title}
           opacity={OFFCHAIN_TONE_RATIO}
@@ -209,7 +211,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
         aria-valuemin={0}
         aria-valuemax={BARS.length - 1}
         aria-valuenow={selected}
-        aria-valuetext={`${bar.month}, block ${bar.startHeight}, ${formatBtc(bar.feePerBlockBtc)} fees per block, ${formatShare(feeOnlyShare(bar))} of all BTC issued per year`}
+        aria-valuetext={`${bar.month}, from block ${bar.startHeight}, ${formatBtc(bar.feeBtc)} fees over the period, ${formatShare(feeOnlyShare(bar))} of all BTC issued per year`}
         className="mt-4 cursor-crosshair touch-none select-none"
         onPointerMove={(event) => readFromEvent(event.clientX)}
         onKeyDown={(event) => {
@@ -366,7 +368,7 @@ export function BitcoinTimeline({ variant = "post" }: BitcoinTimelineProps) {
         className="font-mono text-[9px] whitespace-nowrap"
         style={{ opacity: 0.8 }}
       >
-        onchain, offchain(fake) · per block · big macs · log
+        onchain, offchain(fake) · per bar total · usd of the day · log
       </div>
     </div>
   );
