@@ -300,7 +300,11 @@ export function PostsFan({ posts }: PostsFanProps) {
                     filterId={`paper-pencil-${post.id}`}
                     grid="card"
                   />
-                ) : null}
+                ) : (
+                  <p className="absolute inset-0 overflow-hidden font-[family-name:var(--font-display)] text-[11px] leading-[1.35] text-paper-ink">
+                    {post.description}
+                  </p>
+                )}
               </div>
               <div className="absolute right-3.5 bottom-3 left-3.5 font-mono text-[9px] text-paper-muted">
                 {post.date}
