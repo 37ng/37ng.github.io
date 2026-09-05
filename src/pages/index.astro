@@ -33,8 +33,9 @@ async function cardSrc(image: ImageMetadata | undefined) {
 // stage caption numbers itself off the same positions and the two indexes have
 // to agree.
 const posts = await getSortedPosts();
+const featured = posts.filter((post) => post.data.feat);
 const unordered = await Promise.all(
-  posts.map(async (post) => ({
+  featured.map(async (post) => ({
     id: post.id,
     title: post.data.title,
     description: post.data.description,

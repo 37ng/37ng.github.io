@@ -10,7 +10,7 @@ const posts = defineCollection({
       description: z.string().optional(),
       date: z.string(),
       updated: z.string().optional(),
-      feat: z.boolean(), // whether this is showed in main stage
+      feat: z.boolean().default(false), // whether this is showed in main stage
       tags: z.array(z.string()).default([]),
       github: z.url().optional(),
       color: z.string().optional(),
