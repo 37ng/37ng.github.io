@@ -1,6 +1,7 @@
 ---
 import { getCollection, render } from "astro:content";
-import PostLayout from "../layouts/PostLayout.astro";
+import PostLayout from "../../layouts/PostLayout.astro";
+import { oscTriangle } from "three/tsl";
 
 export async function getStaticPaths() {
   const posts = await getCollection("posts");
