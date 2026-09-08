@@ -23,7 +23,7 @@
  * the row (`subsidyAt` below); neither is the dollar figure, which is one
  * multiplication away from the price (`usdWorth`).
  *
- * `bitcoin-bars.json` is currently **pseudo data**: the heights are exact
+ * `pseudo-bars.json` is currently **pseudo data**: the heights are exact
  * and the month labels follow the real halving boundaries, but the fees and
  * the price are invented, so the widget could be built before the real
  * per-bar numbers exist. It is a stand-in, the widget says so on its face,
@@ -35,7 +35,7 @@
  * of history — which also means nothing here is fetched at runtime, and no
  * figure on the chart can be unavailable.
  */
-import barData from "../data/bars.json";
+import barData from "../data/pseudo-bars.json";
 
 export interface Bar {
   /** The first block this bar covers; it covers `BLOCKS_PER_BAR` of them. */
