@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   axisMax,
   axisTicks,
@@ -33,6 +33,15 @@ export function AcceleratorPools() {
   const ticks = useMemo(() => axisTicks(ceiling), [ceiling]);
   const toggle = (id: string) =>
     setSelected((current) => (current === id ? null : id));
+
+  useEffect(() => {
+    if (selected === null) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setSelected(null);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [selected]);
 
   return (
     <figure className="not-prose my-10 w-full border border-ink-700 p-5 text-ink-300">
@@ -248,7 +257,7 @@ function Readout({
       <div className="text-right font-mono text-[10px] whitespace-nowrap text-ink-50 tabular-nums">
         <div>{selected ?? "all pools"}</div>
         <div className="text-[9px] opacity-60">
-          {row ? formatMonth(row.month) : "every month"}
+          {row ? formatMonth(row.month) : "all months"}
         </div>
       </div>
     </div>
