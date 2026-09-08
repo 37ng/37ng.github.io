@@ -14,7 +14,7 @@ import {
   quarterTicks,
   RESPONSE_LAG,
   xAt,
-} from "@/lib/flag-rate";
+} from "../lib/flag-rate";
 
 // Both ceilings come from the data with a little headroom — a fixed one
 // silently flat-tops the tallest spike, which is the one column that matters.

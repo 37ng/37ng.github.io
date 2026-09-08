@@ -1,8 +1,8 @@
 /**
  * Turns a full-size master in `art-src/` into the one committed webp the site
- * builds from, in `src/assets/`. Subdirectories are mirrored, so a master at
- * `art-src/bitcoin/bg.png` becomes `src/assets/bitcoin/bg.webp` — one folder
- * per post, matching `src/content/`.
+ * builds from. The first folder under `art-src/` is the post slug, so a master
+ * at `art-src/bitcoin/bg.png` becomes `src/posts/bitcoin/assets/bg.webp` — the
+ * art sits in the post folder, beside that post's prose, data and diagrams.
  *
  * Why this exists rather than handing the master to Astro: a master is tens of
  * megabytes of lossless pixels, and committing one puts it in git history
@@ -27,7 +27,7 @@ import path from "node:path";
 import sharp from "sharp";
 
 const SRC_DIR = "art-src";
-const OUT_DIR = "src/assets";
+const OUT_DIR = "src/posts";
 /** The full-bleed stage width. Astro derives every smaller size from it. */
 const DEFAULT_SIZES = [2560];
 const DEFAULT_QUALITY = 90;
@@ -64,6 +64,16 @@ function parseArgs(argv) {
 
 const kb = (bytes) => `${Math.round(bytes / 1024)} KB`;
 
+function outPath(name) {
+  const [slug, ...rest] = name.split("/");
+  if (rest.length === 0) {
+    throw new Error(
+      `${name}: a master must sit in a post folder, e.g. art-src/<slug>/${slug}.png`,
+    );
+  }
+  return path.join(OUT_DIR, slug, "assets", ...rest);
+}
+
 const { names, quality, sizes } = parseArgs(process.argv.slice(2));
 
 const entries = (await readdir(SRC_DIR, { recursive: true }))
@@ -89,7 +99,7 @@ console.log(`webp q${quality} · widths ${sizes.join(", ")}`);
 for (const file of entries) {
   const name = file.replace(MASTERS, "");
   const source = path.join(SRC_DIR, file);
-  await mkdir(path.join(OUT_DIR, path.dirname(name)), { recursive: true });
+  await mkdir(path.dirname(outPath(name)), { recursive: true });
   const master = await stat(source);
   console.log(`\n${name}  (master ${kb(master.size)})`);
 
@@ -104,8 +114,7 @@ for (const file of entries) {
     // One width per master is the normal case, so the plain name is the file
     // the posts import. A second --sizes entry gets the width appended rather
     // than silently overwriting the first.
-    const out = path.join(
-      OUT_DIR,
+    const out = outPath(
       sizes.length === 1 ? `${name}.webp` : `${name}-${width}.webp`,
     );
     await writeFile(out, buffer);

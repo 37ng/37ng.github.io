@@ -12,7 +12,7 @@ import {
   subscribeStage,
 } from "@/lib/stage";
 import { cardNo, sortCurated } from "@/lib/fan";
-import { PrologueSheet } from "@/content/prologue/PrologueSheet";
+import { PrologueSheet } from "@/posts/prologue/PrologueSheet";
 
 export interface PostSummary {
   id: string;

@@ -14,7 +14,7 @@ import {
   normalize,
   spineY,
   usdWorth,
-} from "@/lib/bitcoin-timeline";
+} from "../lib/bitcoin-timeline";
 
 /**
  * Placeholder for a real off-chain measurement that does not exist yet: a

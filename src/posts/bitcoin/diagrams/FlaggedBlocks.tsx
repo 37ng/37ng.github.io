@@ -11,7 +11,7 @@ import {
   poolShare,
   segments,
   yearTicks,
-} from "@/lib/flagged-blocks";
+} from "../lib/flagged-blocks";
 
 const PLOT_HEIGHT = 168;
 const accent = "var(--accent,var(--color-signal-500))";

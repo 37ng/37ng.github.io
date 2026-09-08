@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Updates src/content/bitcoin/data/epochs.json — one row per *finished* halving epoch,
+ * Updates src/posts/bitcoin/data/epochs.json — one row per *finished* halving epoch,
  * aggregated from public history, plus the average BTC/USD needed to say what
  * that epoch's own tx fees were worth at the time.
  *
@@ -45,7 +45,7 @@ import { access, readFile, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 
 const OUT = fileURLToPath(
-  new URL("../src/content/bitcoin/data/epochs.json", import.meta.url),
+  new URL("../src/posts/bitcoin/data/epochs.json", import.meta.url),
 );
 // The protocol's own constants — a halving every 210,000 blocks, subsidy
 // halving each time from 50 BTC. Deriving epoch heights and subsidies from

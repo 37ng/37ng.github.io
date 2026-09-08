@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { FLAG_ROWS } from "@/lib/pool-flag-sample";
+import { FLAG_ROWS } from "../lib/pool-flag-sample";
 import {
   buildHeatmap,
   formatBlocks,
@@ -8,7 +8,7 @@ import {
   shade,
   type Cell,
   type Series,
-} from "@/lib/pool-flag-rate";
+} from "../lib/pool-flag-rate";
 
 interface Hover {
   pool: string;
