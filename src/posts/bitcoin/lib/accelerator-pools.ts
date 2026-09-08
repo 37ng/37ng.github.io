@@ -42,6 +42,7 @@ export const MONTHS: MonthRow[] = Object.entries(raw as Raw)
 
 export const POOLS: PoolSeries[] = buildPools();
 
+// sum up fees for pools
 function buildPools(): PoolSeries[] {
   const totals = new Map<string, number>();
   const totalsUsd = new Map<string, number>();
