@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   axisMax,
   axisTicks,
@@ -34,20 +34,11 @@ export function AcceleratorPools() {
   const toggle = (id: string) =>
     setSelected((current) => (current === id ? null : id));
 
-  useEffect(() => {
-    if (selected === null) return;
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setSelected(null);
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [selected]);
-
   return (
     <figure className="not-prose my-10 w-full border border-ink-700 p-5 text-ink-300">
       <div className="flex flex-col gap-1 font-mono text-[10px] sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
         <span className="text-signal-500">
-          BTC offchain fee published by mempool.space
+          BTC offchain fee, published by mempool.space
         </span>
         <span className="whitespace-nowrap tabular-nums">
           {formatMonth(MONTHS[0].month)} —{" "}
@@ -248,7 +239,7 @@ function Readout({
             ₿
           </span>
         </div>
-        <div className="min-h-[1.2em] font-mono text-[9px] whitespace-nowrap tabular-nums opacity-70">
+        <div className="h-[1.2em] font-mono text-[9px] leading-[1.2em] whitespace-nowrap tabular-nums opacity-70">
           {share === null
             ? ""
             : `${formatShare(share)} of ${row ? "the month" : "the total"}`}
@@ -281,7 +272,7 @@ function Legend({
 }) {
   return (
     <div className="mt-5" onPointerLeave={() => onHover(null)}>
-      <div className="flex min-h-[1.2em] items-baseline justify-end font-mono text-[9px]">
+      <div className="flex h-[1.2em] items-baseline justify-end font-mono text-[9px] leading-[1.2em]">
         {selected && (
           <button
             type="button"
