@@ -6,13 +6,13 @@
  * paid privately to include that transaction anyway. This module holds one
  * month of that measurement, per block, plus the scales the figure draws on.
  *
- * `offchain-revenue-jan2023.json` is PSEUDO DATA — a deterministic stand-in
+ * `pseudo-offchain-revenue-jan2023.json` is PSEUDO DATA — a deterministic stand-in
  * with the shape real measurements will have. Replacing it means replacing
  * that one file: nothing here reads anything else. Only flagged blocks are
  * listed; `totalBlocks` and `blocksPerDay` carry the blocks that were not
  * flagged, which is what the coverage rail is drawn from.
  */
-import data from "../data/offchain-revenue-jan2023.json";
+import data from "../data/pseudo-offchain-revenue-jan2023.json";
 
 export interface FlaggedBlock {
   /** Block height. */
