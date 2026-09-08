@@ -1,0 +1,356 @@
+import { useMemo, useState } from "react";
+import {
+  axisMax,
+  axisTicks,
+  formatBtc,
+  formatMonth,
+  formatShare,
+  GRAND_TOTAL,
+  lifetimeShare,
+  MONTHS,
+  POOLS,
+  position,
+  segments,
+  shareOfMonth,
+  yearTicks,
+  type MonthRow,
+  type PoolSeries,
+  type Segment,
+} from "../lib/accelerator-pools";
+
+const PLOT_HEIGHT = 240;
+const YEARS = yearTicks();
+const STACKS = MONTHS.map(segments);
+
+export function AcceleratorPools() {
+  const [selected, setSelected] = useState<string | null>(null);
+  const [hovered, setHovered] = useState<string | null>(null);
+  const [cursor, setCursor] = useState<number | null>(null);
+
+  const focus = selected ?? hovered;
+  const row = cursor === null ? null : MONTHS[cursor];
+  const ceiling = useMemo(() => axisMax(selected), [selected]);
+  const ticks = useMemo(() => axisTicks(ceiling), [ceiling]);
+  const toggle = (id: string) =>
+    setSelected((current) => (current === id ? null : id));
+
+  return (
+    <figure className="not-prose my-10 w-full border border-ink-700 p-5 text-ink-300">
+      <div className="flex flex-col gap-1 font-mono text-[10px] sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
+        <span className="whitespace-nowrap text-signal-500">
+          accelerator fees paid, by pool
+        </span>
+        <span className="whitespace-nowrap tabular-nums">
+          btc · monthly · {formatMonth(MONTHS[0].month)} —{" "}
+          {formatMonth(MONTHS[MONTHS.length - 1].month)}
+        </span>
+      </div>
+
+      <Readout selected={selected} row={row} />
+
+      <div
+        className="mt-5 flex gap-2"
+        onPointerLeave={() => {
+          setCursor(null);
+          setHovered(null);
+        }}
+      >
+        <div
+          className="relative w-12 shrink-0 font-mono text-[9px] tabular-nums"
+          style={{ height: PLOT_HEIGHT }}
+          aria-hidden="true"
+        >
+          {ticks.map((tick) => (
+            <span
+              key={tick}
+              className="absolute right-0 translate-y-1/2 opacity-55"
+              style={{ bottom: `${position(tick, ceiling) * 100}%` }}
+            >
+              {formatBtc(tick)}
+            </span>
+          ))}
+        </div>
+
+        <div
+          className="relative flex-1 touch-none select-none"
+          style={{ height: PLOT_HEIGHT }}
+          role="img"
+          aria-label={`Accelerator fees paid each month in BTC, stacked by the pool that took them.${selected ? ` Showing ${selected} alone.` : ""}`}
+        >
+          {ticks.map((tick) => (
+            <div
+              key={tick}
+              className="pointer-events-none absolute inset-x-0 h-px"
+              style={{
+                bottom: `${position(tick, ceiling) * 100}%`,
+                background: "currentColor",
+                opacity: tick === 0 ? 0.4 : 0.12,
+              }}
+              aria-hidden="true"
+            />
+          ))}
+
+          <div className="absolute inset-0 flex">
+            {MONTHS.map((month, index) => (
+              <Column
+                key={month.month}
+                stack={STACKS[index]}
+                ceiling={ceiling}
+                index={index}
+                cursor={cursor}
+                selected={selected}
+                focus={focus}
+                onCursor={setCursor}
+                onHover={setHovered}
+                onToggle={toggle}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-1.5 flex gap-2">
+        <div className="w-12 shrink-0" aria-hidden="true" />
+        <div className="relative h-3 flex-1 font-mono text-[9px] tabular-nums">
+          {YEARS.map(({ index, year }) => (
+            <span
+              key={`${year}-${index}`}
+              className="absolute opacity-60"
+              style={{ left: `${(index / MONTHS.length) * 100}%` }}
+            >
+              {year}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <Legend
+        selected={selected}
+        focus={focus}
+        row={row}
+        onHover={setHovered}
+        onToggle={toggle}
+        onClear={() => setSelected(null)}
+      />
+
+      <figcaption className="mt-4 border-t border-ink-700 pt-2 font-mono text-[9px] leading-relaxed opacity-60">
+        one column per month, in BTC, split by the pool that took the fee. the
+        axis is linear, so a band's height is the amount and the top of a column
+        is the month's total. hover a pool to pick it out; click to keep it
+        alone, which refits the axis to that pool's own months — the only way a
+        pool worth a tenth of a percent gets a readable plot.
+      </figcaption>
+    </figure>
+  );
+}
+
+function Column({
+  stack,
+  ceiling,
+  index,
+  cursor,
+  selected,
+  focus,
+  onCursor,
+  onHover,
+  onToggle,
+}: {
+  stack: Segment[];
+  ceiling: number;
+  index: number;
+  cursor: number | null;
+  selected: string | null;
+  focus: string | null;
+  onCursor: (index: number) => void;
+  onHover: (id: string | null) => void;
+  onToggle: (id: string) => void;
+}) {
+  const shown = selected
+    ? stack
+        .filter((segment) => segment.pool.id === selected)
+        .map((segment) => ({ ...segment, base: 0 }))
+    : stack;
+
+  return (
+    <div
+      className="relative h-full flex-1 cursor-pointer"
+      onPointerEnter={() => onCursor(index)}
+    >
+      {cursor === index && (
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "color-mix(in srgb, var(--color-signal-500) 9%, transparent)",
+            boxShadow:
+              "inset 1px 0 0 0 var(--color-signal-500), inset -1px 0 0 0 var(--color-signal-500)",
+          }}
+          aria-hidden="true"
+        />
+      )}
+      {shown.map((segment) => {
+        const bottom = position(segment.base, ceiling);
+        const top = position(segment.base + segment.value, ceiling);
+        return (
+          <div
+            key={segment.pool.id}
+            className="absolute inset-x-px"
+            title={`${segment.pool.id} · ${formatBtc(segment.value)} BTC`}
+            onPointerEnter={() => onHover(segment.pool.id)}
+            onClick={() => onToggle(segment.pool.id)}
+            style={{
+              background: segment.pool.color,
+              bottom: `${bottom * 100}%`,
+              height: `${(top - bottom) * 100}%`,
+              opacity: !focus || focus === segment.pool.id ? 1 : 0.12,
+              transition: "opacity 140ms linear",
+            }}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+function Readout({
+  selected,
+  row,
+}: {
+  selected: string | null;
+  row: MonthRow | null;
+}) {
+  const pool = selected
+    ? POOLS.find((entry) => entry.id === selected)
+    : undefined;
+  const value = row
+    ? selected
+      ? (row.pools[selected] ?? 0)
+      : row.sum
+    : (pool?.total ?? GRAND_TOTAL);
+  const share = selected
+    ? row
+      ? shareOfMonth(row, selected)
+      : pool
+        ? lifetimeShare(pool)
+        : 0
+    : null;
+
+  return (
+    <div className="mt-4 flex items-end justify-between gap-4">
+      <div>
+        <div className="font-[family-name:var(--font-display)] text-2xl font-semibold tabular-nums text-ink-50 sm:text-3xl">
+          {formatBtc(value)}
+          <span className="ml-1.5 font-mono text-[10px] font-normal opacity-60">
+            BTC
+          </span>
+        </div>
+        <div className="font-mono text-[9px] whitespace-nowrap tabular-nums opacity-70">
+          {value.toLocaleString()} sats
+          {share === null
+            ? ""
+            : ` · ${formatShare(share)} of ${row ? "the month" : "the total"}`}
+        </div>
+      </div>
+      <div className="text-right font-mono text-[10px] whitespace-nowrap text-ink-50 tabular-nums">
+        <div>{selected ?? "all pools"}</div>
+        <div className="text-[9px] opacity-60">
+          {row ? formatMonth(row.month) : "every month"}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Legend({
+  selected,
+  focus,
+  row,
+  onHover,
+  onToggle,
+  onClear,
+}: {
+  selected: string | null;
+  focus: string | null;
+  row: MonthRow | null;
+  onHover: (id: string | null) => void;
+  onToggle: (id: string) => void;
+  onClear: () => void;
+}) {
+  return (
+    <div className="mt-5" onPointerLeave={() => onHover(null)}>
+      <div className="flex items-baseline justify-between font-mono text-[9px] opacity-55">
+        <span>pool · btc · {row ? formatMonth(row.month) : "every month"}</span>
+        {selected && (
+          <button
+            type="button"
+            onClick={onClear}
+            className="cursor-pointer text-signal-500 uppercase opacity-100"
+          >
+            show all
+          </button>
+        )}
+      </div>
+
+      <ul className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 font-mono text-[10px] tabular-nums sm:grid-cols-3">
+        {POOLS.map((pool) => (
+          <LegendItem
+            key={pool.id}
+            pool={pool}
+            selected={selected}
+            focus={focus}
+            row={row}
+            onHover={onHover}
+            onToggle={onToggle}
+          />
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function LegendItem({
+  pool,
+  selected,
+  focus,
+  row,
+  onHover,
+  onToggle,
+}: {
+  pool: PoolSeries;
+  selected: string | null;
+  focus: string | null;
+  row: MonthRow | null;
+  onHover: (id: string | null) => void;
+  onToggle: (id: string) => void;
+}) {
+  const absent = row !== null && row.pools[pool.id] === undefined;
+  const value = row ? (row.pools[pool.id] ?? 0) : pool.total;
+  const share = row ? shareOfMonth(row, pool.id) : lifetimeShare(pool);
+  const dim = focus !== null && focus !== pool.id;
+
+  return (
+    <li>
+      <button
+        type="button"
+        aria-pressed={selected === pool.id}
+        onPointerEnter={() => onHover(pool.id)}
+        onFocus={() => onHover(pool.id)}
+        onBlur={() => onHover(null)}
+        onClick={() => onToggle(pool.id)}
+        title={`${pool.id} · ${value.toLocaleString()} sats · ${formatShare(share)}`}
+        className="flex w-full cursor-pointer items-baseline gap-2 py-0.5 text-left"
+        style={{ opacity: dim ? 0.35 : 1, transition: "opacity 140ms linear" }}
+      >
+        <span
+          className="h-2 w-2 shrink-0 translate-y-[-1px]"
+          style={{ background: pool.color }}
+          aria-hidden="true"
+        />
+        <span className="flex-1 truncate text-ink-200">{pool.id}</span>
+        <span className="text-ink-100">{absent ? "—" : formatBtc(value)}</span>
+      </button>
+    </li>
+  );
+}
+
+export default AcceleratorPools;
