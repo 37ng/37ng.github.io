@@ -5,18 +5,23 @@ import {
   formatBtc,
   formatMonth,
   formatShare,
+  formatUsd,
   GRAND_TOTAL,
+  GRAND_TOTAL_USD,
   lifetimeShare,
   MONTHS,
   POOLS,
   position,
   segments,
   shareOfMonth,
+  usdValue,
   yearTicks,
   type MonthRow,
   type PoolSeries,
   type Segment,
 } from "../lib/accelerator-pools";
+
+type Unit = "btc" | "usd";
 
 const PLOT_HEIGHT = 240;
 const YEARS = yearTicks();
@@ -26,6 +31,7 @@ export function AcceleratorPools() {
   const [selected, setSelected] = useState<string | null>(null);
   const [hovered, setHovered] = useState<string | null>(null);
   const [cursor, setCursor] = useState<number | null>(null);
+  const [unit, setUnit] = useState<Unit>("btc");
 
   const focus = selected ?? hovered;
   const row = cursor === null ? null : MONTHS[cursor];
@@ -46,7 +52,7 @@ export function AcceleratorPools() {
         </span>
       </div>
 
-      <Readout selected={selected} row={row} />
+      <Readout selected={selected} row={row} unit={unit} onUnit={setUnit} />
 
       <div
         className="mt-5 flex gap-2"
@@ -128,6 +134,7 @@ export function AcceleratorPools() {
         selected={selected}
         focus={focus}
         row={row}
+        unit={unit}
         onHover={setHovered}
         onToggle={toggle}
         onClear={() => setSelected(null)}
@@ -210,9 +217,13 @@ function Column({
 function Readout({
   selected,
   row,
+  unit,
+  onUnit,
 }: {
   selected: string | null;
   row: MonthRow | null;
+  unit: Unit;
+  onUnit: (unit: Unit) => void;
 }) {
   const pool = selected
     ? POOLS.find((entry) => entry.id === selected)
@@ -222,6 +233,9 @@ function Readout({
       ? (row.pools[selected] ?? 0)
       : row.sum
     : (pool?.total ?? GRAND_TOTAL);
+  const valueUsd = row
+    ? usdValue(value, row.month)
+    : (pool?.totalUsd ?? GRAND_TOTAL_USD);
   const share = selected
     ? row
       ? shareOfMonth(row, selected)
@@ -234,10 +248,8 @@ function Readout({
     <div className="mt-4 flex items-end justify-between gap-4">
       <div>
         <div className="font-[family-name:var(--font-display)] text-2xl font-semibold tabular-nums text-ink-50 sm:text-3xl">
-          {formatBtc(value)}
-          <span className="ml-1.5 font-mono text-xl font-normal opacity-60">
-            ₿
-          </span>
+          <UnitToggle unit={unit} onChange={onUnit} />
+          {unit === "btc" ? formatBtc(value) : formatUsd(valueUsd)}
         </div>
         <div className="h-[1.2em] font-mono text-[9px] leading-[1.2em] whitespace-nowrap tabular-nums opacity-70">
           {share === null
@@ -255,10 +267,41 @@ function Readout({
   );
 }
 
+function UnitToggle({
+  unit,
+  onChange,
+}: {
+  unit: Unit;
+  onChange: (unit: Unit) => void;
+}) {
+  return (
+    <span className="mr-1.5 inline-flex items-baseline gap-0.5 font-mono text-xl font-normal">
+      <button
+        type="button"
+        onClick={() => onChange("btc")}
+        className="cursor-pointer"
+        style={{ opacity: unit === "btc" ? 1 : 0.35 }}
+      >
+        ₿
+      </button>
+      <span className="opacity-35">/</span>
+      <button
+        type="button"
+        onClick={() => onChange("usd")}
+        className="cursor-pointer"
+        style={{ opacity: unit === "usd" ? 1 : 0.35 }}
+      >
+        $
+      </button>
+    </span>
+  );
+}
+
 function Legend({
   selected,
   focus,
   row,
+  unit,
   onHover,
   onToggle,
   onClear,
@@ -266,6 +309,7 @@ function Legend({
   selected: string | null;
   focus: string | null;
   row: MonthRow | null;
+  unit: Unit;
   onHover: (id: string | null) => void;
   onToggle: (id: string) => void;
   onClear: () => void;
@@ -292,6 +336,7 @@ function Legend({
             selected={selected}
             focus={focus}
             row={row}
+            unit={unit}
             onHover={onHover}
             onToggle={onToggle}
           />
@@ -306,6 +351,7 @@ function LegendItem({
   selected,
   focus,
   row,
+  unit,
   onHover,
   onToggle,
 }: {
@@ -313,11 +359,15 @@ function LegendItem({
   selected: string | null;
   focus: string | null;
   row: MonthRow | null;
+  unit: Unit;
   onHover: (id: string | null) => void;
   onToggle: (id: string) => void;
 }) {
   const absent = row !== null && row.pools[pool.id] === undefined;
   const value = row ? (row.pools[pool.id] ?? 0) : pool.total;
+  const valueUsd = row
+    ? usdValue(row.pools[pool.id] ?? 0, row.month)
+    : pool.totalUsd;
   const share = row ? shareOfMonth(row, pool.id) : lifetimeShare(pool);
   const dim = focus !== null && focus !== pool.id;
 
@@ -341,8 +391,16 @@ function LegendItem({
         />
         <span className="flex-1 truncate text-ink-200">{pool.id}</span>
         <span className="text-ink-100">
-          {absent ? "—" : formatBtc(value)}
-          {!absent && <span className="ml-1 opacity-50">₿</span>}
+          {absent
+            ? "—"
+            : unit === "btc"
+              ? formatBtc(value)
+              : formatUsd(valueUsd)}
+          {!absent && (
+            <span className="ml-1 opacity-50">
+              {unit === "btc" ? "₿" : "$"}
+            </span>
+          )}
         </span>
       </button>
     </li>

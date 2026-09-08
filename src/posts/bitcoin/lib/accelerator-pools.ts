@@ -1,6 +1,10 @@
 import raw from "../data/mempool-space-by-month.json";
+import priceRaw from "../data/price.json";
 
 type Raw = Record<string, { pools: Record<string, number>; sum: number }>;
+type Price = Record<string, number>;
+
+const PRICE = priceRaw as Price;
 
 export interface MonthRow {
   month: string;
@@ -12,6 +16,7 @@ export interface PoolSeries {
   id: string;
   color: string;
   total: number;
+  totalUsd: number;
 }
 
 export interface Segment {
@@ -31,9 +36,14 @@ export const POOLS: PoolSeries[] = buildPools();
 
 function buildPools(): PoolSeries[] {
   const totals = new Map<string, number>();
+  const totalsUsd = new Map<string, number>();
   for (const row of MONTHS) {
     for (const [pool, value] of Object.entries(row.pools)) {
       totals.set(pool, (totals.get(pool) ?? 0) + value);
+      totalsUsd.set(
+        pool,
+        (totalsUsd.get(pool) ?? 0) + usdValue(value, row.month),
+      );
     }
   }
 
@@ -43,10 +53,23 @@ function buildPools(): PoolSeries[] {
       id,
       color: `var(--series-${(rank % SERIES_SLOTS) + 1})`,
       total,
+      totalUsd: totalsUsd.get(id) ?? 0,
     }));
 }
 
 export const GRAND_TOTAL = MONTHS.reduce((sum, row) => sum + row.sum, 0);
+export const GRAND_TOTAL_USD = MONTHS.reduce(
+  (sum, row) => sum + usdValue(row.sum, row.month),
+  0,
+);
+
+export function priceAt(month: string): number {
+  return PRICE[month] ?? 0;
+}
+
+export function usdValue(sats: number, month: string): number {
+  return toBtc(sats) * priceAt(month);
+}
 
 export function shareOfMonth(row: MonthRow, pool: string): number {
   const value = row.pools[pool];
@@ -107,6 +130,15 @@ export function formatBtc(sats: number): string {
   if (btc === 0) return "0";
   if (btc >= 100) return btc.toFixed(0);
   const fixed = btc.toPrecision(3);
+  return fixed.includes(".")
+    ? fixed.replace(/0+$/, "").replace(/\.$/, "")
+    : fixed;
+}
+
+export function formatUsd(usd: number): string {
+  if (usd === 0) return "0";
+  if (usd >= 1000) return Math.round(usd).toLocaleString("en-US");
+  const fixed = usd.toPrecision(3);
   return fixed.includes(".")
     ? fixed.replace(/0+$/, "").replace(/\.$/, "")
     : fixed;
