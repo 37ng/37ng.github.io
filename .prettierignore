@@ -4,4 +4,4 @@ node_modules
 package-lock.json
 
 # Bilingual blog prose — avoid Prettier reflowing/mangling content mixed with JSX.
-src/content/blog/*.mdx
+src/content/**/*.mdx

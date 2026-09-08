@@ -67,9 +67,11 @@ const headingClass =
       <div class="mt-3 flex items-center justify-between">
         <time class="font-mono text-sm text-ink-400">
           {date}
-          {updated && (
-            <span class="text-ink-500"> &middot; updated {updated}</span>
-          )}
+          {
+            updated && (
+              <span class="text-ink-500"> &middot; updated {updated}</span>
+            )
+          }
         </time>
         <ThemeToggle client:load />
       </div>

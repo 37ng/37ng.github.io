@@ -12,7 +12,7 @@
  * listed; `totalBlocks` and `blocksPerDay` carry the blocks that were not
  * flagged, which is what the coverage rail is drawn from.
  */
-import data from "@/lib/offchain-revenue-jan2023.json";
+import data from "@/content/posts/bitcoin/offchain-revenue-jan2023.json";
 
 export interface FlaggedBlock {
   /** Block height. */
