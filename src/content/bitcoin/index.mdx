@@ -4,18 +4,18 @@ description: "Pools, farms and miners"
 date: "2026-07-28"
 feat: true
 tags: ["bitcoin", "crypto", "cryptocurrency"]
-stageImage: "../../../assets/bitcoin/bg.webp"
+stageImage: "../../assets/bitcoin/bg.webp"
 color: "#F7941D"
 stageTone: "dark"
 ---
 
-import BitcoinTimeline from "@/components/diagrams/BitcoinTimeline.astro";
-import FlagRateMempool from "@/components/diagrams/FlagRateMempool.astro";
-import FlaggedBlocks from "@/components/diagrams/FlaggedBlocks.astro";
-import PoolFlagHeatmap from "@/components/diagrams/PoolFlagHeatmap.astro";
-import { OffchainRevenue } from "@/components/diagrams/OffchainRevenue";
+import BitcoinTimeline from "./diagrams/BitcoinTimeline.astro";
+import FlagRateMempool from "./diagrams/FlagRateMempool.astro";
+import FlaggedBlocks from "./diagrams/FlaggedBlocks.astro";
+import PoolFlagHeatmap from "./diagrams/PoolFlagHeatmap.astro";
+import { OffchainRevenue } from "./diagrams/OffchainRevenue";
 
-<BitcoinTimeline variant="post" />
+
 
 Bitcoin's subsidy havles every 210000 blocks(~4 years). By the time of 33 halving(~year 2140), it will shrink to 0. Then transaction fee will be the only compensation for maintaining the network.
 
@@ -64,4 +64,6 @@ The numbers here are placeholder data.
 ## What a pool earns off the book
 
 <OffchainRevenue client:visible />
+
+<BitcoinTimeline variant="post" />
 

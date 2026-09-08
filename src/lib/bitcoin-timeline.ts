@@ -35,7 +35,7 @@
  * of history — which also means nothing here is fetched at runtime, and no
  * figure on the chart can be unavailable.
  */
-import barData from "@/content/posts/bitcoin/bars.json";
+import barData from "@/content/bitcoin/data/bars.json";
 
 export interface Bar {
   /** The first block this bar covers; it covers `BLOCKS_PER_BAR` of them. */

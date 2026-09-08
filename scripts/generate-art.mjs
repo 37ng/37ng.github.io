@@ -2,7 +2,7 @@
  * Turns a full-size master in `art-src/` into the one committed webp the site
  * builds from, in `src/assets/`. Subdirectories are mirrored, so a master at
  * `art-src/bitcoin/bg.png` becomes `src/assets/bitcoin/bg.webp` — one folder
- * per post, matching `src/content/posts/`.
+ * per post, matching `src/content/`.
  *
  * Why this exists rather than handing the master to Astro: a master is tens of
  * megabytes of lossless pixels, and committing one puts it in git history
