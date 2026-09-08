@@ -37,11 +37,11 @@ export function AcceleratorPools() {
   return (
     <figure className="not-prose my-10 w-full border border-ink-700 p-5 text-ink-300">
       <div className="flex flex-col gap-1 font-mono text-[10px] sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
-        <span className="whitespace-nowrap text-signal-500">
-          accelerator fees paid, by pool
+        <span className="text-signal-500">
+          BTC offchain fee published by mempool.space
         </span>
         <span className="whitespace-nowrap tabular-nums">
-          btc · monthly · {formatMonth(MONTHS[0].month)} —{" "}
+          {formatMonth(MONTHS[0].month)} —{" "}
           {formatMonth(MONTHS[MONTHS.length - 1].month)}
         </span>
       </div>
@@ -75,7 +75,7 @@ export function AcceleratorPools() {
           className="relative flex-1 touch-none select-none"
           style={{ height: PLOT_HEIGHT }}
           role="img"
-          aria-label={`Accelerator fees paid each month in BTC, stacked by the pool that took them.${selected ? ` Showing ${selected} alone.` : ""}`}
+          aria-label={`Offchain fees published by mempool.space, in BTC per month, stacked by the pool that took them.${selected ? ` Showing ${selected} alone.` : ""}`}
         >
           {ticks.map((tick, slot) => (
             <div
@@ -132,14 +132,6 @@ export function AcceleratorPools() {
         onToggle={toggle}
         onClear={() => setSelected(null)}
       />
-
-      <figcaption className="mt-4 border-t border-ink-700 pt-2 font-mono text-[9px] leading-relaxed opacity-60">
-        one column per month, in BTC, split by the pool that took the fee. the
-        axis is linear, so a band's height is the amount and the top of a column
-        is the month's total. hover a pool to pick it out; click to keep it
-        alone, which refits the axis to that pool's own months — the only way a
-        pool worth a tenth of a percent gets a readable plot.
-      </figcaption>
     </figure>
   );
 }
@@ -243,8 +235,8 @@ function Readout({
       <div>
         <div className="font-[family-name:var(--font-display)] text-2xl font-semibold tabular-nums text-ink-50 sm:text-3xl">
           {formatBtc(value)}
-          <span className="ml-1.5 font-mono text-[10px] font-normal opacity-60">
-            BTC
+          <span className="ml-1.5 font-mono text-xl font-normal opacity-60">
+            ₿
           </span>
         </div>
         <div className="min-h-[1.2em] font-mono text-[9px] whitespace-nowrap tabular-nums opacity-70">
@@ -280,20 +272,19 @@ function Legend({
 }) {
   return (
     <div className="mt-5" onPointerLeave={() => onHover(null)}>
-      <div className="flex items-baseline justify-between font-mono text-[9px] opacity-55">
-        <span>pool · btc · {row ? formatMonth(row.month) : "every month"}</span>
+      <div className="flex min-h-[1.2em] items-baseline justify-end font-mono text-[9px]">
         {selected && (
           <button
             type="button"
             onClick={onClear}
-            className="cursor-pointer text-signal-500 uppercase opacity-100"
+            className="cursor-pointer text-signal-500 uppercase"
           >
             show all
           </button>
         )}
       </div>
 
-      <ul className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 font-mono text-[10px] tabular-nums sm:grid-cols-3">
+      <ul className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 font-mono text-[10px] tabular-nums">
         {POOLS.map((pool) => (
           <LegendItem
             key={pool.id}
@@ -349,7 +340,10 @@ function LegendItem({
           aria-hidden="true"
         />
         <span className="flex-1 truncate text-ink-200">{pool.id}</span>
-        <span className="text-ink-100">{absent ? "—" : formatBtc(value)}</span>
+        <span className="text-ink-100">
+          {absent ? "—" : formatBtc(value)}
+          {!absent && <span className="ml-1 opacity-50">₿</span>}
+        </span>
       </button>
     </li>
   );
