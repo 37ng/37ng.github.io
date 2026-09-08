@@ -1,6 +1,8 @@
 /**
  * Turns a full-size master in `art-src/` into the one committed webp the site
- * builds from, in `src/assets/`.
+ * builds from, in `src/assets/`. Subdirectories are mirrored, so a master at
+ * `art-src/bitcoin/bg.png` becomes `src/assets/bitcoin/bg.webp` — one folder
+ * per post, matching `src/content/posts/`.
  *
  * Why this exists rather than handing the master to Astro: a master is tens of
  * megabytes of lossless pixels, and committing one puts it in git history
@@ -18,7 +20,7 @@
  *   npm run art                        # every master, default quality
  *   npm run art -- --quality 100       # lossless-ish, bigger file
  *   npm run art -- --sizes 1920        # a different stage width
- *   npm run art -- bitcoin             # just one master, by name
+ *   npm run art -- bitcoin/bg          # just one master, by path
  */
 import { mkdir, readdir, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -64,11 +66,14 @@ const kb = (bytes) => `${Math.round(bytes / 1024)} KB`;
 
 const { names, quality, sizes } = parseArgs(process.argv.slice(2));
 
-const entries = (await readdir(SRC_DIR)).filter(
-  (file) =>
-    MASTERS.test(file) &&
-    (names.length === 0 || names.includes(path.parse(file).name)),
-);
+const entries = (await readdir(SRC_DIR, { recursive: true }))
+  .map((file) => file.split(path.sep).join("/"))
+  .filter((file) => {
+    if (!MASTERS.test(file)) return false;
+    if (names.length === 0) return true;
+    const stem = file.replace(MASTERS, "");
+    return names.some((name) => name === stem || name === path.basename(stem));
+  });
 
 if (entries.length === 0) {
   console.error(
@@ -79,12 +84,12 @@ if (entries.length === 0) {
   process.exit(1);
 }
 
-await mkdir(OUT_DIR, { recursive: true });
 console.log(`webp q${quality} · widths ${sizes.join(", ")}`);
 
 for (const file of entries) {
-  const name = path.parse(file).name;
+  const name = file.replace(MASTERS, "");
   const source = path.join(SRC_DIR, file);
+  await mkdir(path.join(OUT_DIR, path.dirname(name)), { recursive: true });
   const master = await stat(source);
   console.log(`\n${name}  (master ${kb(master.size)})`);
 
