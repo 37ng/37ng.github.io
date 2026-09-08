@@ -11,8 +11,35 @@ import {
   stageServerSnapshot,
   subscribeStage,
 } from "@/lib/stage";
-import { cardNo, sortCurated } from "@/lib/fan";
 import { PrologueSheet } from "@/posts/prologue/PrologueSheet";
+
+/**
+ * The fan's order, and the index number that comes out of it. Exported
+ * because two things show that number: the raised panel above the hand, and
+ * the stage caption underneath it. They sit on different sides of the
+ * hydration line — one React island, one static Astro — so both read the
+ * order from here, or the same post gets two different numbers. index.astro
+ * sorts the one list before handing it to either.
+ */
+export const CURATED_ORDER: string[] = ["prologue", "bitcoin", "rust-vecdb"];
+
+/** Anything not in CURATED_ORDER ranks after everything that is. */
+const rankOf = (id: string) => {
+  const rank = CURATED_ORDER.indexOf(id);
+  return rank === -1 ? CURATED_ORDER.length : rank;
+};
+
+export function sortCurated<T extends { id: string; date: string }>(
+  posts: T[],
+): T[] {
+  return [...posts].sort(
+    (a, b) =>
+      rankOf(a.id) - rankOf(b.id) ||
+      new Date(b.date).getTime() - new Date(a.date).getTime(),
+  );
+}
+
+export const cardNo = (i: number) => String(i).padStart(3, "0");
 
 export interface PostSummary {
   id: string;
