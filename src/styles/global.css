@@ -744,6 +744,19 @@ html[data-theme="light"]:has(#post) {
   );
 }
 
+.chart-move {
+  transition-property: bottom, height, opacity;
+  transition-duration: 320ms, 320ms, 140ms;
+  transition-timing-function:
+    cubic-bezier(0.2, 0.8, 0.2, 1), cubic-bezier(0.2, 0.8, 0.2, 1), linear;
+}
+@media (prefers-reduced-motion: reduce) {
+  .chart-move {
+    transition-property: opacity;
+    transition-duration: 140ms;
+  }
+}
+
 /* Heatmap cells grow in from their own baseline. Driven by CSS, not by island
    state: the panel is server-rendered long before it hydrates, so a JS-held
    "grown" flag would leave the static markup invisible. */

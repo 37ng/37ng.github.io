@@ -60,10 +60,10 @@ export function AcceleratorPools() {
           style={{ height: PLOT_HEIGHT }}
           aria-hidden="true"
         >
-          {ticks.map((tick) => (
+          {ticks.map((tick, slot) => (
             <span
-              key={tick}
-              className="absolute right-0 translate-y-1/2 opacity-55"
+              key={slot}
+              className="chart-move absolute right-0 translate-y-1/2 opacity-55"
               style={{ bottom: `${position(tick, ceiling) * 100}%` }}
             >
               {formatBtc(tick)}
@@ -77,10 +77,10 @@ export function AcceleratorPools() {
           role="img"
           aria-label={`Accelerator fees paid each month in BTC, stacked by the pool that took them.${selected ? ` Showing ${selected} alone.` : ""}`}
         >
-          {ticks.map((tick) => (
+          {ticks.map((tick, slot) => (
             <div
-              key={tick}
-              className="pointer-events-none absolute inset-x-0 h-px"
+              key={slot}
+              className="chart-move pointer-events-none absolute inset-x-0 h-px"
               style={{
                 bottom: `${position(tick, ceiling) * 100}%`,
                 background: "currentColor",
@@ -165,12 +165,6 @@ function Column({
   onHover: (id: string | null) => void;
   onToggle: (id: string) => void;
 }) {
-  const shown = selected
-    ? stack
-        .filter((segment) => segment.pool.id === selected)
-        .map((segment) => ({ ...segment, base: 0 }))
-    : stack;
-
   return (
     <div
       className="relative h-full flex-1 cursor-pointer"
@@ -188,13 +182,17 @@ function Column({
           aria-hidden="true"
         />
       )}
-      {shown.map((segment) => {
-        const bottom = position(segment.base, ceiling);
-        const top = position(segment.base + segment.value, ceiling);
+      {stack.map((segment) => {
+        const alone = selected === segment.pool.id;
+        const gone = selected !== null && !alone;
+        const base = alone ? 0 : segment.base;
+        const bottom = gone ? 0 : position(base, ceiling);
+        const top = gone ? 0 : position(base + segment.value, ceiling);
+        const sweep = `${index * 6}ms`;
         return (
           <div
             key={segment.pool.id}
-            className="absolute inset-x-px"
+            className="chart-move absolute inset-x-px"
             title={`${segment.pool.id} · ${formatBtc(segment.value)} BTC`}
             onPointerEnter={() => onHover(segment.pool.id)}
             onClick={() => onToggle(segment.pool.id)}
@@ -202,8 +200,13 @@ function Column({
               background: segment.pool.color,
               bottom: `${bottom * 100}%`,
               height: `${(top - bottom) * 100}%`,
-              opacity: !focus || focus === segment.pool.id ? 1 : 0.12,
-              transition: "opacity 140ms linear",
+              opacity: gone
+                ? 0
+                : !focus || focus === segment.pool.id
+                  ? 1
+                  : 0.12,
+              pointerEvents: gone ? "none" : undefined,
+              transitionDelay: `${sweep}, ${sweep}, 0ms`,
             }}
           />
         );
@@ -244,11 +247,10 @@ function Readout({
             BTC
           </span>
         </div>
-        <div className="font-mono text-[9px] whitespace-nowrap tabular-nums opacity-70">
-          {value.toLocaleString()} sats
+        <div className="min-h-[1.2em] font-mono text-[9px] whitespace-nowrap tabular-nums opacity-70">
           {share === null
             ? ""
-            : ` · ${formatShare(share)} of ${row ? "the month" : "the total"}`}
+            : `${formatShare(share)} of ${row ? "the month" : "the total"}`}
         </div>
       </div>
       <div className="text-right font-mono text-[10px] whitespace-nowrap text-ink-50 tabular-nums">

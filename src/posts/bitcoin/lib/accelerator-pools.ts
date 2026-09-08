@@ -58,7 +58,6 @@ export function lifetimeShare(pool: PoolSeries): number {
   return GRAND_TOTAL === 0 ? 0 : (pool.total / GRAND_TOTAL) * 100;
 }
 
-/** Cumulative floor, in sats, biggest pool on the bottom of the stack. */
 export function segments(row: MonthRow): Segment[] {
   let base = 0;
   return POOLS.flatMap((pool) => {
@@ -70,12 +69,6 @@ export function segments(row: MonthRow): Segment[] {
   });
 }
 
-/* A linear axis, so a band's height is the amount that pool took and nothing
-   else. That is the whole point and it costs something: months run from 0.004
-   BTC to 2.9, so most columns are short next to jan 2024 and jun 2026. The
-   answer is not to bend the scale, it is to let the reader zoom — clicking a
-   pool refits the axis to that pool's own months, which is what gives a pool
-   worth a tenth of a percent a readable plot. */
 export function axisMax(pool: string | null): number {
   const top = MONTHS.reduce(
     (max, row) =>
@@ -101,7 +94,6 @@ export function axisTicks(max: number): number[] {
   return ticks;
 }
 
-/** Height of a sats figure in the plot, 0 at zero and 1 at the ceiling. */
 export function position(value: number, max: number): number {
   return max === 0 ? 0 : value / max;
 }
@@ -110,7 +102,6 @@ export function toBtc(sats: number): number {
   return sats / SATS_PER_BTC;
 }
 
-/** Three significant figures, never an exponent, no trailing zeros. */
 export function formatBtc(sats: number): string {
   const btc = toBtc(sats);
   if (btc === 0) return "0";
