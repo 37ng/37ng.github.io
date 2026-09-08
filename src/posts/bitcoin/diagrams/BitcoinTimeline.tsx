@@ -80,7 +80,7 @@ interface BitcoinTimelineProps {
  * so a halving is always a bar edge — kept as the axis's only ticks even
  * though the subsidy itself is off the chart, since it is still the one
  * event in Bitcoin's history worth marking. Nothing is fetched — every
- * figure is in `bitcoin-bars.json`, which is currently pseudo data (real
+ * figure is in `pseudo-bars.json`, which is currently pseudo data (real
  * heights, invented fees and prices). The widget says so under the chart
  * rather than letting a stand-in pass as a measurement.
  *
