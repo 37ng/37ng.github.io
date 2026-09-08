@@ -1,6 +1,6 @@
 import { getCollection, type CollectionEntry } from "astro:content";
 
-/** All posts, newest first. The fan's own order is pinned in lib/fan.ts. */
+/** All posts, newest first. The fan's own order is pinned in PostsFan.tsx. */
 export async function getSortedPosts(): Promise<CollectionEntry<"posts">[]> {
   const posts = await getCollection("posts");
   return posts.sort(

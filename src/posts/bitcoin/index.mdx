@@ -4,7 +4,7 @@ description: "Pools, farms and miners"
 date: "2026-07-28"
 feat: true
 tags: ["bitcoin", "crypto", "cryptocurrency"]
-stageImage: "../../assets/bitcoin/bg.webp"
+stageImage: "./assets/bg.webp"
 color: "#F7941D"
 stageTone: "dark"
 ---
@@ -14,8 +14,6 @@ import FlagRateMempool from "./diagrams/FlagRateMempool.astro";
 import FlaggedBlocks from "./diagrams/FlaggedBlocks.astro";
 import PoolFlagHeatmap from "./diagrams/PoolFlagHeatmap.astro";
 import { OffchainRevenue } from "./diagrams/OffchainRevenue";
-
-
 
 Bitcoin's subsidy havles every 210000 blocks(~4 years). By the time of 33 halving(~year 2140), it will shrink to 0. Then transaction fee will be the only compensation for maintaining the network.
 
@@ -33,7 +31,7 @@ if we omit subsidy:
 
 ## offchain revenue
 
-Meanwhile, let's look at offchain revenue. mempool.space provides services publish acceleration data, records accelerated txs via its router. 
+Meanwhile, let's look at offchain revenue. mempool.space provides services publish acceleration data, records accelerated txs via its router.
 
 I paid $120 to accelerate a tx 8ab712793f52be691bfd70a971d30634168e3b71d0473bccab5f6486062c79be
 $120 was worth of ~155000 sats and the fee delta is 30000 sats. The actual fee boost is 0 since the tx has paid above the block's rate.

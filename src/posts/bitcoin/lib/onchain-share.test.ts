@@ -20,7 +20,7 @@ import {
   subsidyAt,
   supplyAfter,
   supplyAt,
-} from "@/lib/bitcoin-timeline";
+} from "./bitcoin-timeline.ts";
 
 test("a year is the bar count the period totals are annualized by", () => {
   assert.equal(BARS_PER_YEAR, BLOCKS_PER_YEAR / BLOCKS_PER_BAR);

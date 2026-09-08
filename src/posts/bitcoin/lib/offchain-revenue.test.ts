@@ -14,7 +14,7 @@ import {
   MONTH,
   monthFraction,
   monthStats,
-} from "@/lib/offchain-revenue";
+} from "./offchain-revenue.ts";
 
 test("every row matches the formula the figure prints", () => {
   for (const b of MONTH.blocks) {

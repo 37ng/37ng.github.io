@@ -13,7 +13,7 @@ import {
   topBlocks,
   Y_DECADES,
   type FlaggedBlock,
-} from "@/lib/offchain-revenue";
+} from "../lib/offchain-revenue";
 
 // The viewBox is sized close to the width this figure actually renders at
 // inside the prose measure, so the 9-unit labels land near 9 real pixels

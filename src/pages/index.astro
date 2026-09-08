@@ -2,11 +2,10 @@
 import { getImage } from "astro:assets";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import HeroStage from "../components/HeroStage.astro";
-import { PostsFan } from "../components/PostsFan";
+import { PostsFan, sortCurated } from "../components/PostsFan";
 import { Clock } from "../components/Clock";
 import { getSortedPosts } from "../lib/posts";
 import { backdropFor } from "../lib/stage";
-import { sortCurated } from "../lib/fan";
 
 // The committed art is already the stage's size and format — `npm run art`
 // made it that way from a master that never enters the repo — so the stage
@@ -29,9 +28,9 @@ async function cardSrc(image: ImageMetadata | undefined) {
 // One list feeds both islands: every post gets a card in the fan and a stage
 // behind it, so any card can be raised onto the stage. `heroImage` is the card
 // thumbnail, `stageImage` the same art full-bleed. It is sorted into the fan's
-// curated order here (src/lib/fan.ts) rather than inside the fan, because the
-// stage caption numbers itself off the same positions and the two indexes have
-// to agree.
+// curated order here (sortCurated, from PostsFan) rather than inside the fan,
+// because the stage caption numbers itself off the same positions and the two
+// indexes have to agree.
 const posts = await getSortedPosts();
 const featured = posts.filter((post) => post.data.feat);
 const unordered = await Promise.all(

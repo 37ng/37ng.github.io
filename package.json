@@ -25,8 +25,8 @@
     "verify": "npm run format:check && npm run check && npm run build && npm test",
     "art": "node scripts/generate-art.mjs",
     "bitcoin-epochs": "node scripts/generate-bitcoin-epochs.mjs",
-    "offchain-pseudo": "node scripts/generate-offchain-pseudo.mjs src/content/bitcoin/data/offchain-revenue-jan2023.json",
-    "test": "tsx --test src/**/*.test.ts"
+    "offchain-pseudo": "node scripts/generate-offchain-pseudo.mjs src/posts/bitcoin/data/offchain-revenue-jan2023.json",
+    "test": "tsx --test \"src/**/*.test.ts\""
   },
   "dependencies": {
     "@astrojs/markdown-remark": "^7.2.2",

@@ -10,10 +10,10 @@ import {
 } from "@react-three/drei";
 // Imported as a URL rather than served from public/ so the build fingerprints
 // it and fails loudly if the file ever moves.
-import modelUrl from "@/assets/bitcoin/coin.glb?url";
+import modelUrl from "../assets/coin.glb?url";
 
 /**
- * A downloaded bitcoin coin model (src/assets/bitcoin/coin.glb — a Sketchfab export
+ * A downloaded bitcoin coin model (src/posts/bitcoin/assets/coin.glb — a Sketchfab export
  * with baked baseColor/metallicRoughness/normal maps already built in, so no
  * custom material work is needed) rendered with a small studio lighting rig
  * for a polished-metal look. Drag to orbit the camera via OrbitControls;

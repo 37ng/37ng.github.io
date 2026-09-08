@@ -37,7 +37,7 @@ import {
   subsidyWorth,
   usdWorth,
   type Bar,
-} from "@/lib/bitcoin-timeline";
+} from "./bitcoin-timeline.ts";
 
 const BAR = (over: Partial<Bar> = {}): Bar => ({
   startHeight: 240_000,
