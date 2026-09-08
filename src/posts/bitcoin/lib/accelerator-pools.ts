@@ -2,14 +2,17 @@ import raw from "../data/mempool-space-by-month.json";
 import priceRaw from "../data/price.json";
 
 type Raw = Record<string, { pools: Record<string, number>; sum: number }>;
-type Price = Record<string, number>;
 
-const PRICE = priceRaw as Price;
+const PRICE = priceRaw as Record<string, number>;
+
+export type Unit = "btc" | "usd";
 
 export interface MonthRow {
   month: string;
   pools: Record<string, number>;
   sum: number;
+  /** That month's own BTC/USD, so a fee is never repriced at another month's rate. */
+  btcUsd: number;
 }
 
 export interface PoolSeries {
@@ -30,7 +33,12 @@ export const SATS_PER_BTC = 100_000_000;
 
 export const MONTHS: MonthRow[] = Object.entries(raw as Raw)
   .sort(([a], [b]) => a.localeCompare(b))
-  .map(([month, row]) => ({ month, pools: row.pools, sum: row.sum }));
+  .map(([month, row]) => ({
+    month,
+    pools: row.pools,
+    sum: row.sum,
+    btcUsd: PRICE[month] ?? 0,
+  }));
 
 export const POOLS: PoolSeries[] = buildPools();
 
@@ -40,10 +48,7 @@ function buildPools(): PoolSeries[] {
   for (const row of MONTHS) {
     for (const [pool, value] of Object.entries(row.pools)) {
       totals.set(pool, (totals.get(pool) ?? 0) + value);
-      totalsUsd.set(
-        pool,
-        (totalsUsd.get(pool) ?? 0) + usdValue(value, row.month),
-      );
+      totalsUsd.set(pool, (totalsUsd.get(pool) ?? 0) + usdWorth(value, row));
     }
   }
 
@@ -59,32 +64,56 @@ function buildPools(): PoolSeries[] {
 
 export const GRAND_TOTAL = MONTHS.reduce((sum, row) => sum + row.sum, 0);
 export const GRAND_TOTAL_USD = MONTHS.reduce(
-  (sum, row) => sum + usdValue(row.sum, row.month),
+  (sum, row) => sum + usdWorth(row.sum, row),
   0,
 );
 
-export function priceAt(month: string): number {
-  return PRICE[month] ?? 0;
+export function usdWorth(sats: number, row: MonthRow): number {
+  return toBtc(sats) * row.btcUsd;
 }
 
-export function usdValue(sats: number, month: string): number {
-  return toBtc(sats) * priceAt(month);
+export function amountOf(
+  row: MonthRow,
+  pool: string,
+  unit: Unit,
+): number | undefined {
+  const sats = row.pools[pool];
+  if (sats === undefined) return undefined;
+  return unit === "btc" ? sats : usdWorth(sats, row);
 }
 
-export function shareOfMonth(row: MonthRow, pool: string): number {
-  const value = row.pools[pool];
-  if (value === undefined || row.sum === 0) return 0;
-  return (value / row.sum) * 100;
+export function totalOf(row: MonthRow, unit: Unit): number {
+  return unit === "btc" ? row.sum : usdWorth(row.sum, row);
 }
 
-export function lifetimeShare(pool: PoolSeries): number {
-  return GRAND_TOTAL === 0 ? 0 : (pool.total / GRAND_TOTAL) * 100;
+export function poolTotal(pool: PoolSeries, unit: Unit): number {
+  return unit === "btc" ? pool.total : pool.totalUsd;
 }
 
-export function segments(row: MonthRow): Segment[] {
+export function grandTotal(unit: Unit): number {
+  return unit === "btc" ? GRAND_TOTAL : GRAND_TOTAL_USD;
+}
+
+export function shareOfMonth(
+  row: MonthRow,
+  pool: string,
+  unit: Unit = "btc",
+): number {
+  const value = amountOf(row, pool, unit);
+  const total = totalOf(row, unit);
+  if (value === undefined || total === 0) return 0;
+  return (value / total) * 100;
+}
+
+export function lifetimeShare(pool: PoolSeries, unit: Unit = "btc"): number {
+  const total = grandTotal(unit);
+  return total === 0 ? 0 : (poolTotal(pool, unit) / total) * 100;
+}
+
+export function segments(row: MonthRow, unit: Unit = "btc"): Segment[] {
   let base = 0;
   return POOLS.flatMap((pool) => {
-    const value = row.pools[pool.id];
+    const value = amountOf(row, pool.id, unit);
     if (value === undefined) return [];
     const segment = { pool, value, base };
     base += value;
@@ -92,10 +121,13 @@ export function segments(row: MonthRow): Segment[] {
   });
 }
 
-export function axisMax(pool: string | null): number {
+export function axisMax(pool: string | null, unit: Unit = "btc"): number {
   const top = MONTHS.reduce(
     (max, row) =>
-      Math.max(max, pool === null ? row.sum : (row.pools[pool] ?? 0)),
+      Math.max(
+        max,
+        pool === null ? totalOf(row, unit) : (amountOf(row, pool, unit) ?? 0),
+      ),
     0,
   );
   const step = axisStep(top);
@@ -142,6 +174,14 @@ export function formatUsd(usd: number): string {
   return fixed.includes(".")
     ? fixed.replace(/0+$/, "").replace(/\.$/, "")
     : fixed;
+}
+
+export function formatValue(value: number, unit: Unit): string {
+  return unit === "btc" ? formatBtc(value) : formatUsd(value);
+}
+
+export function unitMark(unit: Unit): string {
+  return unit === "btc" ? "₿" : "$";
 }
 
 export function formatShare(value: number): string {

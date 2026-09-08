@@ -1,31 +1,34 @@
 import { useMemo, useState } from "react";
 import {
+  amountOf,
   axisMax,
   axisTicks,
-  formatBtc,
   formatMonth,
   formatShare,
-  formatUsd,
-  GRAND_TOTAL,
-  GRAND_TOTAL_USD,
+  formatValue,
+  grandTotal,
   lifetimeShare,
   MONTHS,
   POOLS,
+  poolTotal,
   position,
   segments,
   shareOfMonth,
-  usdValue,
+  totalOf,
+  unitMark,
   yearTicks,
   type MonthRow,
   type PoolSeries,
   type Segment,
+  type Unit,
 } from "../lib/accelerator-pools";
-
-type Unit = "btc" | "usd";
 
 const PLOT_HEIGHT = 240;
 const YEARS = yearTicks();
-const STACKS = MONTHS.map(segments);
+const STACKS: Record<Unit, Segment[][]> = {
+  btc: MONTHS.map((row) => segments(row, "btc")),
+  usd: MONTHS.map((row) => segments(row, "usd")),
+};
 
 export function AcceleratorPools() {
   const [selected, setSelected] = useState<string | null>(null);
@@ -35,7 +38,7 @@ export function AcceleratorPools() {
 
   const focus = selected ?? hovered;
   const row = cursor === null ? null : MONTHS[cursor];
-  const ceiling = useMemo(() => axisMax(selected), [selected]);
+  const ceiling = useMemo(() => axisMax(selected, unit), [selected, unit]);
   const ticks = useMemo(() => axisTicks(ceiling), [ceiling]);
   const toggle = (id: string) =>
     setSelected((current) => (current === id ? null : id));
@@ -72,7 +75,7 @@ export function AcceleratorPools() {
               className="chart-move absolute right-0 translate-y-1/2 opacity-55"
               style={{ bottom: `${position(tick, ceiling) * 100}%` }}
             >
-              {formatBtc(tick)}
+              {formatValue(tick, unit)}
             </span>
           ))}
         </div>
@@ -81,7 +84,7 @@ export function AcceleratorPools() {
           className="relative flex-1 touch-none select-none"
           style={{ height: PLOT_HEIGHT }}
           role="img"
-          aria-label={`Offchain fees published by mempool.space, in BTC per month, stacked by the pool that took them.${selected ? ` Showing ${selected} alone.` : ""}`}
+          aria-label={`Offchain fees published by mempool.space, in ${unit === "btc" ? "BTC" : "US dollars"} per month, stacked by the pool that took them.${selected ? ` Showing ${selected} alone.` : ""}`}
         >
           {ticks.map((tick, slot) => (
             <div
@@ -100,12 +103,13 @@ export function AcceleratorPools() {
             {MONTHS.map((month, index) => (
               <Column
                 key={month.month}
-                stack={STACKS[index]}
+                stack={STACKS[unit][index]}
                 ceiling={ceiling}
                 index={index}
                 cursor={cursor}
                 selected={selected}
                 focus={focus}
+                unit={unit}
                 onCursor={setCursor}
                 onHover={setHovered}
                 onToggle={toggle}
@@ -150,6 +154,7 @@ function Column({
   cursor,
   selected,
   focus,
+  unit,
   onCursor,
   onHover,
   onToggle,
@@ -160,6 +165,7 @@ function Column({
   cursor: number | null;
   selected: string | null;
   focus: string | null;
+  unit: Unit;
   onCursor: (index: number) => void;
   onHover: (id: string | null) => void;
   onToggle: (id: string) => void;
@@ -192,7 +198,7 @@ function Column({
           <div
             key={segment.pool.id}
             className="chart-move absolute inset-x-px"
-            title={`${segment.pool.id} · ${formatBtc(segment.value)} BTC`}
+            title={`${segment.pool.id} · ${formatValue(segment.value, unit)} ${unitMark(unit)}`}
             onPointerEnter={() => onHover(segment.pool.id)}
             onClick={() => onToggle(segment.pool.id)}
             style={{
@@ -230,17 +236,16 @@ function Readout({
     : undefined;
   const value = row
     ? selected
-      ? (row.pools[selected] ?? 0)
-      : row.sum
-    : (pool?.total ?? GRAND_TOTAL);
-  const valueUsd = row
-    ? usdValue(value, row.month)
-    : (pool?.totalUsd ?? GRAND_TOTAL_USD);
+      ? (amountOf(row, selected, unit) ?? 0)
+      : totalOf(row, unit)
+    : pool
+      ? poolTotal(pool, unit)
+      : grandTotal(unit);
   const share = selected
     ? row
-      ? shareOfMonth(row, selected)
+      ? shareOfMonth(row, selected, unit)
       : pool
-        ? lifetimeShare(pool)
+        ? lifetimeShare(pool, unit)
         : 0
     : null;
 
@@ -249,7 +254,7 @@ function Readout({
       <div>
         <div className="font-[family-name:var(--font-display)] text-2xl font-semibold tabular-nums text-ink-50 sm:text-3xl">
           <UnitToggle unit={unit} onChange={onUnit} />
-          {unit === "btc" ? formatBtc(value) : formatUsd(valueUsd)}
+          <span className="ml-3">{formatValue(value, unit)}</span>
         </div>
         <div className="h-[1.2em] font-mono text-[9px] leading-[1.2em] whitespace-nowrap tabular-nums opacity-70">
           {share === null
@@ -275,25 +280,16 @@ function UnitToggle({
   onChange: (unit: Unit) => void;
 }) {
   return (
-    <span className="mr-1.5 inline-flex items-baseline gap-0.5 font-mono text-xl font-normal">
-      <button
-        type="button"
-        onClick={() => onChange("btc")}
-        className="cursor-pointer"
-        style={{ opacity: unit === "btc" ? 1 : 0.35 }}
-      >
-        ₿
-      </button>
+    <button
+      type="button"
+      onClick={() => onChange(unit === "btc" ? "usd" : "btc")}
+      aria-label={`Showing ${unit === "btc" ? "BTC" : "US dollars"}, switch to ${unit === "btc" ? "US dollars" : "BTC"}`}
+      className="mr-4 inline-flex cursor-pointer items-baseline gap-0.5 font-mono text-[1em] font-normal"
+    >
+      <span style={{ opacity: unit === "btc" ? 1 : 0.35 }}>₿</span>
       <span className="opacity-35">/</span>
-      <button
-        type="button"
-        onClick={() => onChange("usd")}
-        className="cursor-pointer"
-        style={{ opacity: unit === "usd" ? 1 : 0.35 }}
-      >
-        $
-      </button>
-    </span>
+      <span style={{ opacity: unit === "usd" ? 1 : 0.35 }}>$</span>
+    </button>
   );
 }
 
@@ -363,12 +359,13 @@ function LegendItem({
   onHover: (id: string | null) => void;
   onToggle: (id: string) => void;
 }) {
-  const absent = row !== null && row.pools[pool.id] === undefined;
-  const value = row ? (row.pools[pool.id] ?? 0) : pool.total;
-  const valueUsd = row
-    ? usdValue(row.pools[pool.id] ?? 0, row.month)
-    : pool.totalUsd;
-  const share = row ? shareOfMonth(row, pool.id) : lifetimeShare(pool);
+  const paid = row === null ? undefined : amountOf(row, pool.id, unit);
+  const absent = row !== null && paid === undefined;
+  const value = row ? (paid ?? 0) : poolTotal(pool, unit);
+  const sats = row ? (row.pools[pool.id] ?? 0) : pool.total;
+  const share = row
+    ? shareOfMonth(row, pool.id, unit)
+    : lifetimeShare(pool, unit);
   const dim = focus !== null && focus !== pool.id;
 
   return (
@@ -380,7 +377,7 @@ function LegendItem({
         onFocus={() => onHover(pool.id)}
         onBlur={() => onHover(null)}
         onClick={() => onToggle(pool.id)}
-        title={`${pool.id} · ${value.toLocaleString()} sats · ${formatShare(share)}`}
+        title={`${pool.id} · ${sats.toLocaleString()} sats · ${formatShare(share)}`}
         className="flex w-full cursor-pointer items-baseline gap-2 py-0.5 text-left"
         style={{ opacity: dim ? 0.35 : 1, transition: "opacity 140ms linear" }}
       >
@@ -391,16 +388,8 @@ function LegendItem({
         />
         <span className="flex-1 truncate text-ink-200">{pool.id}</span>
         <span className="text-ink-100">
-          {absent
-            ? "—"
-            : unit === "btc"
-              ? formatBtc(value)
-              : formatUsd(valueUsd)}
-          {!absent && (
-            <span className="ml-1 opacity-50">
-              {unit === "btc" ? "₿" : "$"}
-            </span>
-          )}
+          {absent ? "—" : formatValue(value, unit)}
+          {!absent && <span className="ml-1 opacity-50">{unitMark(unit)}</span>}
         </span>
       </button>
     </li>
