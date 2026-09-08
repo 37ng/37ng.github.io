@@ -9,11 +9,14 @@ color: "#F7941D"
 stageTone: "dark"
 ---
 
+import AcceleratorPools from "./diagrams/AcceleratorPools.astro";
 import BitcoinTimeline from "./diagrams/BitcoinTimeline.astro";
 import FlagRateMempool from "./diagrams/FlagRateMempool.astro";
 import FlaggedBlocks from "./diagrams/FlaggedBlocks.astro";
 import PoolFlagHeatmap from "./diagrams/PoolFlagHeatmap.astro";
 import { OffchainRevenue } from "./diagrams/OffchainRevenue";
+
+<AcceleratorPools />
 
 Bitcoin's subsidy havles every 210000 blocks(~4 years). By the time of 33 halving(~year 2140), it will shrink to 0. Then transaction fee will be the only compensation for maintaining the network.
 

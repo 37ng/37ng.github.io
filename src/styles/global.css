@@ -673,12 +673,18 @@ html[data-theme="light"]:has(#post) .chart-mark {
 /* ---------------------------------------------------------------
    Chart series
    A stacked chart needs hues that stay apart for a colorblind reader, which
-   the ink ramp and the single signal orange cannot supply on their own. Five
-   slots, fixed order, each pool keeping its slot whatever the mix does. Steps
-   are chosen per mode, not flipped: the light column is stepped against warm
-   paper, the dark column against ink-950. Both were run through the palette
-   validator — worst adjacent pair 9.2 ΔE (light) / 9.4 ΔE (dark) under
-   simulated deuteranopia, above the 8 target.
+   the ink ramp and the single signal orange cannot supply on their own.
+   Fourteen slots, fixed order, each pool keeping its slot whatever the mix
+   does. Steps are chosen per mode, not flipped: the light column is stepped
+   against warm paper, the dark column against ink-950. Slots 1-4 were run
+   through the palette validator (worst adjacent pair 9.2 ΔE light / 9.4 ΔE
+   dark under simulated deuteranopia); slots 5-14 exist because the
+   accelerator chart has one line per pool and 14 pools, and are separated by
+   hover and click rather than by hue alone.
+
+   --pool-* is the five-slot stacked palette, aliased onto the same slots so a
+   pool keeps one color across every figure. --pool-5 is its own neutral: it is
+   the residual bucket, not a series.
 
    Plain :root rather than @theme for the same reason as --fan-* above:
    nothing here becomes a Tailwind utility, and unreferenced @theme tokens
@@ -686,19 +692,44 @@ html[data-theme="light"]:has(#post) .chart-mark {
    gap between stacked segments, so it tracks the body background.
 ----------------------------------------------------------------- */
 :root {
-  --pool-1: #d95926;
-  --pool-2: #199e70;
-  --pool-3: #3987e5;
-  --pool-4: #c98500;
+  --series-1: #d95926;
+  --series-2: #199e70;
+  --series-3: #3987e5;
+  --series-4: #c98500;
+  --series-5: #d167a6;
+  --series-6: #3ec6bd;
+  --series-7: #9a86e8;
+  --series-8: #93bd35;
+  --series-9: #e35a52;
+  --series-10: #4fb0ef;
+  --series-11: #c08f5e;
+  --series-12: #5fc25a;
+  --series-13: #e59ad2;
+  --series-14: #8a97a6;
+
+  --pool-1: var(--series-1);
+  --pool-2: var(--series-2);
+  --pool-3: var(--series-3);
+  --pool-4: var(--series-4);
   --pool-5: #6f7566;
+
   --chart-surface: var(--color-ink-950);
 }
 html[data-theme="light"]:has(#post) {
-  --pool-1: #eb6834;
-  --pool-2: #1baf7a;
-  --pool-3: #2a78d6;
-  --pool-4: #eda100;
-  --pool-5: #6f7566;
+  --series-1: #eb6834;
+  --series-2: #1baf7a;
+  --series-3: #2a78d6;
+  --series-4: #eda100;
+  --series-5: #a63d72;
+  --series-6: #1c8079;
+  --series-7: #6a4fb5;
+  --series-8: #62821c;
+  --series-9: #bd352e;
+  --series-10: #1c78b0;
+  --series-11: #8a6136;
+  --series-12: #3f8a2c;
+  --series-13: #a3538f;
+  --series-14: #58626f;
 }
 
 /* Slot 5 is the residual bucket, and the one slot deliberately below the
@@ -711,6 +742,19 @@ html[data-theme="light"]:has(#post) {
     transparent 0 4px,
     color-mix(in srgb, var(--chart-surface) 40%, transparent) 4px 6px
   );
+}
+
+.chart-move {
+  transition-property: bottom, height, opacity;
+  transition-duration: 320ms, 320ms, 140ms;
+  transition-timing-function:
+    cubic-bezier(0.2, 0.8, 0.2, 1), cubic-bezier(0.2, 0.8, 0.2, 1), linear;
+}
+@media (prefers-reduced-motion: reduce) {
+  .chart-move {
+    transition-property: opacity;
+    transition-duration: 140ms;
+  }
 }
 
 /* Heatmap cells grow in from their own baseline. Driven by CSS, not by island
