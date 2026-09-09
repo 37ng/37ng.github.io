@@ -11,9 +11,6 @@ stageTone: "dark"
 
 import AcceleratorPools from "./diagrams/AcceleratorPools.astro";
 import BitcoinTimeline from "./diagrams/BitcoinTimeline.astro";
-import FlagRateMempool from "./diagrams/FlagRateMempool.astro";
-import FlaggedBlocks from "./diagrams/FlaggedBlocks.astro";
-import PoolFlagHeatmap from "./diagrams/PoolFlagHeatmap.astro";
 import { OffchainRevenue } from "./diagrams/OffchainRevenue";
 
 <AcceleratorPools />
@@ -51,16 +48,6 @@ Template vs Actual blocks are another source, but it's not certain that the diff
 There are more offchain revenues, private business deals, un published data, so we try to find the pattern that could be offchain txs by observing mempool.space API.
 
 [same charts, but with addition of assumed offchain revenue]
-
-## Flag rate vs mempool congestion
-
-<FlagRateMempool />
-
-<FlaggedBlocks />
-
-<PoolFlagHeatmap />
-
-The numbers here are placeholder data.
 
 ## What a pool earns off the book
 
